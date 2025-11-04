@@ -1,0 +1,1284 @@
+{
+    "tepeQuestions": {
+        "traits": {
+            "N1": "Poco sociable",
+            "N2": "Discutidor",
+            "N3": "Perfeccionista",
+            "N4": "Curioso",
+            "N5": "Dependiente",
+            "N6": "Eficiente",
+            "N7": "Paciente",
+            "N8": "Dinámico",
+            "N9": "Poco flexible",
+            "N10": "Insensible",
+            "N11": "Reflexivo",
+            "N12": "Amable",
+            "N13": "Tosco",
+            "N14": "Impopular",
+            "N15": "Original",
+            "N16": "Gustos refinados",
+            "N17": "Lento de movimientos",
+            "N18": "Esforzado",
+            "N19": "Desconfiado",
+            "N20": "Sencillo, modesto",
+            "N21": "Poco convencional"
+        },
+        "affirmations": {
+            "N22": "Busco el consejo de gente especialista con más experiencia que yo.",
+            "N23": "Me canso sin motivo.",
+            "N24": "Me gusta estar mucho tiempo sin hacer nada.",
+            "N25": "Me valgo de personas influyentes para alcanzar mis metas.",
+            "N26": "Encuentro agradable vivir.",
+            "N27": "Me gustan las tareas fáciles.",
+            "N28": "El cambio me agrada.",
+            "N29": "Mi mente está tan despejada como siempre.",
+            "N30": "Voy a la acción sin perder tiempo buscando información.",
+            "N31": "Frecuentemente olvido citas y cosas que tenía que hacer.",
+            "N32": "Suelo cumplir con los demás a tiempo.",
+            "N33": "Prefiero la vida estable, sin cambios.",
+            "N34": "Tengo flojera para hacer las cosas.",
+            "N35": "Mis padres tienen o han tenido una empresa.",
+            "N36": "Las personas menosprecian mis recomendaciones.",
+            "N37": "Caigo mal a la gente que dirijo.",
+            "N38": "He realizado más, de lo que pensaba mi cuerpo podía dar.",
+            "N39": "Desconfió de todos.",
+            "N40": "Tengo confianza en el futuro.",
+            "N41": "Nunca quedo totalmente satisfecho con la forma en que se hacen las cosas, siempre considero que hay una mejor manera de hacerlo.",
+            "N42": "Hay personas que no sirven para nada.",
+            "N43": "Tengo una persona que es mi 'brazo derecho'.",
+            "N44": "Puedo solucionar problemas con pobres recursos.",
+            "N45": "Me gusta trabajar en grupo.",
+            "N46": "Juego a acortar tiempos en las cosas que hago.",
+            "N47": "Busco hacer cosas nuevas y diferentes de lo que hecho en el pasado.",
+            "N48": "Creo que ya he logrado lo máximo en superación personal.",
+            "N49": "Evito pensar en el futuro.",
+            "N50": "Siempre ando haciendo cosas distintas para no aburrirme.",
+            "N51": "Me canso cuando realizo un trabajo mucho rato.",
+            "N52": "Anoto y programo lo que tengo que hacer.",
+            "N53": "Tengo que hacer las cosas yo mismo para que salgan bien.",
+            "N54": "Tengo mala suerte.",
+            "N55": "Puedo pedir favores con facilidad.",
+            "N56": "Prefiero trabajar solo que en grupo.",
+            "N57": "Soluciono conflictos entre dos personas.",
+            "N58": "Siempre ando haciendo cosas para no aburrirme.",
+            "N59": "Gasto más de lo debido.",
+            "N60": "Me disgustan las ventas.",
+            "N61": "Quiero proteger económicamente a mis seres queridos.",
+            "N62": "Constantemente me llaman la atención por no cumplir a tiempo.",
+            "N63": "Creo que soy capaz de soportar la adversidad.",
+            "N64": "Veo mi futuro muy negro.",
+            "N65": "Hago cosas arriesgadas.",
+            "N66": "Quiero ser mejor de lo que soy ahora",
+            "N67": "Solo emprendo aquello en lo que estoy seguro tendré éxito.",
+            "N68": "Cuando se presenta un problema, me alejo",
+            "N69": "en el colegio mis compañeros hacían lo que yo les decía",
+            "N70": "Me gustan las tareas difíciles.",
+            "N71": "Estoy cinco minutos antes de la hora citada.",
+            "N72": "Insisto varias veces para conseguir que otras personas hagan lo que yo quiero que hagan.",
+            "N73": "Si es necesario, hago el trabajo de otros para cumplir con una entrega a tiempo.",
+            "N74": "Creo que me irá bien en la vida.",
+            "N75": "Soy más arriesgado que la mayoría.",
+            "N76": "Tengo energías para realizar trabajos muchas horas seguidas.",
+            "N77": "Cuando algo me sale mal insisto hasta que salga como yo quiero.",
+            "N78": "Trabajo por obligación.",
+            "N79": "Tengo varias personas de mucha confianza para mí",
+            "N80": "En el colegio mis compañeros me ignoraban.",
+            "N81": "Siento que soy útil y necesario.",
+            "N82": "Se me hace difícil convencer a la gente.",
+            "N83": "Me disgustan las competencias.",
+            "N84": "La gente me desobedece lo que digo.",
+            "N85": "Cuando alguien me encarga algo, le hago muchas preguntas para estar seguro que entiendo lo que quiere la persona.",
+            "N86": "Me gusta conversar.",
+            "N87": "Me molesto con Facilidad.",
+            "N88": "Quiero tener un trabajo estable y con un sueldo seguro.",
+            "N89": "Puedo hacer un trabajo más de 10 horas seguidas.",
+            "N90": "Trabajo porque me gusta estar ocupado.",
+            "N91": "Invierto mucho tiempo en pensar cómo puedo influenciar a otras personas.",
+            "N92": "Me gusta pensar en el futuro.",
+            "N93": "Tengo buena suerte",
+            "N94": "Cuando me enfrento a serias dificultades, rápidamente me desplazo hacia otras actividades.",
+            "N95": "Tengo personas de confianza que pueden hacer las cosas tan bien como yo.",
+            "N96": "Me gusta hacer amigos.",
+            "N97": "La gente me evita.",
+            "N98": "Quiero ser mi propio jefe.",
+            "N99": "Tengo amigos que dirigen una empresa.",
+            "N100": "Estoy más irritable que antes."
+        }
+    },
+    "ieppoQuestions": {
+        "personalStyles": {
+            "E1": "Es un buen líder, sabe cómo dirigir a las personas.",
+            "E2": "Es hábil para relacionarse con otras personas.",
+            "E3": "Organiza sus compañeros para realizar diversas actividades.",
+            "E4": "Es tímido en sus relaciones sociales.",
+            "E5": "Convence a sus compañeros o profesores para lograr algo.",
+            "E6": "Dirige los grupos en los que trabaja.",
+            "E7": "Tiene curiosidad por saber cómo funciona un objeto o máquina.",
+            "E8": "Se da cuenta fácilmente de cómo armar o desarmar objetos.",
+            "E9": "Suele reparar artefactos u objetos del hogar.",
+            "E10": "Es bueno para descubrir cómo funciona una herramienta o aparato.",
+            "E11": "Es comprensivo frente a las necesidades de los demás.",
+            "E12": "Coopera con las personas con las que hace algo.",
+            "E13": "Tiene curiosidad por aprender nuevas cosas.",
+            "E14": "Es amigable con los demás.",
+            "E15": "Es servicial y ayuda a los demás.",
+            "E16": "Es organizado para hacer las cosas.",
+            "E17": "Es ordenado, planifica sus acciones.",
+            "E18": "Sigue un método ordenado para realizar sus actividades.",
+            "E19": "Mantiene ordenados sus útiles, trabajos y presentaciones.",
+            "E20": "Es disciplinado en sus actividades.",
+            "E21": "Se propone hacer un horario para hacer sus tareas con anticipación.",
+            "E22": "Es creativo, con capacidad para crear o inventar algo.",
+            "E23": "Es bueno para hacer alguna actividad artística (actuar, dibujar, manualidades, cocinar, etc.)",
+            "E24": "Dedica el tiempo a alguna actividad artística (cantar, bailar, actuar, dibujar, manualidades, cocinar, etc.",
+            "E25": "Disfruta de las actividades en donde puede utilizar su imaginación.",
+            "E26": "Se esfuerza por terminar exitosamente sus tareas.",
+            "E27": "Es estudioso e intelectual.",
+            "E28": "Es persistente en las tareas que realiza.",
+            "E29": "Cuando tiene que hacer una tarea, trata de hacer más de lo que le piden.",
+            "E30": "Trata de hacer sus tareas o trabajos lo mejor posible.",
+            "E31": "Cuando hace un trabajo revisa con cuidado los detalles.",
+            "E32": "Se responsabiliza por alcanzar las metas que se plantea.",
+            "E33": "Pone mucha energía para lograr lo que se propone."
+        },
+        "preferredActivities": {
+            "P1": "Dar ideas creativas en un trabajo de equipo.",
+            "P2": "Tomar decisiones importantes en el trabajo.",
+            "P3": "Dirigir equipos de personas para que logren una meta.",
+            "P4": "Ser representante de un grupo frente a otras personas.",
+            "P5": "Guiar el trabajo de otros.",
+            "P6": "Brindar discursos o hablar frente a un grupo de personas.",
+            "P7": "Arreglar objetos (aparatos, instalaciones eléctricas, etc.)",
+            "P8": "Utilizar herramientas manuales y/o maquinarias (martillo, desarmador, camiones, montacargas, etc.)",
+            "P9": "Armar o desarmar aparatos (televisores, celulares, refrigeradoras, etc.)",
+            "P10": "Solucionar problemas de funcionamiento de máquinas.",
+            "P11": "Ensamblar muebles (estantes, camas, melanina, etc.)",
+            "P12": "Cuidar a niños o personas con dificultades.",
+            "P13": "Curar a personas.",
+            "P14": "Trabajar en proyectos de ayuda a la comunidad.",
+            "P15": "Trabajar atendiendo al público.",
+            "P16": "Brindar consejos a otras personas.",
+            "P17": "Enseñar o instruir a otras personas.",
+            "P18": "Llenar formularios o recibos.",
+            "P19": "Redactar documentos formales (solicitudes constancias, formularios, etc.)",
+            "P20": "Utilizar equipos de oficina (computadora, calculadora, archivadores, teléfonos, etc.)",
+            "P21": "Realizar un inventario o lista de productos.",
+            "P22": "Ordenar y clasificar objetos.",
+            "P23": "Llevar un archivo de documentos, libros, etc.",
+            "P24": "Sacar cuentas de manera ordenada (para cobrar o pagar algo).",
+            "P25": "Componer música y/o cantar.",
+            "P26": "Crear peinados, cortes de cabello, recetas, platillos de comida, etc.",
+            "P27": "Actuar o bailar en un espectáculo.",
+            "P28": "Escribir historias, cuentos, poemas.",
+            "P29": "Diseñar ropa u objetos.",
+            "P30": "Tocar un instrumento musical.",
+            "P31": "Dibujar o pintar un cuadro o retrato.",
+            "P32": " Hacer manualidades (origami, telares, escultura, canastas, cerámica, etc.)",
+            "P33": "Encontrar nuevas oportunidades de negocio o proyectos.",
+            "P34": "Ejecutar ideas o proyectos nuevos.",
+            "P35": "Desarrollar un provecto, negocio o pequeña empresa.",
+            "P36": "Negociar con otras personas para llegar a un acuerdo.",
+            "P37": "Vender un producto.",
+            "P38": "Crear o inventar un producto original.",
+            "P39": "Diseñar la publicidad de un producto.",
+            "P40": "Recolectar datos sobre un hecho (hacer registros, observaciones, entrevistas, etc.)",
+            "P41": "Explicar los hechos que ocurren alrededor.",
+            "P42": "Analizar información.",
+            "P43": "Observar minuciosamente lo que sucede alrededor.",
+            "P44": "Trabajar en un proyecto de investigación.",
+            "P45": "Realizar entrevistas y/o encuestas a personas.",
+            "P46": "Usar un microscopio (instrumento para observar objetos demasiado pequeños).",
+            "P47": "Hacer experimentos con objetos o sustancias."
+        },
+        "perceptionOfAbility": {
+            "H1": "Ser representante de un grupo frente a otras personas.",
+            "H2": "Dirigir equipos de personas para que logren una meta.",
+            "H3": "Guiar el trabajo de otros.",
+            "H4": "Influenciar en las opiniones de las personas.",
+            "H5": "Enseñar o instruir a otras personas.",
+            "H6": "Tomar decisiones importantes en las decisiones de las personas.",
+            "H7": "Dar ideas creativas en un trabajo de equipo.",
+            "H8": "Brindar discursos o hablar frente a un grupo de personas.",
+            "H9": "Arreglar objetos ( aparatos, instalaciones, eléctricas, etc.)",
+            "H10": "Armar o desarmar aparatos (televisores, celulares, refrigeradoras, etc.)",
+            "H11": "Utilizar herramientas manuales y/o maquinarias (martillo, desarmador, camiones, montacargas, etc.)",
+            "H12": "Solucionar problemas de funcionamiento de máquinas.",
+            "H13": "Ensamblar muebles (estante, cama, melanina, etc.)",
+            "H14": "Cuidar niños o personas con dificultades.",
+            "H15": "Curar personas.",
+            "H16": "Trabajar atendiendo al público.",
+            "H17": "Brindar consejos a otras personas.",
+            "H18": "Llenar formularios o recibos.",
+            "H19": "Realizar un inventario o lista de productos.",
+            "H20": "Llevar un archivo de documentos, libros, etc.",
+            "H21": "Ordenar y clasificar objetos.",
+            "H22": "Utilizar equipos de oficina (computadora, calculadora, archivadores, teléfonos, etc.)",
+            "H23": "Sacar cuentas de manera ordenada (para cobrar o pagar algo).",
+            "H24": "Redactar documentos formales (solicitudes, constancias, formularios, etc.)",
+            "H25": "Componer música y/o cantar.",
+            "H26": "Crear peinados, cortes de cabello, recetas, platillos de comida, etc.",
+            "H27": "Tocar un instrumento musical.",
+            "H28": "Actuar o bailar en un espectáculo.",
+            "H29": "Desarrollar un proyecto, negocio o pequeña empresa.",
+            "H30": "Encontrar nuevas oportunidades de negocio o proyectos.",
+            "H31": "Ejecutar ideas o proyectos nuevos.",
+            "H32": "Negociar con otras personas para llegar a un acuerdo.",
+            "H33": "Vender un producto.",
+            "H34": "Diseñar la publicidad de un producto.",
+            "H35": "Recolectar datos sobre un hecho (hacer registros, observaciones, entrevistas, etc.)",
+            "H36": "Explicar los hechos que ocurren alrededor.",
+            "H37": "Analizar información.",
+            "H38": "Trabajar en un proyecto de investigación."
+        }
+    },
+    "phbQuestions": {
+        "attentionSkills": {
+            "A1": {
+                "numbersList": [
+                    4,
+                    2,
+                    0,
+                    3,
+                    5,
+                    2,
+                    2,
+                    9,
+                    7,
+                    2,
+                    6,
+                    9,
+                    1,
+                    8,
+                    1,
+                    8,
+                    9,
+                    4,
+                    2,
+                    1,
+                    0,
+                    4,
+                    3,
+                    8,
+                    2,
+                    7,
+                    8,
+                    7,
+                    9,
+                    0,
+                    3,
+                    7
+                ]
+            },
+            "A2": {
+                "numbersList": [
+                    6,
+                    6,
+                    1,
+                    3,
+                    5,
+                    1,
+                    5,
+                    1,
+                    5,
+                    9,
+                    4,
+                    9,
+                    1,
+                    0,
+                    3,
+                    0,
+                    4,
+                    1,
+                    3,
+                    4,
+                    4,
+                    6,
+                    9,
+                    2,
+                    3,
+                    4,
+                    6,
+                    0,
+                    9,
+                    5,
+                    1,
+                    5
+                ]
+            },
+            "A3": {
+                "numbersList": [
+                    8,
+                    9,
+                    6,
+                    4,
+                    2,
+                    6,
+                    7,
+                    4,
+                    7,
+                    8,
+                    8,
+                    7,
+                    2,
+                    7,
+                    3,
+                    0,
+                    9,
+                    7,
+                    1,
+                    9,
+                    7,
+                    0,
+                    2,
+                    9,
+                    9,
+                    6,
+                    3,
+                    9,
+                    3,
+                    5,
+                    8,
+                    5
+                ]
+            },
+            "A4": {
+                "numbersList": [
+                    6,
+                    8,
+                    5,
+                    5,
+                    2,
+                    0,
+                    5,
+                    9,
+                    1,
+                    4,
+                    1,
+                    4,
+                    1,
+                    2,
+                    7,
+                    5,
+                    4,
+                    3,
+                    7,
+                    6,
+                    0,
+                    5,
+                    9,
+                    0,
+                    1,
+                    2,
+                    3,
+                    5,
+                    0,
+                    0,
+                    2,
+                    4
+                ]
+            },
+            "A5": {
+                "numbersList": [
+                    7,
+                    4,
+                    8,
+                    5,
+                    7,
+                    9,
+                    8,
+                    0,
+                    3,
+                    6,
+                    8,
+                    2,
+                    0,
+                    4,
+                    3,
+                    9,
+                    9,
+                    6,
+                    7,
+                    0,
+                    2,
+                    0,
+                    6,
+                    5,
+                    5,
+                    6,
+                    5,
+                    3,
+                    4,
+                    6,
+                    9,
+                    4
+                ]
+            },
+            "A6": {
+                "numbersList": [
+                    9,
+                    6,
+                    6,
+                    0,
+                    6,
+                    7,
+                    9,
+                    1,
+                    5,
+                    8,
+                    5,
+                    3,
+                    8,
+                    2,
+                    2,
+                    4,
+                    8,
+                    7,
+                    5,
+                    5,
+                    0,
+                    5,
+                    8,
+                    6,
+                    0,
+                    9,
+                    4,
+                    8,
+                    3,
+                    1,
+                    0,
+                    3
+                ]
+            },
+            "A7": {
+                "numbersList": [
+                    0,
+                    7,
+                    8,
+                    2,
+                    6,
+                    1,
+                    7,
+                    3,
+                    6,
+                    6,
+                    7,
+                    4,
+                    3,
+                    4,
+                    0,
+                    5,
+                    4,
+                    6,
+                    6,
+                    7,
+                    5,
+                    0,
+                    6,
+                    1,
+                    8,
+                    8,
+                    5,
+                    9,
+                    7,
+                    6,
+                    8,
+                    0
+                ]
+            },
+            "A8": {
+                "numbersList": [
+                    5,
+                    5,
+                    8,
+                    8,
+                    9,
+                    7,
+                    2,
+                    5,
+                    4,
+                    0,
+                    7,
+                    7,
+                    1,
+                    7,
+                    8,
+                    0,
+                    0,
+                    6,
+                    9,
+                    4,
+                    4,
+                    9,
+                    1,
+                    3,
+                    9,
+                    2,
+                    8,
+                    7,
+                    2,
+                    3,
+                    9,
+                    7
+                ]
+            },
+            "A9": {
+                "numbersList": [
+                    3,
+                    9,
+                    2,
+                    1,
+                    5,
+                    5,
+                    6,
+                    4,
+                    9,
+                    2,
+                    1,
+                    7,
+                    4,
+                    4,
+                    8,
+                    4,
+                    5,
+                    7,
+                    9,
+                    3,
+                    6,
+                    4,
+                    1,
+                    6,
+                    0,
+                    0,
+                    6,
+                    2,
+                    5,
+                    3,
+                    4,
+                    8
+                ]
+            },
+            "A10": {
+                "numbersList": [
+                    0,
+                    1,
+                    9,
+                    4,
+                    9,
+                    5,
+                    5,
+                    1,
+                    9,
+                    3,
+                    1,
+                    0,
+                    2,
+                    4,
+                    1,
+                    1,
+                    8,
+                    8,
+                    4,
+                    5,
+                    8,
+                    3,
+                    7,
+                    1,
+                    2,
+                    7,
+                    3,
+                    1,
+                    0,
+                    3,
+                    3,
+                    1
+                ]
+            },
+            "A11": {
+                "numbersList": [
+                    9,
+                    5,
+                    4,
+                    4,
+                    4,
+                    5,
+                    2,
+                    1,
+                    2,
+                    8,
+                    3,
+                    0,
+                    3,
+                    4,
+                    5,
+                    3,
+                    8,
+                    3,
+                    9,
+                    6,
+                    5,
+                    3,
+                    7,
+                    5,
+                    3,
+                    6,
+                    8,
+                    5,
+                    5,
+                    2,
+                    0,
+                    5
+                ]
+            },
+            "A12": {
+                "numbersList": [
+                    8,
+                    4,
+                    7,
+                    5,
+                    5,
+                    0,
+                    8,
+                    8,
+                    7,
+                    0,
+                    9,
+                    4,
+                    8,
+                    3,
+                    4,
+                    3,
+                    5,
+                    6,
+                    9,
+                    3,
+                    7,
+                    5,
+                    3,
+                    6,
+                    2,
+                    5,
+                    8,
+                    2,
+                    6,
+                    5,
+                    3,
+                    9
+                ]
+            },
+            "A13": {
+                "numbersList": [
+                    2,
+                    4,
+                    6,
+                    9,
+                    7,
+                    5,
+                    2,
+                    8,
+                    9,
+                    1,
+                    1,
+                    4,
+                    6,
+                    8,
+                    1,
+                    9,
+                    4,
+                    4,
+                    5,
+                    5,
+                    6,
+                    5,
+                    6,
+                    6,
+                    6,
+                    7,
+                    7,
+                    7,
+                    7,
+                    7,
+                    8,
+                    3
+                ]
+            },
+            "A14": {
+                "numbersList": [
+                    9,
+                    2,
+                    8,
+                    1,
+                    9,
+                    9,
+                    4,
+                    2,
+                    2,
+                    0,
+                    4,
+                    3,
+                    8,
+                    2,
+                    7,
+                    8,
+                    7,
+                    9,
+                    0,
+                    3,
+                    7,
+                    7,
+                    9,
+                    1,
+                    0,
+                    6,
+                    9,
+                    2,
+                    6,
+                    0,
+                    9,
+                    7
+                ]
+            }
+        },
+        "numericalSkills": {
+            "N1": {
+                "statement": "Si alguien gana S/.75 diarios y ahorra diariamente la quinta parte ¿En cuántos días podrá ahorrar S/.300?"
+            },
+            "N2": {
+                "statement": "Si 3 objetos cuestan S/. 42 ¿cuánto se tendría que pagar por 12?"
+            },
+            "N3": {
+                "statement": "Si por un trabajo de 8 horas diarias, durante 7 días, una persona recibió S/. 2240 ¿Cuánto ganó por cada hora?"
+            },
+            "N4": {
+                "statement": "Una persona compró un artefacto a S/. 3000, pagando una cuota inicial de S/. 750 y el resto en 6 cuotas mensuales sin recargo de interés ¿Cuánto deberá pagar en cada cuota mensual?"
+            },
+            "N5": {
+                "statement": "Un equipo de vóley ha jugado 27 partidos y ha ganado 9 más de los que perdió ¿Cuántos partidos ha ganado?"
+            },
+            "N6": {
+                "statement": "Tres cajas contienen un total de 70 lapiceros; la primera tiene el doble de la segunda y ésta el doble de la tercera; ¿cuántos lapiceros tiene la tercera caja?"
+            },
+            "N7": {
+                "statement": "En un plano a escala ¼ de cm representa 1 km, ¿cuántos centímetros deberá tener una línea que represente 12 km?"
+            },
+            "N8": {
+                "statement": "Si un objeto vale S/. 13.50 y la docena del mismo cuesta S/. 145. ¿Cuánto se ahorra al comprar 5 docenas?"
+            },
+            "N9": {
+                "statement": "Si cortamos en dos partes una tira de madera de 100 cm, de tal modo que el pedazo menor sea las dos terceras partes del largo del mayor, ¿de qué tamaño será el más largo?"
+            }
+        },
+        "reasoningSkills": {
+            "R1": {
+                "statement": "De estas cinco palabras, una pertenece a una clase diferente, ¿cuál es?",
+                "alternatives": [
+                    "Melocotón",
+                    "Plátano",
+                    "Naranja",
+                    "Pelota",
+                    "Ciruela"
+                ]
+            },
+            "R2": {
+                "statement": "El SOMBRERO es a CABEZA como GUANTE es a:",
+                "alternatives": [
+                    "Dedo",
+                    "Médico",
+                    "Seguridad",
+                    "Mano",
+                    "Frío"
+                ]
+            },
+            "R3": {
+                "statement": "LANA es a CARNERO; como PLUMAS es a:",
+                "alternatives": [
+                    "Almohada",
+                    "Conejo",
+                    "Pájaro",
+                    "Cabra",
+                    "Cama"
+                ]
+            },
+            "R4": {
+                "statement": "De estas cinco palabras, una pertenece a una clase diferente, ¿cuál es?",
+                "alternatives": [
+                    "General",
+                    "Presidente",
+                    "Capitán",
+                    "Teniente",
+                    "Coronel"
+                ]
+            },
+            "R5": {
+                "statement": "Escoge la alternativa que tenga los números que completan los espacios vacíos de la siguiente serie: 8 16 24 32 … 48 56 … 72 80",
+                "alternatives": [
+                    "40 y 60",
+                    "34 y 60",
+                    "40 y 64",
+                    "36 y 70",
+                    "38 y 70"
+                ]
+            },
+            "R6": {
+                "statement": "VERDE es a HIERBA como Redondo es a:",
+                "alternatives": [
+                    "Papel",
+                    "Árbol",
+                    "Arete",
+                    "Vaso",
+                    "Moneda"
+                ]
+            },
+            "R7": {
+                "statement": "De estas cinco palabras, una pertenece a una clase diferente, ¿cuál es?",
+                "alternatives": [
+                    "Luis",
+                    "Gonzalo",
+                    "Javier",
+                    "Carmen",
+                    "Sergio"
+                ]
+            },
+            "R8": {
+                "statement": "Escoge la alternativa que tenga los números que completan los espacios vacíos de la siguiente serie: 10 16 23 31 … 50 61 73 86 …",
+                "alternatives": [
+                    "41 y 90",
+                    "40 y 100",
+                    "40 y 90",
+                    "35 y 100",
+                    "36 y 90"
+                ]
+            },
+            "R9": {
+                "statement": "Escoge la alternativa que tenga los números que completan los espacios vacíos de la siguiente serie: 3 4 6 9 … 18 24 31 … 48",
+                "alternatives": [
+                    "10 y 32",
+                    "13 y 39",
+                    "12 y 35",
+                    "13 y 40",
+                    "12 y 39"
+                ]
+            },
+            "R10": {
+                "statement": "Escoge la alternativa que tenga los números que completan los espacios vacíos de la siguiente serie: 100 80 62 46 … 20 …",
+                "alternatives": [
+                    "45 y 10",
+                    "32 y 12",
+                    "45 y 12",
+                    "32 y 10",
+                    "30 y 10"
+                ]
+            },
+            "R11": {
+                "statement": "BIBLIOTECA es a LIBRO como PINACOTECA es a:",
+                "alternatives": [
+                    "pinturas",
+                    "películas",
+                    "periódicos",
+                    "discos",
+                    "revistas"
+                ]
+            }
+        },
+        "vocabularySkills": {
+            "V1": {
+                "word": "AVERIGUAR",
+                "alternatives": [
+                    "Remover",
+                    "Hallar",
+                    "Investigar",
+                    "Detener"
+                ]
+            },
+            "V2": {
+                "word": "FATIGADO",
+                "alternatives": [
+                    "Dócil",
+                    "Grave",
+                    "Cansado",
+                    "Fanático"
+                ]
+            },
+            "V3": {
+                "word": "DELICADO",
+                "alternatives": [
+                    "Fino",
+                    "Hermoso",
+                    "Bueno",
+                    "Sabroso"
+                ]
+            },
+            "V4": {
+                "word": "DIARIO",
+                "alternatives": [
+                    "Variable",
+                    "Cotidiano",
+                    "Indiferente",
+                    "Insostenible"
+                ]
+            },
+            "V5": {
+                "word": "HÚMEDO",
+                "alternatives": [
+                    "Corto",
+                    "Humano",
+                    "Mojado",
+                    "Moderado"
+                ]
+            },
+            "V6": {
+                "word": "RESPLANDECIENTE",
+                "alternatives": [
+                    "Fonético",
+                    "Acerbo",
+                    "Brillante",
+                    "Intrépido"
+                ]
+            },
+            "V7": {
+                "word": "BENEFICIOSO",
+                "alternatives": [
+                    "Artificial",
+                    "Domesticable",
+                    "Útil",
+                    "Picante"
+                ]
+            },
+            "V8": {
+                "word": "CONTENTO",
+                "alternatives": [
+                    "Fastidioso",
+                    "Continuo",
+                    "Difamatorio",
+                    "Satisfecho"
+                ]
+            },
+            "V9": {
+                "word": "CONCEDER",
+                "alternatives": [
+                    "Intentar",
+                    "Aconsejar",
+                    "Otorgar",
+                    "Conciliar"
+                ]
+            },
+            "V10": {
+                "word": "FAMOSO",
+                "alternatives": [
+                    "Célebre",
+                    "Leal",
+                    "Renovado",
+                    "Ágil"
+                ]
+            },
+            "V11": {
+                "word": "TRANSFORMAR",
+                "alternatives": [
+                    "Entregar",
+                    "Transmitir",
+                    "Realzar",
+                    "Cambiar"
+                ]
+            },
+            "V12": {
+                "word": "HABITUAL",
+                "alternatives": [
+                    "Nocturno",
+                    "Circular",
+                    "Principal",
+                    "Usual"
+                ]
+            },
+            "V13": {
+                "word": "NOTABLE",
+                "alternatives": [
+                    "Severo",
+                    "Distinguido",
+                    "Terrible",
+                    "Insignificante"
+                ]
+            },
+            "V14": {
+                "word": "PERSISTENTE",
+                "alternatives": [
+                    "Constante",
+                    "Descuidado",
+                    "Raro",
+                    "Variable"
+                ]
+            },
+            "V15": {
+                "word": "FESTIVO",
+                "alternatives": [
+                    "Delicioso",
+                    "Divertido",
+                    "Potente",
+                    "Forastero"
+                ]
+            },
+            "V16": {
+                "word": "ERRÓNEO",
+                "alternatives": [
+                    "Solemne",
+                    "Falso",
+                    "Irónico",
+                    "Trágico"
+                ]
+            },
+            "V17": {
+                "word": "IMPERFECTO",
+                "alternatives": [
+                    "Oculto",
+                    "Mítico",
+                    "Incompleto",
+                    "Externo"
+                ]
+            },
+            "V18": {
+                "word": "VIGILANTE",
+                "alternatives": [
+                    "Alerta",
+                    "Indulgente",
+                    "Valeroso",
+                    "Naciente"
+                ]
+            },
+            "V19": {
+                "word": "DISCRETO",
+                "alternatives": [
+                    "Cáustico",
+                    "Fragante",
+                    "Honorable",
+                    "Prudente"
+                ]
+            },
+            "V20": {
+                "word": "DESTREZA",
+                "alternatives": [
+                    "Habilidad",
+                    "Destroza",
+                    "Ventaja",
+                    "Suficiencia"
+                ]
+            },
+            "V21": {
+                "word": "LETAL",
+                "alternatives": [
+                    "Adusto",
+                    "Mortal",
+                    "Lácteo",
+                    "Abigarrado"
+                ]
+            },
+            "V22": {
+                "word": "INSOLENTE",
+                "alternatives": [
+                    "Estudioso",
+                    "Envidioso",
+                    "Altanero",
+                    "Accidental"
+                ]
+            },
+            "V23": {
+                "word": "TOSCO",
+                "alternatives": [
+                    "Áspero",
+                    "Diminuto",
+                    "Cinestésico",
+                    "Fangoso"
+                ]
+            },
+            "V24": {
+                "word": "ESENCIAL",
+                "alternatives": [
+                    "Clásico",
+                    "Indispensable",
+                    "Deplorable",
+                    "Veraz"
+                ]
+            },
+            "V25": {
+                "word": "RÁPIDO",
+                "alternatives": [
+                    "Mayor",
+                    "Ligero",
+                    "Estrecho",
+                    "Vigoroso"
+                ]
+            },
+            "V26": {
+                "word": "SISTEMÁTICO",
+                "alternatives": [
+                    "Laudatorio",
+                    "Ordenado",
+                    "Jubiloso",
+                    "Ambicioso"
+                ]
+            },
+            "V27": {
+                "word": "FLEXIBLE",
+                "alternatives": [
+                    "Lastimoso",
+                    "Formal",
+                    "Plegable",
+                    "Pacífico"
+                ]
+            },
+            "V28": {
+                "word": "ÁVARO",
+                "alternatives": [
+                    "Usurero",
+                    "Tacaño",
+                    "Explotador",
+                    "Rico"
+                ]
+            },
+            "V29": {
+                "word": "EXTRANJERO",
+                "alternatives": [
+                    "Desconocido",
+                    "Forastero",
+                    "Nativo",
+                    "Extraño"
+                ]
+            },
+            "V30": {
+                "word": "DEFICIENTE",
+                "alternatives": [
+                    "Constante",
+                    "Triste",
+                    "Falto",
+                    "Peculiar"
+                ]
+            },
+            "V31": {
+                "word": "FLUIDO",
+                "alternatives": [
+                    "Lívido",
+                    "Muerto",
+                    "Líquido",
+                    "Hablador"
+                ]
+            },
+            "V32": {
+                "word": "ETERNO",
+                "alternatives": [
+                    "Importante",
+                    "Sagrado",
+                    "Durable",
+                    "Perpetuo"
+                ]
+            }
+        },
+        "spatialSkills": {
+            "cubeCounting": {
+                "ES1": {
+                    "imgUrlStatement": "./SpatialSkillImages/ES1.png"
+                },
+                "ES2": {
+                    "imgUrlStatement": "./SpatialSkillImages/ES2.png"
+                },
+                "ES3": {
+                    "imgUrlStatement": "./SpatialSkillImages/ES3.png"
+                },
+                "ES4": {
+                    "imgUrlStatement": "./SpatialSkillImages/ES4.png"
+                },
+                "ES5": {
+                    "imgUrlStatement": "./SpatialSkillImages/ES5.png"
+                },
+                "ES6": {
+                    "imgUrlStatement": "./SpatialSkillImages/ES6.png"
+                },
+                "ES7": {
+                    "imgUrlStatement": "./SpatialSkillImages/ES7.png"
+                },
+                "ES8": {
+                    "imgUrlStatement": "./SpatialSkillImages/ES8.png"
+                },
+                "ES9": {
+                    "imgUrlStatement": "./SpatialSkillImages/ES9.png"
+                }
+            },
+            "foldedPaper": {
+                "ES10": {
+                    "imgUrlStatement": "./SpatialSkillImages/ES10.png",
+                    "alternatives": [
+                        "./SpatialSkillImages/ES10A.png",
+                        "./SpatialSkillImages/ES10B.png",
+                        "./SpatialSkillImages/ES10C.png",
+                        "./SpatialSkillImages/ES10D.png",
+                        "./SpatialSkillImages/ES10E.png"
+                    ]
+                },
+                "ES11": {
+                    "imgUrlStatement": "./SpatialSkillImages/ES11.png",
+                    "alternatives": [
+                        "./SpatialSkillImages/ES11A.png",
+                        "./SpatialSkillImages/ES11B.png",
+                        "./SpatialSkillImages/ES11C.png",
+                        "./SpatialSkillImages/ES11D.png",
+                        "./SpatialSkillImages/ES11E.png"
+                    ]
+                },
+                "ES12": {
+                    "imgUrlStatement": "./SpatialSkillImages/ES12.png",
+                    "alternatives": [
+                        "./SpatialSkillImages/ES12A.png",
+                        "./SpatialSkillImages/ES12B.png",
+                        "./SpatialSkillImages/ES12C.png",
+                        "./SpatialSkillImages/ES12D.png",
+                        "./SpatialSkillImages/ES12E.png"
+                    ]
+                },
+                "ES13": {
+                    "imgUrlStatement": "./SpatialSkillImages/ES13.png",
+                    "alternatives": [
+                        "./SpatialSkillImages/ES13A.png",
+                        "./SpatialSkillImages/ES13B.png",
+                        "./SpatialSkillImages/ES13C.png",
+                        "./SpatialSkillImages/ES13D.png",
+                        "./SpatialSkillImages/ES13E.png"
+                    ]
+                }
+            },
+            "assemblySolidForms": {
+                "ES14": {
+                    "imgUrlStatement": "./SpatialSkillImages/ES14.png",
+                    "alternatives": [
+                        "./SpatialSkillImages/ES14A.png",
+                        "./SpatialSkillImages/ES14B.png",
+                        "./SpatialSkillImages/ES14C.png",
+                        "./SpatialSkillImages/ES14D.png"
+                    ]
+                },
+                "ES15": {
+                    "imgUrlStatement": "./SpatialSkillImages/ES15.png",
+                    "alternatives": [
+                        "./SpatialSkillImages/ES15A.png",
+                        "./SpatialSkillImages/ES15B.png",
+                        "./SpatialSkillImages/ES15C.png",
+                        "./SpatialSkillImages/ES15D.png"
+                    ]
+                },
+                "ES16": {
+                    "imgUrlStatement": "./SpatialSkillImages/ES16.png",
+                    "alternatives": [
+                        "./SpatialSkillImages/ES16A.png",
+                        "./SpatialSkillImages/ES16B.png",
+                        "./SpatialSkillImages/ES16C.png",
+                        "./SpatialSkillImages/ES16D.png"
+                    ]
+                },
+                "ES17": {
+                    "imgUrlStatement": "./SpatialSkillImages/ES17.png",
+                    "alternatives": [
+                        "./SpatialSkillImages/ES17A.png",
+                        "./SpatialSkillImages/ES17B.png",
+                        "./SpatialSkillImages/ES17C.png",
+                        "./SpatialSkillImages/ES17D.png"
+                    ]
+                }
+            }
+        }
+    }
+}

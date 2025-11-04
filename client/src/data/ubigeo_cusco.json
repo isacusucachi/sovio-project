@@ -1,0 +1,1010 @@
+[
+    {
+        "ubigeo": "080913",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "09",
+        "nombprov": "LA CONVENCION",
+        "ccdi": "13",
+        "nombdist": "VILLA KINTIARINA"
+    },
+    {
+        "ubigeo": "081003",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "10",
+        "nombprov": "PARURO",
+        "ccdi": "03",
+        "nombdist": "CCAPI"
+    },
+    {
+        "ubigeo": "081005",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "10",
+        "nombprov": "PARURO",
+        "ccdi": "05",
+        "nombdist": "HUANOQUITE"
+    },
+    {
+        "ubigeo": "081006",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "10",
+        "nombprov": "PARURO",
+        "ccdi": "06",
+        "nombdist": "OMACHA"
+    },
+    {
+        "ubigeo": "080705",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "07",
+        "nombprov": "CHUMBIVILCAS",
+        "ccdi": "05",
+        "nombdist": "LIVITACA"
+    },
+    {
+        "ubigeo": "081201",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "12",
+        "nombprov": "QUISPICANCHI",
+        "ccdi": "01",
+        "nombdist": "URCOS"
+    },
+    {
+        "ubigeo": "081202",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "12",
+        "nombprov": "QUISPICANCHI",
+        "ccdi": "02",
+        "nombdist": "ANDAHUAYLILLAS"
+    },
+    {
+        "ubigeo": "080201",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "02",
+        "nombprov": "ACOMAYO",
+        "ccdi": "01",
+        "nombdist": "ACOMAYO"
+    },
+    {
+        "ubigeo": "080206",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "02",
+        "nombprov": "ACOMAYO",
+        "ccdi": "06",
+        "nombdist": "RONDOCAN"
+    },
+    {
+        "ubigeo": "080207",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "02",
+        "nombprov": "ACOMAYO",
+        "ccdi": "07",
+        "nombdist": "SANGARARA"
+    },
+    {
+        "ubigeo": "080203",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "02",
+        "nombprov": "ACOMAYO",
+        "ccdi": "03",
+        "nombdist": "ACOS"
+    },
+    {
+        "ubigeo": "081001",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "10",
+        "nombprov": "PARURO",
+        "ccdi": "01",
+        "nombdist": "PARURO"
+    },
+    {
+        "ubigeo": "080708",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "07",
+        "nombprov": "CHUMBIVILCAS",
+        "ccdi": "08",
+        "nombdist": "VELILLE"
+    },
+    {
+        "ubigeo": "080802",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "08",
+        "nombprov": "ESPINAR",
+        "ccdi": "02",
+        "nombdist": "CONDOROMA"
+    },
+    {
+        "ubigeo": "080506",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "05",
+        "nombprov": "CANAS",
+        "ccdi": "06",
+        "nombdist": "PAMPAMARCA"
+    },
+    {
+        "ubigeo": "081207",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "12",
+        "nombprov": "QUISPICANCHI",
+        "ccdi": "07",
+        "nombdist": "HUARO"
+    },
+    {
+        "ubigeo": "080801",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "08",
+        "nombprov": "ESPINAR",
+        "ccdi": "01",
+        "nombdist": "ESPINAR"
+    },
+    {
+        "ubigeo": "080803",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "08",
+        "nombprov": "ESPINAR",
+        "ccdi": "03",
+        "nombdist": "COPORAQUE"
+    },
+    {
+        "ubigeo": "080306",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "03",
+        "nombprov": "ANTA",
+        "ccdi": "06",
+        "nombdist": "LIMATAMBO"
+    },
+    {
+        "ubigeo": "080308",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "03",
+        "nombprov": "ANTA",
+        "ccdi": "08",
+        "nombdist": "PUCYURA"
+    },
+    {
+        "ubigeo": "081105",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "11",
+        "nombprov": "PAUCARTAMBO",
+        "ccdi": "05",
+        "nombdist": "HUANCARANI"
+    },
+    {
+        "ubigeo": "080401",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "04",
+        "nombprov": "CALCA",
+        "ccdi": "01",
+        "nombdist": "CALCA"
+    },
+    {
+        "ubigeo": "081303",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "13",
+        "nombprov": "URUBAMBA",
+        "ccdi": "03",
+        "nombdist": "HUAYLLABAMBA"
+    },
+    {
+        "ubigeo": "080103",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "01",
+        "nombprov": "CUSCO",
+        "ccdi": "03",
+        "nombdist": "POROY"
+    },
+    {
+        "ubigeo": "080107",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "01",
+        "nombprov": "CUSCO",
+        "ccdi": "07",
+        "nombdist": "SAYLLA"
+    },
+    {
+        "ubigeo": "080906",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "09",
+        "nombprov": "LA CONVENCION",
+        "ccdi": "06",
+        "nombdist": "QUELLOUNO"
+    },
+    {
+        "ubigeo": "080408",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "04",
+        "nombprov": "CALCA",
+        "ccdi": "08",
+        "nombdist": "YANATILE"
+    },
+    {
+        "ubigeo": "080907",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "09",
+        "nombprov": "LA CONVENCION",
+        "ccdi": "07",
+        "nombdist": "KIMBIRI"
+    },
+    {
+        "ubigeo": "080304",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "03",
+        "nombprov": "ANTA",
+        "ccdi": "04",
+        "nombdist": "CHINCHAYPUJIO"
+    },
+    {
+        "ubigeo": "081101",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "11",
+        "nombprov": "PAUCARTAMBO",
+        "ccdi": "01",
+        "nombdist": "PAUCARTAMBO"
+    },
+    {
+        "ubigeo": "080402",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "04",
+        "nombprov": "CALCA",
+        "ccdi": "02",
+        "nombdist": "COYA"
+    },
+    {
+        "ubigeo": "081209",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "12",
+        "nombprov": "QUISPICANCHI",
+        "ccdi": "09",
+        "nombdist": "MARCAPATA"
+    },
+    {
+        "ubigeo": "081205",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "12",
+        "nombprov": "QUISPICANCHI",
+        "ccdi": "05",
+        "nombdist": "CCATCA"
+    },
+    {
+        "ubigeo": "080101",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "01",
+        "nombprov": "CUSCO",
+        "ccdi": "01",
+        "nombdist": "CUSCO"
+    },
+    {
+        "ubigeo": "080704",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "07",
+        "nombprov": "CHUMBIVILCAS",
+        "ccdi": "04",
+        "nombdist": "COLQUEMARCA"
+    },
+    {
+        "ubigeo": "080706",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "07",
+        "nombprov": "CHUMBIVILCAS",
+        "ccdi": "06",
+        "nombdist": "LLUSCO"
+    },
+    {
+        "ubigeo": "080707",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "07",
+        "nombprov": "CHUMBIVILCAS",
+        "ccdi": "07",
+        "nombdist": "QUIÑOTA"
+    },
+    {
+        "ubigeo": "080503",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "05",
+        "nombprov": "CANAS",
+        "ccdi": "03",
+        "nombdist": "KUNTURKANKI"
+    },
+    {
+        "ubigeo": "080504",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "05",
+        "nombprov": "CANAS",
+        "ccdi": "04",
+        "nombdist": "LANGUI"
+    },
+    {
+        "ubigeo": "080508",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "05",
+        "nombprov": "CANAS",
+        "ccdi": "08",
+        "nombdist": "TUPAC AMARU"
+    },
+    {
+        "ubigeo": "080202",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "02",
+        "nombprov": "ACOMAYO",
+        "ccdi": "02",
+        "nombdist": "ACOPIA"
+    },
+    {
+        "ubigeo": "080204",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "02",
+        "nombprov": "ACOMAYO",
+        "ccdi": "04",
+        "nombdist": "MOSOC LLACTA"
+    },
+    {
+        "ubigeo": "080701",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "07",
+        "nombprov": "CHUMBIVILCAS",
+        "ccdi": "01",
+        "nombdist": "SANTO TOMAS"
+    },
+    {
+        "ubigeo": "080105",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "01",
+        "nombprov": "CUSCO",
+        "ccdi": "05",
+        "nombdist": "SAN SEBASTIAN"
+    },
+    {
+        "ubigeo": "081008",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "10",
+        "nombprov": "PARURO",
+        "ccdi": "08",
+        "nombdist": "PILLPINTO"
+    },
+    {
+        "ubigeo": "081009",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "10",
+        "nombprov": "PARURO",
+        "ccdi": "09",
+        "nombdist": "YAURISQUE"
+    },
+    {
+        "ubigeo": "081002",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "10",
+        "nombprov": "PARURO",
+        "ccdi": "02",
+        "nombdist": "ACCHA"
+    },
+    {
+        "ubigeo": "080501",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "05",
+        "nombprov": "CANAS",
+        "ccdi": "01",
+        "nombdist": "YANAOCA"
+    },
+    {
+        "ubigeo": "081206",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "12",
+        "nombprov": "QUISPICANCHI",
+        "ccdi": "06",
+        "nombdist": "CUSIPATA"
+    },
+    {
+        "ubigeo": "080606",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "06",
+        "nombprov": "CANCHIS",
+        "ccdi": "06",
+        "nombdist": "SAN PABLO"
+    },
+    {
+        "ubigeo": "080608",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "06",
+        "nombprov": "CANCHIS",
+        "ccdi": "08",
+        "nombdist": "TINTA"
+    },
+    {
+        "ubigeo": "080804",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "08",
+        "nombprov": "ESPINAR",
+        "ccdi": "04",
+        "nombdist": "OCORURO"
+    },
+    {
+        "ubigeo": "080305",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "03",
+        "nombprov": "ANTA",
+        "ccdi": "05",
+        "nombdist": "HUAROCONDO"
+    },
+    {
+        "ubigeo": "080301",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "03",
+        "nombprov": "ANTA",
+        "ccdi": "01",
+        "nombdist": "ANTA"
+    },
+    {
+        "ubigeo": "080403",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "04",
+        "nombprov": "CALCA",
+        "ccdi": "03",
+        "nombdist": "LAMAY"
+    },
+    {
+        "ubigeo": "081305",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "13",
+        "nombprov": "URUBAMBA",
+        "ccdi": "05",
+        "nombdist": "MARAS"
+    },
+    {
+        "ubigeo": "080104",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "01",
+        "nombprov": "CUSCO",
+        "ccdi": "04",
+        "nombdist": "SAN JERONIMO"
+    },
+    {
+        "ubigeo": "081103",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "11",
+        "nombprov": "PAUCARTAMBO",
+        "ccdi": "03",
+        "nombdist": "CHALLABAMBA"
+    },
+    {
+        "ubigeo": "080910",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "09",
+        "nombprov": "LA CONVENCION",
+        "ccdi": "10",
+        "nombdist": "PICHARI"
+    },
+    {
+        "ubigeo": "080901",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "09",
+        "nombprov": "LA CONVENCION",
+        "ccdi": "01",
+        "nombdist": "SANTA ANA"
+    },
+    {
+        "ubigeo": "080914",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "09",
+        "nombprov": "LA CONVENCION",
+        "ccdi": "14",
+        "nombdist": "MEGANTONI"
+    },
+    {
+        "ubigeo": "080903",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "09",
+        "nombprov": "LA CONVENCION",
+        "ccdi": "03",
+        "nombdist": "HUAYOPATA"
+    },
+    {
+        "ubigeo": "080905",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "09",
+        "nombprov": "LA CONVENCION",
+        "ccdi": "05",
+        "nombdist": "OCOBAMBA"
+    },
+    {
+        "ubigeo": "080909",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "09",
+        "nombprov": "LA CONVENCION",
+        "ccdi": "09",
+        "nombdist": "VILCABAMBA"
+    },
+    {
+        "ubigeo": "081304",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "13",
+        "nombprov": "URUBAMBA",
+        "ccdi": "04",
+        "nombdist": "MACHUPICCHU"
+    },
+    {
+        "ubigeo": "081106",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "11",
+        "nombprov": "PAUCARTAMBO",
+        "ccdi": "06",
+        "nombdist": "KOSÑIPATA"
+    },
+    {
+        "ubigeo": "081301",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "13",
+        "nombprov": "URUBAMBA",
+        "ccdi": "01",
+        "nombdist": "URUBAMBA"
+    },
+    {
+        "ubigeo": "080302",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "03",
+        "nombprov": "ANTA",
+        "ccdi": "02",
+        "nombdist": "ANCAHUASI"
+    },
+    {
+        "ubigeo": "080303",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "03",
+        "nombprov": "ANTA",
+        "ccdi": "03",
+        "nombdist": "CACHIMAYO"
+    },
+    {
+        "ubigeo": "081104",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "11",
+        "nombprov": "PAUCARTAMBO",
+        "ccdi": "04",
+        "nombdist": "COLQUEPATA"
+    },
+    {
+        "ubigeo": "080406",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "04",
+        "nombprov": "CALCA",
+        "ccdi": "06",
+        "nombdist": "SAN SALVADOR"
+    },
+    {
+        "ubigeo": "081210",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "12",
+        "nombprov": "QUISPICANCHI",
+        "ccdi": "10",
+        "nombdist": "OCONGATE"
+    },
+    {
+        "ubigeo": "081211",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "12",
+        "nombprov": "QUISPICANCHI",
+        "ccdi": "11",
+        "nombdist": "OROPESA"
+    },
+    {
+        "ubigeo": "080808",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "08",
+        "nombprov": "ESPINAR",
+        "ccdi": "08",
+        "nombdist": "ALTO PICHIGUA"
+    },
+    {
+        "ubigeo": "080309",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "03",
+        "nombprov": "ANTA",
+        "ccdi": "09",
+        "nombdist": "ZURITE"
+    },
+    {
+        "ubigeo": "081102",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "11",
+        "nombprov": "PAUCARTAMBO",
+        "ccdi": "02",
+        "nombdist": "CAICAY"
+    },
+    {
+        "ubigeo": "080102",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "01",
+        "nombprov": "CUSCO",
+        "ccdi": "02",
+        "nombdist": "CCORCA"
+    },
+    {
+        "ubigeo": "080108",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "01",
+        "nombprov": "CUSCO",
+        "ccdi": "08",
+        "nombdist": "WANCHAQ"
+    },
+    {
+        "ubigeo": "080911",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "09",
+        "nombprov": "LA CONVENCION",
+        "ccdi": "11",
+        "nombdist": "INKAWASI"
+    },
+    {
+        "ubigeo": "080912",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "09",
+        "nombprov": "LA CONVENCION",
+        "ccdi": "12",
+        "nombdist": "VILLA VIRGEN"
+    },
+    {
+        "ubigeo": "080902",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "09",
+        "nombprov": "LA CONVENCION",
+        "ccdi": "02",
+        "nombdist": "ECHARATE"
+    },
+    {
+        "ubigeo": "080702",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "07",
+        "nombprov": "CHUMBIVILCAS",
+        "ccdi": "02",
+        "nombdist": "CAPACMARCA"
+    },
+    {
+        "ubigeo": "080703",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "07",
+        "nombprov": "CHUMBIVILCAS",
+        "ccdi": "03",
+        "nombdist": "CHAMACA"
+    },
+    {
+        "ubigeo": "080505",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "05",
+        "nombprov": "CANAS",
+        "ccdi": "05",
+        "nombdist": "LAYO"
+    },
+    {
+        "ubigeo": "080602",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "06",
+        "nombprov": "CANCHIS",
+        "ccdi": "02",
+        "nombdist": "CHECACUPE"
+    },
+    {
+        "ubigeo": "080205",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "02",
+        "nombprov": "ACOMAYO",
+        "ccdi": "05",
+        "nombdist": "POMACANCHI"
+    },
+    {
+        "ubigeo": "081007",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "10",
+        "nombprov": "PARURO",
+        "ccdi": "07",
+        "nombdist": "PACCARITAMBO"
+    },
+    {
+        "ubigeo": "081004",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "10",
+        "nombprov": "PARURO",
+        "ccdi": "04",
+        "nombdist": "COLCHA"
+    },
+    {
+        "ubigeo": "080502",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "05",
+        "nombprov": "CANAS",
+        "ccdi": "02",
+        "nombdist": "CHECCA"
+    },
+    {
+        "ubigeo": "080507",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "05",
+        "nombprov": "CANAS",
+        "ccdi": "07",
+        "nombdist": "QUEHUE"
+    },
+    {
+        "ubigeo": "080601",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "06",
+        "nombprov": "CANCHIS",
+        "ccdi": "01",
+        "nombdist": "SICUANI"
+    },
+    {
+        "ubigeo": "080603",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "06",
+        "nombprov": "CANCHIS",
+        "ccdi": "03",
+        "nombdist": "COMBAPATA"
+    },
+    {
+        "ubigeo": "080604",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "06",
+        "nombprov": "CANCHIS",
+        "ccdi": "04",
+        "nombdist": "MARANGANI"
+    },
+    {
+        "ubigeo": "080605",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "06",
+        "nombprov": "CANCHIS",
+        "ccdi": "05",
+        "nombdist": "PITUMARCA"
+    },
+    {
+        "ubigeo": "081208",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "12",
+        "nombprov": "QUISPICANCHI",
+        "ccdi": "08",
+        "nombdist": "LUCRE"
+    },
+    {
+        "ubigeo": "081212",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "12",
+        "nombprov": "QUISPICANCHI",
+        "ccdi": "12",
+        "nombdist": "QUIQUIJANA"
+    },
+    {
+        "ubigeo": "080607",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "06",
+        "nombprov": "CANCHIS",
+        "ccdi": "07",
+        "nombdist": "SAN PEDRO"
+    },
+    {
+        "ubigeo": "080805",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "08",
+        "nombprov": "ESPINAR",
+        "ccdi": "05",
+        "nombdist": "PALLPATA"
+    },
+    {
+        "ubigeo": "080307",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "03",
+        "nombprov": "ANTA",
+        "ccdi": "07",
+        "nombdist": "MOLLEPATA"
+    },
+    {
+        "ubigeo": "081302",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "13",
+        "nombprov": "URUBAMBA",
+        "ccdi": "02",
+        "nombdist": "CHINCHERO"
+    },
+    {
+        "ubigeo": "080404",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "04",
+        "nombprov": "CALCA",
+        "ccdi": "04",
+        "nombdist": "LARES"
+    },
+    {
+        "ubigeo": "080904",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "09",
+        "nombprov": "LA CONVENCION",
+        "ccdi": "04",
+        "nombdist": "MARANURA"
+    },
+    {
+        "ubigeo": "080908",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "09",
+        "nombprov": "LA CONVENCION",
+        "ccdi": "08",
+        "nombdist": "SANTA TERESA"
+    },
+    {
+        "ubigeo": "081306",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "13",
+        "nombprov": "URUBAMBA",
+        "ccdi": "06",
+        "nombdist": "OLLANTAYTAMBO"
+    },
+    {
+        "ubigeo": "081307",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "13",
+        "nombprov": "URUBAMBA",
+        "ccdi": "07",
+        "nombdist": "YUCAY"
+    },
+    {
+        "ubigeo": "080405",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "04",
+        "nombprov": "CALCA",
+        "ccdi": "05",
+        "nombdist": "PISAC"
+    },
+    {
+        "ubigeo": "080407",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "04",
+        "nombprov": "CALCA",
+        "ccdi": "07",
+        "nombdist": "TARAY"
+    },
+    {
+        "ubigeo": "080806",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "08",
+        "nombprov": "ESPINAR",
+        "ccdi": "06",
+        "nombdist": "PICHIGUA"
+    },
+    {
+        "ubigeo": "080807",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "08",
+        "nombprov": "ESPINAR",
+        "ccdi": "07",
+        "nombdist": "SUYCKUTAMBO"
+    },
+    {
+        "ubigeo": "081204",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "12",
+        "nombprov": "QUISPICANCHI",
+        "ccdi": "04",
+        "nombdist": "CCARHUAYO"
+    },
+    {
+        "ubigeo": "081203",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "12",
+        "nombprov": "QUISPICANCHI",
+        "ccdi": "03",
+        "nombdist": "CAMANTI"
+    },
+    {
+        "ubigeo": "080106",
+        "ccdd": "08",
+        "nombdep": "CUSCO",
+        "ccpp": "01",
+        "nombprov": "CUSCO",
+        "ccdi": "06",
+        "nombdist": "SANTIAGO"
+    }
+]
