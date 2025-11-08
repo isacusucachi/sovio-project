@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node dist/index.js",
-    "dev": "nodemon --env-file=.env src/index.js --exec babel-node",
+    "dev": "nodemon --env-file=.env --legacy-watch --delay 1000ms src/index.js --exec babel-node",
     "build": "babel src --out-dir dist"
   },
   "keywords": [],

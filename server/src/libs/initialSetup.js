@@ -22,6 +22,7 @@ export const createAdmin = async () => {
       fullname: ADMIN_FULLNAME,
       password: passwordHash,
       role: "admin",
+      status: true,
     });
 
     console.log(`new user created: ${newAdminUser.username}`);

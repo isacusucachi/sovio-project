@@ -43,6 +43,9 @@ cloudinary.config({
 });
 
 // Api routes
+app.get('/', (req, res) => {
+  res.send('Hello World!')
+});
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminUserRoutes);
 app.use("/api/user", userRoutes);
