@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node dist/index.js",
     "dev": "nodemon --env-file=.env --legacy-watch --delay 1000ms src/index.js --exec babel-node",
-    "build": "babel src --out-dir dist"
+    "build": "babel src --out-dir dist && cp -r src/data dist/data"
   },
   "keywords": [],
   "author": "Isacanderson",
