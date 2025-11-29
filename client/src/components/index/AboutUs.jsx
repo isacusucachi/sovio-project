@@ -1,17 +1,9 @@
-import { motion } from 'framer-motion';
-
 const AboutUs = () => {
   return (
     <section
       className="p-9 lg:p-20 w-full h-full flex flex-col justify-center items-center"
       id="nosotros"
     >
-      <motion.div
-        initial={{ opacity: 0, y: 200 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 2 }}
-        viewport={{ once: true }} 
-      >
         <div className="container mx-auto">
           <div className="mb-14">
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-dark dark:text-white mb-2 text-center uppercase font-arima">
@@ -57,7 +49,6 @@ const AboutUs = () => {
             </div>
           </div>
         </div>
-      </motion.div>
     </section>
   );
 };

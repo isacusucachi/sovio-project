@@ -183,13 +183,13 @@ export const login = async (req, res) => {
 
     if (!userFound)
       return res.status(400).json({
-        message: [`Número de documento o correo no registrado.`],
+        message: [`Credenciales inválidas.`],
       });
 
     const isMatch = await bcrypt.compare(password, userFound.password);
     if (!isMatch) {
       return res.status(400).json({
-        message: ["La contraseña es incorrecta."],
+        message: ["Credenciales inválidas."],
       });
     }
 
