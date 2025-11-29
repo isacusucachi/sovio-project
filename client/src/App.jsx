@@ -23,10 +23,11 @@ import Header from "./components/Header";
 import MiCarrera from "./pages/MiCarrera";
 import { useEffect } from "react";
 import { trackPageView } from "./analytics";
+import AccessibilityButton from "./components/AccesibilityButton";
 
 const App = () => {
   return (
-    <div className="font-redhat">
+    <div className="">
       <VocationalTestProvider>
         <UserProvider>
           <BrowserRouter>
@@ -35,6 +36,7 @@ const App = () => {
           </BrowserRouter>
         </UserProvider>
       </VocationalTestProvider>
+      <AccessibilityButton />
     </div>
   );
 };
@@ -47,54 +49,51 @@ const AppRoutes = () => {
   }, [location]);
 
   return (
-    <>
-      <Header />
-      <Routes>
-        <Route path="/" element={<Index />} />
+    <Routes>
+      <Route path="/" element={<Index />} />
+      <Route
+        path="/login"
+        element={
+          <RecaptchaProvider>
+            <Login />
+          </RecaptchaProvider>
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          <RecaptchaProvider>
+            <Register />
+          </RecaptchaProvider>
+        }
+      />
+      <Route path="mi-carrera" element={<MiCarrera />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="/main" element={<MainPage />} />
         <Route
-          path="/login"
-          element={
-            <RecaptchaProvider>
-              <Login />
-            </RecaptchaProvider>
-          }
+          path="/personal-information"
+          element={<PersonalInformationSheet />}
+        />
+        <Route path="/phb-test" element={<PhbTest />} />
+        <Route path="/ieppo-test" element={<IeppoTest />} />
+        <Route path="/tepe-test" element={<TepeTest />} />
+        <Route
+          path="/final-vocational-test-report"
+          element={<FinalVocationalTestReport />}
         />
         <Route
-          path="/register"
+          path="/assessment-survey"
           element={
-            <RecaptchaProvider>
-              <Register />
-            </RecaptchaProvider>
+            <AssessmentSurveyProvider>
+              <AssessmentSurvey />
+            </AssessmentSurveyProvider>
           }
         />
-        <Route path="mi-carrera" element={<MiCarrera />} />
-        <Route element={<ProtectedRoute />}>
-          <Route path="/main" element={<MainPage />} />
-          <Route
-            path="/personal-information"
-            element={<PersonalInformationSheet />}
-          />
-          <Route path="/phb-test" element={<PhbTest />} />
-          <Route path="/ieppo-test" element={<IeppoTest />} />
-          <Route path="/tepe-test" element={<TepeTest />} />
-          <Route
-            path="/final-vocational-test-report"
-            element={<FinalVocationalTestReport />}
-          />
-          <Route
-            path="/assessment-survey"
-            element={
-              <AssessmentSurveyProvider>
-                <AssessmentSurvey />
-              </AssessmentSurveyProvider>
-            }
-          />
-        </Route>
-        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </>
+      </Route>
+      <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 };
 

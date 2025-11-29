@@ -7,6 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "../schemas/authSchema";
+import { FaArrowLeft, FaEye, FaEyeSlash } from "react-icons/fa6";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -51,15 +52,39 @@ const Login = () => {
     }
   }, [loginErrors]);
   return (
-    <section className="bg-[url('/Fondo-blanco-GORE.svg')] dark:bg-[url('/Fondo-rojo-GORE.svg')] bg-cover bg-center">
+    <section className="bg-gray-50 dark:bg-gray-900 h-screen">
+      <Link
+        to="/"
+        className="absolute top-4 left-4 inline-flex items-center justify-center px-5 py-3 text-base font-bold text-center text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-800"
+      >
+        <FaArrowLeft className="w-4 h-4 mr-2" />
+        VOLVER A INICIO
+      </Link>
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto h-screen lg:py-0">
-        <div className="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800">
-          <div className="py-2 px-3 rounded-t-lg bg-red-gore-1 shadow-lg inline-block w-full dark:bg-white">
-            <h2 className="text-2xl text-white dark:text-red-gore-3 font-bold text-center text-primary">
-              Iniciar Sesión
-            </h2>
-          </div>
+        <a
+          href="/"
+          className="flex items-center justify-center space-x-2 md:space-x-4 mb-6"
+        >
+          <img
+            src={"./Logo GORE_Nuevo_negativo_vertical.png"}
+            className="h-16 w-auto hidden dark:block"
+            alt="Logo GORE Cusco"
+          />
+          <img
+            src={"./Logo GORE_Nuevo_positivo_vertical.png"}
+            className="h-16 w-auto block dark:hidden"
+            alt="Logo GORE Cusco"
+          />
+          <span className="font-arima text-[6px] md:text-[8px] font-extrabold text-center dark:text-white">
+            GERENCIA REGIONAL DE TRABAJO
+            <br />Y PROMOCIÓN DEL EMPLEO CUSCO
+          </span>
+        </a>
+        <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
+            <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+              Inicia sesión en tu cuenta
+            </h1>
             <form
               className="space-y-4 md:space-y-6"
               onSubmit={handleSubmit(onSubmit)}
@@ -67,56 +92,74 @@ const Login = () => {
               <div>
                 <label
                   htmlFor="identifier"
-                  className="block mb-2 text-lg font-medium text-gray-900 dark:text-white"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
-                  DNI o correo electrónico
+                  <span>N° de documento de identidad o correo electrónico</span>
+                  <span className="mt-2 text-sm text-red-600 dark:text-red-500 font-bold">
+                    {" "}
+                    *
+                  </span>
                 </label>
                 <input
                   type="text"
                   name="identifier"
                   id="identifier"
-                  {...register("identifier", { required: true })}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Ingrese dni o correo eletrónico"
+                  {...register("identifier")}
+                  className={`bg-gray-50 border text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:placeholder:text-gray-400 dark:text-white ${
+                    errors.identifier
+                      ? "border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-500"
+                      : "bg-gray-50 border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  }`}
+                  placeholder="Ej. 74###### o correo@ejemplo.com"
                 />
                 {errors.identifier?.message && (
-                  <p className="text-red-500">{errors.identifier?.message}</p>
+                  <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                    {errors.identifier?.message}
+                  </p>
                 )}
               </div>
               <div>
                 <label
                   htmlFor="password"
-                  className="block mb-2 text-lg font-medium text-gray-900 dark:text-white"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
-                  Contraseña
+                  <span>Contraseña</span>
+                  <span className="mt-2 text-sm text-red-600 dark:text-red-500 font-bold">
+                    {" "}
+                    *
+                  </span>
                 </label>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  id="password"
-                  {...register("password", { required: true })}
-                  placeholder="••••••••"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                />
-                {errors.password?.message && (
-                  <p className="text-red-500">{errors.password?.message}</p>
-                )}
-                <div className="w-full flex items-center justify-end mt-2">
-                  <label className="flex items-center justify-center">
-                    <input
-                      id="showPassword"
-                      type="checkbox"
-                      className="mr-2 w-4 h-4"
-                      checked={showPassword}
-                      onChange={() =>
-                        setShowPassword((prevState) => !prevState)
-                      }
-                    />
-                    <span className="text-sm text-gray-500 dark:text-gray-300">
-                      Mostrar contraseña
-                    </span>
-                  </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    id="password"
+                    {...register("password")}
+                    placeholder="••••••••"
+                    className={`bg-gray-50 border text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:placeholder:text-gray-400 dark:text-white ${
+                    errors.password
+                      ? "border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-500"
+                      : "bg-gray-50 border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  }`}
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none"
+                  >
+                    {showPassword ? (
+                      <FaEyeSlash className="w-4 h-4" />
+                    ) : (
+                      <FaEye className="w-4 h-4" />
+                    )}
+                  </button>
                 </div>
+                {errors.password?.message && (
+                  <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                    {errors.password?.message}
+                  </p>
+                )}
               </div>
               <button
                 type="submit"
@@ -144,15 +187,18 @@ const Login = () => {
                   "INGRESAR"
                 )}
               </button>
-              <p className="text-sm font-light text-gray-500 dark:text-gray-400 text-center">
-                ¿No tienes una cuenta?{" "}
-                <Link
-                  to="/register"
-                  className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+              <div
+                className="text-base font-medium text-gray-500 dark:text-gray-400 text-center"
+                bis_skin_checked="1"
+              >
+                ¿Aún no tienes una cuenta?
+                <a
+                  className="ml-1 text-blue-700 dark:text-blue-500 hover:underline font-bold"
+                  href="/register"
                 >
-                  Registrarse
-                </Link>
-              </p>
+                  Regístrese aquí
+                </a>
+              </div>
             </form>
           </div>
         </div>

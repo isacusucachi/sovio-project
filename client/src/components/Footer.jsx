@@ -9,7 +9,7 @@ const Footer = () => {
           <div className="px-5 py-2">
             <a
               href="/terms-and-conditions"
-              className="text-base font-semibold leading-6 text-gray-900 hover:text-blue-600 dark:text-gray-500"
+              className="text-base font-semibold leading-6 text-gray-900 hover:text-blue-600 dark:text-gray-500 uppercase"
             >
               Términos y Condiciones
             </a>
@@ -17,7 +17,7 @@ const Footer = () => {
           <div className="px-5 py-2">
             <a
               href="/privacy-policy"
-              className="text-base font-semibold leading-6 text-gray-900 hover:text-blue-600 dark:text-gray-500"
+              className="text-base font-semibold leading-6 text-gray-900 hover:text-blue-600 dark:text-gray-500 uppercase"
             >
               Políticas de privacidad
             </a>
@@ -26,7 +26,7 @@ const Footer = () => {
             <a
               href="https://micarrera.trabajo.gob.pe"
               target="_blank"
-              className="text-base font-semibold leading-6 text-gray-900 hover:text-blue-600 dark:text-gray-500"
+              className="text-base font-semibold leading-6 text-gray-900 hover:text-blue-600 dark:text-gray-500 uppercase"
             >
               Mi Carrera
             </a>

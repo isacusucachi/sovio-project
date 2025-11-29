@@ -21,23 +21,21 @@ const calculateAge = (birthDate) => {
 export const loginSchema = z.object({
   identifier: z
     .string()
-    .min(3, "El identificador debe tener al menos 3 caracteres")
+    .min(1, "N° de documento o correo electrónico es requerido")
     .refine(
       (value) =>
         /^[0-9]{6,9}$/.test(value) || // Validar documentos (DNI, CE, PTP)
         /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value), // Validar correo electrónico
       {
-        message:
-          "El identificador debe ser un correo electrónico válido o un documento numérico válido",
+        message: "N° de documento o correo electrónico inválido",
       }
     ),
-  password: z.string().refine((password) => password.trim() !== "", {
-    message: "Su contraseña es requerida.",
-  }),
+  password: z.string().min(1, "La contraseña es requerida"),
 });
 
 export const registerSchema = z
   .object({
+    // Paso 1: Información Personal
     typeOfIdentityDocument: z.enum(["DNI", "PTP", "CE"], {
       errorMap: () => ({
         message: "El tipo de documento debe ser DNI, PTP o CE",
@@ -45,68 +43,106 @@ export const registerSchema = z
     }),
     identityDocumentNumber: z
       .string()
-      .min(6, "El Número de documento debe tener entre 6 y 9 dígitos.")
-      .max(9, "El Número de documento debe tener entre 6 y 9 dígitos."),
-    nationality: z.string({
-      required_error: "La nacionalidad es requerida",
-    }),
-    names: z.string({
-      required_error: "Los nombres son requeridos",
-    }),
-    surnames: z.string({
-      required_error: "Los apellidos son requeridos",
-    }),
-    birthdate: z.string().refine((value) => {
-      const date = new Date(value);
-      const age = calculateAge(date);
-      return age >= MIN_AGE && age <= MAX_AGE;
-    }, `Debes tener entre ${MIN_AGE} y ${MAX_AGE} años.`),
-    gender: z.string({
-      required_error: "El género es requerido.",
-    }),
-    height: z.string(),
-    educationalService: z.string(),
-    grade_section_cycle: z.string({
-      required_error: "El grado/sección/ciclo es requerido",
-    }),
-    email: z
+      .min(6, "El número de documento debe tener entre 6 y 9 dígitos")
+      .max(9, "El número de documento debe tener entre 6 y 9 dígitos")
+      .regex(/^\d+$/, "El número de documento solo puede contener números"),
+    nationality: z.string().min(1, "La nacionalidad es requerida"),
+    names: z
       .string()
-      .refine((value) => value === "" || /\S+@\S+\.\S+\S+/.test(value), {
-        message: "Correo electrónico no válido",
-      }),
-    phoneNumber: z
+      .min(1, "Los nombres son requeridos")
+      .max(100, "Los nombres no pueden exceder 100 caracteres"),
+    surnames: z
       .string()
+      .min(1, "Los apellidos son requeridos")
+      .max(100, "Los apellidos no pueden exceder 100 caracteres"),
+    birthdate: z
+      .string()
+      .min(1, "La fecha de nacimiento es requerida")
       .refine(
-        (value) => value === "" || (/^\d{9}$/.test(value) && value[0] === "9"),
+        (value) => {
+          const date = new Date(value);
+          const age = calculateAge(date);
+          return age >= MIN_AGE && age <= MAX_AGE;
+        },
         {
-          message: "Número de celular no válido",
+          message: `Debes tener entre ${MIN_AGE} y ${MAX_AGE} años`,
+        }
+      ),
+    gender: z.string().min(1, "El género es requerido"),
+    height: z
+      .string()
+      .optional()
+      .refine(
+        (value) => {
+          // Si está vacío, es válido (campo opcional)
+          if (!value || value.trim() === "") return true;
+
+          // Solo permite números y punto decimal
+          const regex = /^\d+(\.\d+)?$/;
+          if (!regex.test(value)) return false;
+
+          // Convierte a número
+          const heightNum = parseFloat(value);
+
+          // Valida rango en centímetros (ej: 140-220 cm)
+          return heightNum <= 250;
+        },
+        {
+          message:
+            "La estatura debe ser un número menor o igual a 250 cm (ej: 165 o 165.5)",
         }
       )
-      .optional(),
+      .transform((value) => {
+        // Si está vacío, retorna string vacío
+        if (!value || value.trim() === "") return "";
+        // Retorna el valor limpio
+        return value.trim();
+      }),
+
+    // Paso 2: Institución Educativa
+    department: z.string().min(1, "El departamento es requerido"),
+    province: z.string().min(1, "La provincia es requerida"),
+    district: z.string().min(1, "El distrito es requerido"),
+    educationalService: z
+      .string()
+      .min(1, "La institución educativa es requerida"),
+    grade_section_cycle: z
+      .string()
+      .min(1, "El grado/sección/ciclo es requerido")
+      .max(50, "El grado/sección/ciclo no puede exceder 50 caracteres"),
+
+    // Paso 3: Credenciales
+    email: z
+      .string()
+      .min(1, "El correo electrónico es requerido")
+      .email("Correo electrónico no válido")
+      .toLowerCase(),
+    phoneNumber: z
+      .string()
+      .min(1, "El número de celular es requerido")
+      .refine((value) => value.startsWith("9"), {
+        message: "Número de celular inválido: debe iniciar con 9",
+      })
+      .refine((value) => value.length === 9, {
+        message: "Número de celular inválido: debe tener 9 dígitos",
+      }),
+
     password: z
       .string()
-      .min(8, "La contraseña debe tener al menos 8 caracteres")
+      .min(8, "Contraseña no válida. Verifica los requisitos")
+      .regex(/[A-Z]/, "Contraseña no válida. Verifica los requisitos")
+      .regex(/[a-z]/, "Contraseña no válida. Verifica los requisitos")
+      .regex(/[0-9]/, "Contraseña no válida. Verifica los requisitos")
       .regex(
-        /[A-Z]/,
-        "La contraseña debe contener al menos una letra mayúscula"
-      )
-      .regex(
-        /[a-z]/,
-        "La contraseña debe contener al menos una letra minúscula"
-      )
-      .regex(/[0-9]/, "La contraseña debe contener al menos un número")
-      .regex(
-        /[@$!%*?&#]/,
-        "La contraseña debe contener al menos un carácter especial"
+        /[^A-Za-z0-9]/,
+        "Contraseña no válida. Verifica los requisitos"
       ),
-    confirmPassword: z
-      .string()
-      .min(1, { message: "Por favor, confirma tu contraseña." }),
-    termsAndConditions: z.boolean({
-      required_error: "Los terminos y condiciones son requeridos",
+    confirmPassword: z.string().min(1, "Por favor, confirma tu contraseña"),
+    termsAndConditions: z.boolean().refine((val) => val === true, {
+      message: "Debes aceptar los términos y condiciones",
     }),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Las contraseñas no coinciden.",
+    message: "Las contraseñas no coinciden",
     path: ["confirmPassword"],
   });
