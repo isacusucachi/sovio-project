@@ -1,15 +1,30 @@
 import { Link } from "react-router-dom";
 import Footer from "../components/Footer";
+import Header from "../components/Header";
 
 const TermsAndConditions = () => {
   return (
-    <>
-      <section className="bg-gray-50 dark:bg-gray-900 w-full h-full relative lg:p-9 flex justify-center mt-[104px]">
-        <div className="max-w-5xl dark:bg-gray-800 lg:p-10 p-8 relative bg-white  rounded-lg shadow dark:border dark:border-gray-700">
-          <h1 className="font-extrabold text-4xl text-blue-700 dark:text-blue-600 text-center">
+    <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
+      <Header/>
+      <section class="py-8 bg-white lg:py-24 dark:bg-gray-900">
+        <div class="max-w-4xl px-4 mx-auto lg:px-4 format dark:format-invert">
+          <h1 class="mb-6 text-3xl font-bold text-gray-900 lg:text-4xl dark:text-white">
             Términos y Condiciones
           </h1>
-          <ol className="space-y-1 text-gray-500 list-decimal dark:text-gray-400">
+          <p class="mb-10 text-lg text-gray-600 dark:text-gray-400 lg:text-lg">
+            Lea los términos y condiciones. Si tiene alguna pregunta, por favor
+            <a
+              class="mx-2 font-normal text-blue-600 no-underline dark:text-blue-400 hover:underline"
+              href="https://www.gob.pe/institucion/regioncusco-grtpe/contacto-y-numeros-de-emergencias"
+              target="_blank"
+              rel="noreferrer"
+            >
+              contactanos
+            </a>
+            y le ayudaremos tan pronto como podamos.
+          </p>
+          <hr class="my-12 border-gray-200 dark:border-gray-800" />
+          <ol className="space-y-5 text-gray-500 list-decimal list-inside dark:text-gray-400">
             <li className="text-lg lg:text-xl font-semibold text-gray-900 dark:text-white">
               Aceptación de Términos
               <p className="text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">
@@ -55,18 +70,12 @@ const TermsAndConditions = () => {
               <p className="space-y-1 text-lg font-normal list-inside list-disc text-gray-500 lg:text-xl dark:text-gray-400">
                 LLa privacidad de nuestros usuarios es de suma importancia.
                 Consulta nuestra{" "}
-                <Link
-                  to="/privacy-policy"
-                  onClick={() => {
-                    window.scrollTo({
-                      top: 0,
-                      behavior: "smooth",
-                    });
-                  }}
+                <a
+                  href="/privacy-policy"
                   className="font-medium text-primary-600 hover:underline dark:text-primary-500"
                 >
                   Política de Privacidad
-                </Link>{" "}
+                </a>{" "}
                 para obtener información detallada sobre cómo recopilamos,
                 utilizamos y protegemos tu información personal.
               </p>
@@ -153,7 +162,7 @@ const TermsAndConditions = () => {
         </div>
       </section>
       <Footer />
-    </>
+    </div>
   );
 };
 export default TermsAndConditions;

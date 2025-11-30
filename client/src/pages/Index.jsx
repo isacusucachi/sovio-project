@@ -1,19 +1,17 @@
 import Footer from "../components/Footer";
-import AboutUs from "../components/index/AboutUs";
-import Services from "../components/index/Services";
 import Header from "../components/Header";
 import Hero from "../components/index/Hero";
+import Features from "../components/index/Features";
+import VocationalTestsDescription from "../components/index/VocationalTestsDescription";
 
 const Index = () => {
   return (
     <div>
       <Header />
-      <main className="min-w-0 flex-auto divide-y dark:divide-gray-700">
+      <main className="min-w-0 flex-auto">
         <Hero />
-        <div className="flex flex-col justify-center items-center">
-          <AboutUs />
-          <Services />
-        </div>
+        <Features />
+        <VocationalTestsDescription />
         <Footer />
       </main>
     </div>
