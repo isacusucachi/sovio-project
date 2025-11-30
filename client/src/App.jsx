@@ -19,11 +19,10 @@ import { RecaptchaProvider } from "./context/recaptchaContext";
 import NotFound from "./pages/NotFound";
 import AssessmentSurvey from "./pages/AssessmentSurvey";
 import { AssessmentSurveyProvider } from "./context/assessmentSurveyContex";
-import Header from "./components/Header";
-import MiCarrera from "./pages/MiCarrera";
 import { useEffect } from "react";
 import { trackPageView } from "./analytics";
 import AccessibilityButton from "./components/AccesibilityButton";
+import Services from "./pages/Services";
 
 const App = () => {
   return (
@@ -67,7 +66,6 @@ const AppRoutes = () => {
           </RecaptchaProvider>
         }
       />
-      <Route path="mi-carrera" element={<MiCarrera />} />
       <Route element={<ProtectedRoute />}>
         <Route path="/main" element={<MainPage />} />
         <Route
@@ -90,6 +88,7 @@ const AppRoutes = () => {
           }
         />
       </Route>
+      <Route path="/services" element={<Services />} />
       <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="*" element={<NotFound />} />

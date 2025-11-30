@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   FaUniversalAccess,
   FaSun,
@@ -22,6 +22,22 @@ export default function AccessibilityButton() {
   const [easyFont, setEasyFont] = useState(false);
   const [textSpacing, setTextSpacing] = useState(false);
   const [isReading, setIsReading] = useState(false);
+
+  const accessibilyButtonRef = useRef(null);
+
+  // Cerrar el menú de usuario cuando se hace clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (accessibilyButtonRef.current && !accessibilyButtonRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Cargar valores desde localStorage
   useEffect(() => {
@@ -111,7 +127,7 @@ export default function AccessibilityButton() {
   };
 
   return (
-    <div className="fixed bottom-6 left-6 z-50">
+    <div className="fixed bottom-6 left-6 z-50" ref={accessibilyButtonRef}>
       {/* Botón principal */}
       <button
         id="accessibility-btn"

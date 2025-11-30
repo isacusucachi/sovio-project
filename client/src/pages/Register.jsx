@@ -4,6 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useForm, useWatch } from "react-hook-form";
 import { useAuth } from "../context/authContext";
 import { useRecaptcha } from "../context/recaptchaContext";
+import { Link, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema } from "../schemas/authSchema";
 import {
@@ -12,7 +13,7 @@ import {
   getInstitutionRequest,
 } from "../api/educationalService";
 import paises from "../data/paises.json";
-import { FaEye, FaEyeSlash, FaIdCard } from "react-icons/fa6";
+import { FaArrowLeft, FaEye, FaEyeSlash, FaIdCard } from "react-icons/fa6";
 import { IoSchool } from "react-icons/io5";
 import { TbPasswordUser } from "react-icons/tb";
 import StepIndicator from "../components/Register/StepIndicator";
@@ -73,6 +74,8 @@ const Register = () => {
 
   const { signup, errors: registerErrors, isAuthenticated } = useAuth();
   const { getRecaptchaToken } = useRecaptcha();
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -185,6 +188,12 @@ const Register = () => {
   };
 
   useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/main");
+    }
+  }, [isAuthenticated, navigate]);
+  
+  useEffect(() => {
     if (registerErrors.length > 0) {
       registerErrors.forEach((error) => toast.error(error));
     }
@@ -260,6 +269,13 @@ const Register = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
+      <Link
+        to="/"
+        className="absolute top-4 left-4 inline-flex items-center justify-center px-5 py-3 text-base font-bold text-center text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-800"
+      >
+        <FaArrowLeft className="w-4 h-4 sm:mr-2" />
+        <span className="hidden sm:inline">VOLVER A INICIO</span>
+      </Link>
       <main className="bg-gray-50 dark:bg-gray-900">
         <div className="flex flex-col justify-center items-center py-8 px-6 mx-auto md:h-screen">
           <a

@@ -57,8 +57,8 @@ const Login = () => {
         to="/"
         className="absolute top-4 left-4 inline-flex items-center justify-center px-5 py-3 text-base font-bold text-center text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-800"
       >
-        <FaArrowLeft className="w-4 h-4 mr-2" />
-        VOLVER A INICIO
+        <FaArrowLeft className="w-4 h-4 sm:mr-2" />
+        <span className="hidden sm:inline">VOLVER A INICIO</span>
       </Link>
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto h-screen lg:py-0">
         <a
@@ -137,10 +137,10 @@ const Login = () => {
                     {...register("password")}
                     placeholder="••••••••"
                     className={`bg-gray-50 border text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:placeholder:text-gray-400 dark:text-white ${
-                    errors.password
-                      ? "border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-500"
-                      : "bg-gray-50 border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  }`}
+                      errors.password
+                        ? "border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-500"
+                        : "bg-gray-50 border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    }`}
                   />
 
                   <button
