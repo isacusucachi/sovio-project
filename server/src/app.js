@@ -20,6 +20,7 @@ import userRoutes from "./routes/user.routes.js";
 const educationalServiceRoutes = require("./routes/educationalService.routes.js");
 import vocationalTestRoutes from "./routes/vocationalTest.routes.js";
 import assessmentSurveyRoutes from "./routes/assessmentSurvey.routes.js";
+import dashboardRoutes from "./routes/dashboard.routes.js";
 
 const app = express();
 
@@ -52,5 +53,5 @@ app.use("/api/user", userRoutes);
 app.use("/api/educational-service", educationalServiceRoutes);
 app.use("/api/vocational-test", vocationalTestRoutes);
 app.use("/api/assessment-survey", assessmentSurveyRoutes);
-
+app.use("/api/dashboard", dashboardRoutes);
 export default app;
