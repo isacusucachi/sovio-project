@@ -285,17 +285,12 @@ const MainPage = () => {
                             <div className="px-3 sm:px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 rounded-lg font-medium text-xs sm:text-sm w-full sm:w-auto text-center self-start sm:self-center">
                               Bloqueado
                             </div>
-                          ) : completedIeppoTest ? (
-                            <div className="flex items-center gap-2 text-green-600 dark:text-green-400 font-medium self-start sm:self-center">
-                              <MdCheckCircle className="w-5 h-5 flex-shrink-0" />
-                              <span className="text-sm">Completado</span>
-                            </div>
                           ) : (
                             <a
                               href="/ieppo-test"
                               className="inline-flex items-center justify-center px-5 py-3 mr-3 text-base font-bold text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900 space-x-2"
                             >
-                              <span>INICIAR</span>
+                              <span>IR A LA PRUEBA</span>
                               <FaArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
                             </a>
                           )}
@@ -350,20 +345,13 @@ const MainPage = () => {
                               )}
                             </div>
                           </div>
-                          {completedPhbTest ? (
-                            <div className="flex items-center gap-2 text-green-600 dark:text-green-400 font-medium self-start sm:self-center">
-                              <MdCheckCircle className="w-5 h-5 flex-shrink-0" />
-                              <span className="text-sm">Completado</span>
-                            </div>
-                          ) : (
-                            <a
-                              href="/phb-test"
-                              className="inline-flex items-center justify-center px-5 py-3 mr-3 text-base font-bold text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900 space-x-2"
-                            >
-                              <span>INICIAR</span>
-                              <FaArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
-                            </a>
-                          )}
+                          <a
+                            href="/phb-test"
+                            className="inline-flex items-center justify-center px-5 py-3 mr-3 text-base font-bold text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900 space-x-2"
+                          >
+                            <span>IR A LA PRUEBA</span>
+                            <FaArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
+                          </a>
                         </div>
                       </div>
 
@@ -415,20 +403,13 @@ const MainPage = () => {
                               )}
                             </div>
                           </div>
-                          {completedTepeTest ? (
-                            <div className="flex items-center gap-2 text-green-600 dark:text-green-400 font-medium self-start sm:self-center">
-                              <MdCheckCircle className="w-5 h-5 flex-shrink-0" />
-                              <span className="text-sm">Completado</span>
-                            </div>
-                          ) : (
-                            <a
-                              href="/tepe-test"
-                              className="inline-flex items-center justify-center px-5 py-3 mr-3 text-base font-bold text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900 space-x-2"
-                            >
-                              <span>INICIAR</span>
-                              <FaArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
-                            </a>
-                          )}
+                          <a
+                            href="/tepe-test"
+                            className="inline-flex items-center justify-center px-5 py-3 mr-3 text-base font-bold text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900 space-x-2"
+                          >
+                            <span>IR A LA PRUEBA</span>
+                            <FaArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
+                          </a>
                         </div>
                       </div>
 
@@ -523,7 +504,7 @@ const MainPage = () => {
                       </div>
                       <a
                         href="/final-vocational-test-report"
-                        className="flex items-center justify-center gap-2 bg-sky-500 hover:bg-sky-600 text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg font-medium transition-colors text-sm sm:text-base w-full sm:w-auto"
+                        className="inline-flex items-center justify-center px-5 py-3 mr-3 text-base font-bold text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900 space-x-2"
                       >
                         <span>VER INFORME</span>
                         <FaArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
