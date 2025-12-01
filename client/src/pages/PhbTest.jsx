@@ -832,32 +832,38 @@ const ImageChoiceQuestion = ({
 };
 
 // Completion Screen
-const CompletionScreen = ({ onRetake, loading }) => {
+const CompletionScreen = ({
+  onRetake,
+  loading,
+  showRetakeModal,
+  setShowRetakeModal,
+}) => {
   return (
     <div className="text-center py-8 animate-fadeIn">
-      <div className="w-32 h-32 mx-auto mb-6 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center shadow-xl animate-bounce-slow">
+      <div className="w-32 h-32 mx-auto mb-6 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center shadow-xl">
         <span className="text-6xl">🎉</span>
       </div>
 
       <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
-        ¡Excelente trabajo!
+        ¡Felicidades!
       </h2>
 
       <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">
-        Has completado con éxito el Test de Habilidades Básicas (PHB).
+        Has completado con éxito el Test de Prueba de Habilidades Básicas (PHB).
       </p>
 
-      <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+      <div className="flex flex-col sm:flex-row gap-4 justify-center">
         <a
           href="/final-vocational-test-report"
           className="
-            flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white
-            px-6 py-4 rounded-xl font-bold text-lg
+            bg-gradient-to-r from-blue-500 to-indigo-600 text-white
+            px-8 py-4 rounded-xl font-bold text-lg
             shadow-lg hover:shadow-xl
             transition-all duration-300 transform hover:scale-105
             inline-flex items-center justify-center gap-2
           "
         >
+          Ver Resultados
           <svg
             className="w-5 h-5"
             fill="none"
@@ -871,16 +877,42 @@ const CompletionScreen = ({ onRetake, loading }) => {
               d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
             />
           </svg>
-          Ver Resultados
+        </a>
+
+        <a
+          href="/main"
+          className="
+            bg-gray-100 dark:bg-gray-700
+            text-gray-700 dark:text-gray-200
+            px-8 py-4 rounded-xl font-bold text-lg
+            hover:bg-gray-200 dark:hover:bg-gray-600
+            transition-all duration-300
+            inline-flex items-center justify-center gap-2
+          "
+        >
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+            />
+          </svg>
+          Volver al Inicio
         </a>
 
         <button
-          onClick={onRetake}
+          onClick={() => setShowRetakeModal(true)}
           disabled={loading}
           className="
-            flex-1 border-2 border-gray-300 dark:border-gray-600
+            border-2 border-gray-300 dark:border-gray-600
             text-gray-700 dark:text-gray-200
-            px-6 py-4 rounded-xl font-bold text-lg
+            px-8 py-4 rounded-xl font-bold text-lg
             hover:bg-gray-100 dark:hover:bg-gray-700
             transition-all duration-300
             inline-flex items-center justify-center gap-2
@@ -918,11 +950,21 @@ const CompletionScreen = ({ onRetake, loading }) => {
                   d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                 />
               </svg>
-              Repetir Test
+              Volver a realizar
             </>
           )}
         </button>
       </div>
+      <RetakeConfirmModal
+        isOpen={showRetakeModal}
+        onClose={() => setShowRetakeModal(false)}
+        onConfirm={() => {
+          setShowRetakeModal(false);
+          onRetake();
+        }}
+        loading={loading}
+        testName="Test PHB"
+      />
     </div>
   );
 };
@@ -1241,6 +1283,105 @@ const ExitButton = ({ onClick }) => {
   );
 };
 
+// Modal de Confirmación para Volver a Realizar
+const RetakeConfirmModal = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  loading,
+  testName,
+}) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* Modal */}
+      <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 animate-fadeIn">
+        {/* Icon */}
+        <div className="w-16 h-16 mx-auto mb-4 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center">
+          <span className="text-4xl">⚠️</span>
+        </div>
+
+        {/* Content */}
+        <h3 className="text-xl font-bold text-gray-800 dark:text-white text-center mb-2">
+          ¿Volver a realizar el test?
+        </h3>
+        <p className="text-gray-500 dark:text-gray-400 text-center mb-6">
+          Si vuelves a realizar el <strong>{testName}</strong>, tus respuestas
+          anteriores serán eliminadas y deberás completar el test nuevamente.
+        </p>
+
+        {/* Warning box */}
+        <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-3 mb-6">
+          <p className="text-amber-700 dark:text-amber-400 text-sm text-center">
+            <strong>⚠️ Esta acción no se puede deshacer</strong>
+          </p>
+        </div>
+
+        {/* Buttons */}
+        <div className="flex flex-col sm:flex-row gap-3">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-300"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={loading}
+            className="flex-1 px-4 py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              <>
+                <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                  />
+                </svg>
+                Procesando...
+              </>
+            ) : (
+              <>
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
+                </svg>
+                Sí, volver a realizar
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ============================================
 // MAIN COMPONENT
 // ============================================
@@ -1271,6 +1412,7 @@ const PhbTest = () => {
   const [showWarning, setShowWarning] = useState(false);
   const [showTimeExpiredModal, setShowTimeExpiredModal] = useState(false);
   const [showExitModal, setShowExitModal] = useState(false);
+  const [showRetakeModal, setShowRetakeModal] = useState(false);
 
   // Track which areas have been completed (by answering all or time expired)
   const [completedAreas, setCompletedAreas] = useState({
@@ -1757,7 +1899,7 @@ const PhbTest = () => {
           {/* Main Card */}
           <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-3xl shadow-xl p-6">
             {completedTest ? (
-              <CompletionScreen onRetake={handleReset} loading={resetLoading} />
+              <CompletionScreen onRetake={handleReset} loading={resetLoading} showRetakeModal={showRetakeModal} setShowRetakeModal={setShowRetakeModal} />
             ) : (
               <>
                 {/* Overall Progress */}

@@ -40,6 +40,7 @@ export const createAssessmentSurvey = async (req, res) => {
       assessmentSurveySaved,
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: error.message });
   }
 };

@@ -1,5 +1,5 @@
 import { MdCheckCircle } from "react-icons/md";
-import { FaArrowRight, FaClock } from "react-icons/fa";
+import { FaArrowRight, FaClock, FaIdCard } from "react-icons/fa";
 import { IoCloseCircle } from "react-icons/io5";
 import {
   HiHome,
@@ -42,6 +42,7 @@ const MainPage = () => {
   const handleSectionChange = (sectionId) => {
     setActiveSection(sectionId);
     setIsSidebarOpen(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const menuItems = [
@@ -149,12 +150,8 @@ const MainPage = () => {
                     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4 sm:p-6 hover:shadow-md transition-shadow">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
-                          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-sky-100 dark:bg-sky-900/30 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <img
-                              className="h-6 w-6 sm:h-7 sm:w-7"
-                              src="https://img.icons8.com/external-tanah-basah-basic-outline-tanah-basah/50/0EA5E9/external-personal-file-user-tanah-basah-basic-outline-tanah-basah.png"
-                              alt="ficha-personal"
-                            />
+                          <div className="w-20 h-20 bg-sky-100 dark:bg-sky-900/30 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <FaIdCard className="w-16 h-16 text-gray-500 dark:text-gray-400" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">
@@ -164,40 +161,38 @@ const MainPage = () => {
                               Necesitamos conocer algunos datos básicos para
                               personalizar tu experiencia
                             </p>
-                            <div className="flex items-center gap-2 mt-1 text-xs text-gray-500 dark:text-gray-400">
-                              <svg
-                                className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                />
-                              </svg>
-                              <span className="truncate">
-                                5 minutos aproximadamente
-                              </span>
-                            </div>
+                            {completedUserInformation ? (
+                              <div className="flex items-center gap-2 text-xs text-green-600 dark:text-green-400 mt-1">
+                                <MdCheckCircle className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                                <span>Completado</span>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-2 text-xs text-sky-600 dark:text-sky-400 mt-1">
+                                <svg
+                                  className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                  />
+                                </svg>
+                                <span>Listo para iniciar</span>
+                              </div>
+                            )}
                           </div>
                         </div>
-                        {completedUserInformation ? (
-                          <div className="flex items-center gap-2 text-green-600 dark:text-green-400 font-medium self-start sm:self-center">
-                            <MdCheckCircle className="w-5 h-5 flex-shrink-0" />
-                            <span className="text-sm">Completado</span>
-                          </div>
-                        ) : (
-                          <a
-                            href="/personal-information"
-                            className="inline-flex items-center justify-center px-5 py-3 mr-3 text-base font-bold text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900 space-x-2"
-                          >
-                            <span>COMPLETAR</span>
-                            <FaArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
-                          </a>
-                        )}
+                        <a
+                          href="/personal-information"
+                          className="inline-flex items-center justify-center px-5 py-3 mr-3 text-base font-bold text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900 space-x-2"
+                        >
+                          <span>IR A LA FICHA</span>
+                          <FaArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
+                        </a>
                       </div>
                     </div>
                   </section>
@@ -549,38 +544,39 @@ const MainPage = () => {
                             Comparte tu experiencia con la plataforma y los
                             tests
                           </p>
-                          <div className="flex items-center gap-2 mt-1 text-xs text-gray-500 dark:text-gray-400">
-                            <svg
-                              className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                              />
-                            </svg>
-                            <span>3 minutos aproximadamente</span>
-                          </div>
+
+                          {!completedUserInformation ? (
+                            <div className="flex items-center gap-2 mt-1 text-xs text-gray-500 dark:text-gray-400">
+                              <svg
+                                className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                              </svg>
+                              <span>3 minutos aproximadamente</span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2 text-green-600 dark:text-green-400 font-medium self-start sm:self-center">
+                              <MdCheckCircle className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
+                              <span className="text-sm">Completado</span>
+                            </div>
+                          )}
                         </div>
                       </div>
-                      {completedAssessmentSurvey ? (
-                        <div className="flex items-center gap-2 text-green-600 dark:text-green-400 font-medium self-start sm:self-center">
-                          <MdCheckCircle className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
-                          <span className="text-sm">Completado</span>
-                        </div>
-                      ) : (
-                        <a
-                          href="/assessment-survey"
-                          className="inline-flex items-center justify-center px-5 py-3 mr-3 text-base font-bold text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900 space-x-2"
-                        >
-                          <span>COMPLETAR ENCUESTA</span>
-                          <FaArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
-                        </a>
-                      )}
+                      <a
+                        href="/assessment-survey"
+                        className="inline-flex items-center justify-center px-5 py-3 mr-3 text-base font-bold text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900 space-x-2"
+                      >
+                        <span>IR A LA ENCUESTA</span>
+                        <FaArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
+                      </a>
                     </div>
                   </div>
                 </section>

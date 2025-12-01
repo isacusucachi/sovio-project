@@ -90,7 +90,7 @@ export default function Header({ onToggleSidebar, isSidebarOpen }) {
   const menuItems = [
     { path: "/", label: "INICIO" },
     { path: "/services", label: "SERVICIOS" },
-    { path: "/galeria", label: "GALERÍA" },
+    { path: "/gallery", label: "GALERÍA" },
   ];
 
   return (
