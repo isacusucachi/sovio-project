@@ -1,5 +1,4 @@
-import { useState, useRef } from "react";
-import ReCAPTCHA from "react-google-recaptcha";
+import { useState, useCallback } from "react";
 
 import { EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
@@ -7,55 +6,119 @@ import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
 import { useAuth } from "../../context/AuthContext";
-import { RECAPTCHA_SITE_KEY } from "../../config";
+import { useRecaptcha } from "../../context/RecaptchaContext";
+
+interface LoginCredentials {
+  username: string;
+  password: string;
+}
 
 export default function SignInForm() {
-  const { login, errors } = useAuth();
-  const [user, setUser] = useState<{ username: string; password: string }>({
+  const { login, errors: authErrors } = useAuth();
+  const { getRecaptchaToken } = useRecaptcha();
+
+  const [credentials, setCredentials] = useState<LoginCredentials>({
     username: "",
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
-  const recaptchaRef = useRef<ReCAPTCHA | null>(null);
-  const [error, setError] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [localError, setLocalError] = useState<string>("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUser((prevUser) => ({
-      ...prevUser,
-      [e.target.name]: e.target.value,
-    }));
+  // Manejar cambios en los inputs
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target;
+      setCredentials((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+      // Limpiar error local cuando el usuario empieza a escribir
+      if (localError) {
+        setLocalError("");
+      }
+    },
+    [localError]
+  );
+
+  // Validar formulario
+  const validateForm = (): boolean => {
+    if (!credentials.username.trim()) {
+      setLocalError("Por favor, ingresa tu usuario.");
+      return false;
+    }
+
+    if (!credentials.password) {
+      setLocalError("Por favor, ingresa tu contraseña.");
+      return false;
+    }
+
+    return true;
   };
 
-  const resetCaptcha = () => {
-    (recaptchaRef.current as any)?.reset();
-    setRecaptchaToken(null);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Manejar envío del formulario
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError("");
+    setLocalError("");
 
-    if (!recaptchaToken) {
-      setError("Por favor, completa el reCAPTCHA.");
+    // Validar antes de enviar
+    if (!validateForm()) {
       return;
     }
 
-    setLoading(true);
+    // Verificar que reCAPTCHA esté disponible
+    if (!getRecaptchaToken) {
+      setLocalError("Error al cargar reCAPTCHA. Por favor, recarga la página.");
+      return;
+    }
+
+    setIsLoading(true);
+
     try {
-      await login(user, isChecked, recaptchaToken);
-      resetCaptcha();
+      // Ejecutar reCAPTCHA v3 y obtener token
+      const recaptchaToken = await getRecaptchaToken("login");
+
+      if (!recaptchaToken) {
+        setLocalError(
+          "Error al verificar reCAPTCHA. Por favor, inténtalo de nuevo."
+        );
+        setIsLoading(false);
+        return;
+      }
+
+      // Llamar al login con el token
+      await login(credentials, rememberMe, recaptchaToken);
     } catch (err) {
       console.error("Error durante el login:", err);
-      setError(
-        "Ocurrió un error al iniciar sesión. Por favor, inténtalo de nuevo."
-      );
+
+      if (err instanceof Error) {
+        setLocalError(err.message);
+      } else {
+        setLocalError(
+          "Ocurrió un error al iniciar sesión. Por favor, inténtalo de nuevo."
+        );
+      }
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
+
+  // Toggle para mostrar/ocultar contraseña
+  const togglePasswordVisibility = useCallback(() => {
+    setShowPassword((prev) => !prev);
+  }, []);
+
+  // Toggle para "recordarme"
+  const toggleRememberMe = useCallback(() => {
+    setRememberMe((prev) => !prev);
+  }, []);
+
+  // Combinar errores del contexto y locales para mostrar
+  const displayErrors = [...authErrors];
+  if (localError && !displayErrors.includes(localError)) {
+    displayErrors.unshift(localError);
+  }
 
   return (
     <div className="flex flex-col flex-1">
@@ -69,129 +132,161 @@ export default function SignInForm() {
               Ingresa tu usuario y contraseña para iniciar sesión
             </p>
           </div>
+
           <div>
-            {errors.length > 0 && (
-              <div className="bg-red-500 text-white p-2 rounded mb-5 sm:mb-8">
-                <ol className="list-disc list-inside">
-                  {errors.map((error, index) => (
-                    <li key={index}>{error}</li>
-                  ))}
-                </ol>
+            {/* Mostrar errores */}
+            {displayErrors.length > 0 && (
+              <div
+                className="bg-red-500 text-white p-3 rounded-lg mb-5 sm:mb-8"
+                role="alert"
+                aria-live="polite"
+              >
+                {displayErrors.length === 1 ? (
+                  <p>{displayErrors[0]}</p>
+                ) : (
+                  <ul className="list-disc list-inside space-y-1">
+                    {displayErrors.map((error, index) => (
+                      <li key={index}>{error}</li>
+                    ))}
+                  </ul>
+                )}
               </div>
             )}
-            <form onSubmit={handleSubmit}>
+
+            <form onSubmit={handleSubmit} noValidate>
               <div className="space-y-6">
+                {/* Campo de usuario */}
                 <div>
-                  <Label>
+                  <Label htmlFor="username">
                     Usuario <span className="text-error-500">*</span>
                   </Label>
                   <Input
+                    id="username"
                     type="text"
                     name="username"
-                    value={user.username}
-                    onChange={handleChange}
+                    value={credentials.username}
+                    onChange={handleInputChange}
                     placeholder="Ingresa tu usuario"
+                    disabled={isLoading}
                   />
                 </div>
+
+                {/* Campo de contraseña */}
                 <div>
-                  <Label>
+                  <Label htmlFor="password">
                     Contraseña <span className="text-error-500">*</span>
                   </Label>
                   <div className="relative">
                     <Input
+                      id="password"
                       type={showPassword ? "text" : "password"}
                       name="password"
-                      value={user.password}
-                      onChange={handleChange}
+                      value={credentials.password}
+                      onChange={handleInputChange}
                       placeholder="Ingresa tu contraseña"
+                      disabled={isLoading}
                     />
-                    <span
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
+                    <button
+                      type="button"
+                      onClick={togglePasswordVisibility}
+                      className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 rounded"
+                      aria-label={
+                        showPassword
+                          ? "Ocultar contraseña"
+                          : "Mostrar contraseña"
+                      }
+                      disabled={isLoading}
                     >
                       {showPassword ? (
                         <EyeIcon className="size-5" />
                       ) : (
                         <EyeCloseIcon className="size-5" />
                       )}
-                    </span>
+                    </button>
                   </div>
                 </div>
+
+                {/* Checkbox "Mantener sesión" */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <Checkbox
-                      checked={isChecked}
-                      onChange={() => setIsChecked(!isChecked)}
+                      id="rememberMe"
+                      checked={rememberMe}
+                      onChange={toggleRememberMe}
+                      disabled={isLoading}
                     />
-                    <span className="text-gray-700 dark:text-gray-400">
+                    <label
+                      htmlFor="rememberMe"
+                      className="text-gray-700 dark:text-gray-400 cursor-pointer select-none"
+                    >
                       Mantener sesión iniciada
-                    </span>
+                    </label>
                   </div>
                 </div>
 
-                {/* reCAPTCHA */}
-                <div className="mb-4">
-                  <ReCAPTCHA
-                    sitekey={RECAPTCHA_SITE_KEY}
-                    onChange={(token) => setRecaptchaToken(token)}
-                  />
-                </div>
-
-                {error && <p className="text-red-500 text-sm">{error}</p>}
-
+                {/* Botón de envío */}
                 <div>
                   <Button
                     type="submit"
-                    disabled={loading}
+                    disabled={isLoading}
                     className="w-full"
                     size="sm"
                   >
-                    {loading ? (
-                      <svg
-                        width="20"
-                        height="20"
-                        fill="hsl(228, 97%, 42%)"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <circle cx="4" cy="12" r="3">
-                          <animate
-                            id="spinner_qFRN"
-                            begin="0;spinner_OcgL.end+0.25s"
-                            attributeName="cy"
-                            calcMode="spline"
-                            dur="0.6s"
-                            values="12;6;12"
-                            keySplines=".33,.66,.66,1;.33,0,.66,.33"
+                    {isLoading ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <svg
+                          className="animate-spin"
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          aria-hidden="true"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
                           />
-                        </circle>
-                        <circle cx="12" cy="12" r="3">
-                          <animate
-                            begin="spinner_qFRN.begin+0.1s"
-                            attributeName="cy"
-                            calcMode="spline"
-                            dur="0.6s"
-                            values="12;6;12"
-                            keySplines=".33,.66,.66,1;.33,0,.66,.33"
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                           />
-                        </circle>
-                        <circle cx="20" cy="12" r="3">
-                          <animate
-                            id="spinner_OcgL"
-                            begin="spinner_qFRN.begin+0.2s"
-                            attributeName="cy"
-                            calcMode="spline"
-                            dur="0.6s"
-                            values="12;6;12"
-                            keySplines=".33,.66,.66,1;.33,0,.66,.33"
-                          />
-                        </circle>
-                      </svg>
+                        </svg>
+                        <span>Iniciando sesión...</span>
+                      </span>
                     ) : (
                       "Ingresar"
                     )}
                   </Button>
                 </div>
+
+                {/* Texto de protección reCAPTCHA */}
+                <p className="text-xs text-center text-gray-500 dark:text-gray-400">
+                  Este sitio está protegido por reCAPTCHA y aplican la{" "}
+                  <a
+                    href="https://policies.google.com/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary-500 hover:underline"
+                  >
+                    Política de Privacidad
+                  </a>{" "}
+                  y los{" "}
+                  <a
+                    href="https://policies.google.com/terms"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary-500 hover:underline"
+                  >
+                    Términos de Servicio
+                  </a>{" "}
+                  de Google.
+                </p>
               </div>
             </form>
           </div>

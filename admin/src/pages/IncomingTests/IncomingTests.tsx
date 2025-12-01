@@ -128,7 +128,7 @@ export default function IncomingTests() {
             </p>
           ) : (
             <>
-              <DataTable
+              <BasicTable
                 data={reports}
                 columns={columns}
                 actions={renderActions}

@@ -4,7 +4,7 @@ import axios from "axios";
 import cloudinary from "cloudinary";
 import AdminUser from "../models/adminUser.model";
 import { createAccessToken } from "../libs/jwt";
-import { TOKEN_SECRET, RECAPTCHA_SECRET_KEY_V2 } from "../config.js";
+import { TOKEN_SECRET, RECAPTCHA_SECRET_KEY_V3 } from "../config.js";
 
 export const createAdminUser = async (req, res) => {
   try {
@@ -105,45 +105,55 @@ export const updateAdminUser = async (req, res) => {
   }
 };
 
+async function verifyRecaptcha(token) {
+  try {
+    const response = await axios.post(
+      "https://www.google.com/recaptcha/api/siteverify",
+      null,
+      {
+        params: {
+          secret: RECAPTCHA_SECRET_KEY_V3,
+          response: token,
+        },
+      }
+    );
+
+    const { success, score, action } = response.data;
+
+    if (success && score >= 0.5 && action === "login") {
+      return { success: true, score };
+    }
+
+    return { success: false, score: score || 0 };
+  } catch (error) {
+    console.error("Error verificando reCAPTCHA:", error);
+    return { success: false, score: 0 };
+  }
+}
 export const adminLogin = async (req, res) => {
   try {
     const { username, password, recaptchaToken } = req.body;
 
-    if (!recaptchaToken) {
+    // Verificar reCAPTCHA primero
+    const recaptchaResult = await verifyRecaptcha(recaptchaToken);
+
+    if (!recaptchaResult.success) {
       return res
         .status(400)
-        .json({ success: false, message: ["reCAPTCHA no completado."] });
-    }
-
-    // Verificar reCAPTCHA con Google
-    const recaptchaResponse = await fetch(
-      "https://www.google.com/recaptcha/api/siteverify",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `secret=${RECAPTCHA_SECRET_KEY_V2}&response=${recaptchaToken}`,
-      }
-    );
-
-    const recaptchaData = await recaptchaResponse.json();
-
-    if (!recaptchaData.success) {
-      return res
-        .status(400)
-        .json({ success: false, message: ["reCAPTCHA inválido."] });
+        .json({ success: false, message: ["Verificación de seguridad fallida. Por favor, inténtalo de nuevo."] });
     }
     const adminUserFound = await AdminUser.findOne({ username });
 
     if (!adminUserFound)
       return res.status(400).json({
-        message: [`El usuario: ${req.body.username} no esta registrado.`],
+        message: [`Credenciales inválidas.`],
       });
 
     const isMatch = await bcrypt.compare(password, adminUserFound.password);
 
     if (!isMatch) {
       return res.status(400).json({
-        message: ["La contraseña es incorrecta."],
+        message: ["Credenciales inválidas"],
       });
     }
 
