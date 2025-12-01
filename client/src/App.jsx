@@ -24,7 +24,7 @@ import { trackPageView } from "./analytics";
 import AccessibilityButton from "./components/AccesibilityButton";
 import Services from "./pages/Services";
 import Gallery from "./pages/Gallery";
-import Faq from "./pages/faq";
+import FaqPage from "./pages/FaqPage";
 
 const App = () => {
   return (
@@ -92,7 +92,7 @@ const AppRoutes = () => {
       </Route>
       <Route path="/services" element={<Services />} />
       <Route path="/gallery" element={<Gallery />} />
-      <Route path="/faq" element={<Faq />} />
+      <Route path="/faq" element={<FaqPage />} />
       <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="*" element={<NotFound />} />

@@ -33,7 +33,7 @@ function AccordionItem({ question, children }) {
   );
 }
 
-export default function Faq() {
+export default function FaqPage() {
   return (
     <>
       <Header />
