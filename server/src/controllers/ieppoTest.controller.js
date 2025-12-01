@@ -584,7 +584,12 @@ export const resetIeppoTest = async (req, res) => {
 
     await FinalTestReport.findOneAndUpdate(
       { userId: req.user.id },
-      { $unset: { ieppoTestResult: "" } },
+      {
+        $unset: {
+          ieppoTestResult: "",
+          vocationalTypes: "",
+        },
+      },
       { new: true }
     );
 

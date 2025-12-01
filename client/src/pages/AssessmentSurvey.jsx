@@ -1,15 +1,337 @@
-import { useEffect, useState } from "react";
-import { FaStar, FaRegStar } from "react-icons/fa";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { TbAlertSquareFilled } from "react-icons/tb";
 import { useAssessmentSurveys } from "../context/assessmentSurveyContex";
+
+// ============================================
+// SURVEY CONFIGURATION
+// ============================================
+
+const SURVEY_QUESTIONS = [
+  {
+    id: "navigationDifficulty",
+    question: "¿Cómo de difícil te resulta la navegación por la plataforma?",
+    icon: "🧭",
+    type: "scale",
+    options: [
+      { value: "Muy sencilla", label: "Muy sencilla", emoji: "😊", color: "green" },
+      { value: "Relativamente sencilla", label: "Relativamente sencilla", emoji: "🙂", color: "green" },
+      { value: "Normal", label: "Normal", emoji: "😐", color: "amber" },
+      { value: "Algo compleja", label: "Algo compleja", emoji: "😕", color: "red" },
+      { value: "Muy compleja", label: "Muy compleja", emoji: "😣", color: "red" },
+    ],
+  },
+  {
+    id: "appereanceRating",
+    question: "¿Cómo valoras el aspecto de nuestra plataforma?",
+    icon: "🎨",
+    type: "scale",
+    options: [
+      { value: "Muy bueno", label: "Muy bueno", emoji: "🤩", color: "green" },
+      { value: "Normal", label: "Normal", emoji: "😐", color: "amber" },
+      { value: "Peor que la media", label: "Peor que la media", emoji: "😕", color: "red" },
+      { value: "No me gusta nada", label: "No me gusta nada", emoji: "😞", color: "red" },
+    ],
+  },
+  {
+    id: "satisfactionRating",
+    question: "¿Cómo de satisfecho/a te encuentras respecto a los datos obtenidos de nuestra plataforma?",
+    icon: "📊",
+    type: "scale",
+    options: [
+      { value: "Muy satisfecho/a", label: "Muy satisfecho/a", emoji: "🤩", color: "green" },
+      { value: "Satisfecho/a", label: "Satisfecho/a", emoji: "😊", color: "green" },
+      { value: "Medianamente satisfecho/a", label: "Medianamente satisfecho/a", emoji: "😐", color: "amber" },
+      { value: "Insatisfecho/a", label: "Insatisfecho/a", emoji: "😕", color: "red" },
+      { value: "Muy insatisfecho/a", label: "Muy insatisfecho/a", emoji: "😞", color: "red" },
+    ],
+  },
+  {
+    id: "recommendationToOthers",
+    question: "¿Recomendarías nuestra plataforma a otras personas?",
+    icon: "💬",
+    type: "scale",
+    options: [
+      { value: "Sí, definitivamente", label: "Sí, definitivamente", emoji: "👍", color: "green" },
+      { value: "Probablemente sí", label: "Probablemente sí", emoji: "🙂", color: "green" },
+      { value: "No lo sé", label: "No lo sé", emoji: "🤔", color: "amber" },
+      { value: "Probablemente no", label: "Probablemente no", emoji: "😕", color: "red" },
+      { value: "No, para nada", label: "No, para nada", emoji: "👎", color: "red" },
+    ],
+  },
+  {
+    id: "comments",
+    question: "¿Tienes algún comentario o sugerencia para nosotros?",
+    icon: "✏️",
+    type: "textarea",
+    placeholder: "Escribe aquí tus comentarios, sugerencias o ideas para mejorar la plataforma...",
+    optional: true,
+  },
+  {
+    id: "rating",
+    question: "Por último, ¿qué calificación general le darías a SOVIO?",
+    icon: "⭐",
+    type: "stars",
+    labels: ["Muy malo", "Malo", "Regular", "Bueno", "Excelente"],
+  },
+];
+
+// ============================================
+// SUBCOMPONENTS
+// ============================================
+
+// Progress Bar
+const ProgressBar = ({ current, total, answeredCount }) => {
+  const percentage = (answeredCount / total) * 100;
+  
+  return (
+    <div className="mb-8">
+      <div className="flex justify-between items-center mb-2">
+        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+          Progreso de la encuesta
+        </span>
+        <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
+          {answeredCount} de {total} preguntas
+        </span>
+      </div>
+      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+        <div
+          className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500 ease-out"
+          style={{ width: `${percentage}%` }}
+        />
+      </div>
+    </div>
+  );
+};
+
+// Question Card Wrapper
+const QuestionCard = ({ number, icon, question, children, isAnswered, isOptional }) => {
+  return (
+    <div
+      className={`
+        bg-white dark:bg-gray-800 rounded-2xl p-6 border-2 transition-all duration-300
+        ${isAnswered
+          ? "border-green-300 dark:border-green-700 shadow-md"
+          : "border-gray-200 dark:border-gray-700 hover:border-blue-200 dark:hover:border-blue-800"
+        }
+      `}
+    >
+      {/* Question Header */}
+      <div className="flex items-start gap-4 mb-5">
+        <div className={`
+          w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0
+          ${isAnswered 
+            ? "bg-green-100 dark:bg-green-900/30" 
+            : "bg-blue-100 dark:bg-blue-900/30"
+          }
+        `}>
+          {isAnswered ? "✓" : icon}
+        </div>
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
+              Pregunta {number}
+            </span>
+            {isOptional && (
+              <span className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-full">
+                Opcional
+              </span>
+            )}
+            {isAnswered && (
+              <span className="text-xs px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full">
+                ✓ Respondida
+              </span>
+            )}
+          </div>
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+            {question}
+          </h3>
+        </div>
+      </div>
+
+      {/* Question Content */}
+      <div className="ml-0 md:ml-16">
+        {children}
+      </div>
+    </div>
+  );
+};
+
+// Scale Option Button (for radio questions)
+const ScaleOptionButton = ({ option, isSelected, onSelect }) => {
+  const colorClasses = {
+    green: {
+      selected: "bg-green-100 dark:bg-green-900/40 border-green-400 dark:border-green-600 ring-2 ring-green-200 dark:ring-green-800",
+      hover: "hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-300",
+    },
+    amber: {
+      selected: "bg-amber-100 dark:bg-amber-900/40 border-amber-400 dark:border-amber-600 ring-2 ring-amber-200 dark:ring-amber-800",
+      hover: "hover:bg-amber-50 dark:hover:bg-amber-900/20 hover:border-amber-300",
+    },
+    red: {
+      selected: "bg-red-100 dark:bg-red-900/40 border-red-400 dark:border-red-600 ring-2 ring-red-200 dark:ring-red-800",
+      hover: "hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-300",
+    },
+  };
+
+  const colors = colorClasses[option.color] || colorClasses.amber;
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(option.value)}
+      className={`
+        w-full p-4 rounded-xl border-2 transition-all duration-200 text-left
+        flex items-center gap-3
+        ${isSelected
+          ? colors.selected
+          : `border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 ${colors.hover}`
+        }
+      `}
+    >
+      <span className="text-2xl">{option.emoji}</span>
+      <span className={`font-medium ${isSelected ? "text-gray-800 dark:text-white" : "text-gray-600 dark:text-gray-300"}`}>
+        {option.label}
+      </span>
+      {isSelected && (
+        <svg className="w-5 h-5 ml-auto text-green-500" fill="currentColor" viewBox="0 0 20 20">
+          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+        </svg>
+      )}
+    </button>
+  );
+};
+
+// Star Rating Component
+const StarRating = ({ value, onChange, labels }) => {
+  const [hoverValue, setHoverValue] = useState(0);
+
+  return (
+    <div className="text-center">
+      <div className="flex justify-center gap-2 mb-4">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            type="button"
+            onClick={() => onChange(star)}
+            onMouseEnter={() => setHoverValue(star)}
+            onMouseLeave={() => setHoverValue(0)}
+            className="transition-transform duration-200 hover:scale-110 focus:outline-none focus:scale-110"
+          >
+            <svg
+              className={`w-12 h-12 md:w-14 md:h-14 transition-colors duration-200 ${
+                (hoverValue || value) >= star
+                  ? "text-yellow-400 fill-yellow-400"
+                  : "text-gray-300 dark:text-gray-600"
+              }`}
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+          </button>
+        ))}
+      </div>
+      
+      {/* Label indicator */}
+      <div className="h-8">
+        {(hoverValue || value) > 0 && (
+          <span className={`
+            inline-block px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-200
+            ${(hoverValue || value) >= 4 
+              ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+              : (hoverValue || value) >= 3
+                ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+            }
+          `}>
+            {labels[(hoverValue || value) - 1]}
+          </span>
+        )}
+      </div>
+
+      {/* Star scale labels */}
+      <div className="flex justify-between mt-2 px-2 text-xs text-gray-400">
+        <span>1</span>
+        <span>2</span>
+        <span>3</span>
+        <span>4</span>
+        <span>5</span>
+      </div>
+    </div>
+  );
+};
+
+// Textarea Component
+const TextareaInput = ({ value, onChange, placeholder }) => {
+  const maxLength = 500;
+  const charCount = value?.length || 0;
+
+  return (
+    <div>
+      <textarea
+        value={value || ""}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        maxLength={maxLength}
+        rows={4}
+        className="
+          w-full p-4 rounded-xl border-2 border-gray-200 dark:border-gray-600
+          bg-gray-50 dark:bg-gray-700/50
+          text-gray-800 dark:text-white
+          placeholder-gray-400 dark:placeholder-gray-500
+          focus:border-blue-400 dark:focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900
+          transition-all duration-200 resize-none
+        "
+      />
+      <div className="flex justify-end mt-2">
+        <span className={`text-xs ${charCount > maxLength * 0.8 ? "text-amber-500" : "text-gray-400"}`}>
+          {charCount}/{maxLength} caracteres
+        </span>
+      </div>
+    </div>
+  );
+};
+
+// Success Screen
+const SuccessScreen = () => {
+  return (
+    <div className="text-center py-12 animate-fadeIn">
+      <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center shadow-xl">
+        <span className="text-5xl">🎉</span>
+      </div>
+      <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-3">
+        ¡Gracias por tu opinión!
+      </h2>
+      <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">
+        Tu feedback nos ayuda a mejorar SOVIO para ti y para todos los usuarios.
+      </p>
+      <a
+        href="/home"
+        className="
+          inline-flex items-center gap-2 px-8 py-4 
+          bg-gradient-to-r from-blue-500 to-blue-600 text-white
+          font-bold rounded-xl shadow-lg
+          hover:shadow-xl transition-all duration-300 transform hover:scale-105
+        "
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+        Volver al Inicio
+      </a>
+    </div>
+  );
+};
+
+// ============================================
+// MAIN COMPONENT
+// ============================================
 
 const AssessmentSurvey = () => {
   const { createAssessmentSurvey, errors } = useAssessmentSurveys();
-
   const navigate = useNavigate();
 
-  const [assessmentSurvey, setAssesmentSurvey] = useState({
+  const [assessmentSurvey, setAssessmentSurvey] = useState({
     navigationDifficulty: null,
     appereanceRating: null,
     satisfactionRating: null,
@@ -18,525 +340,303 @@ const AssessmentSurvey = () => {
     rating: 0,
   });
 
-  const [starError, setStarError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({});
 
-  const handleAssessmentSurveyChange = (e) => {
-    const { name, value } = e.target;
-    setAssesmentSurvey({
-      ...assessmentSurvey,
-      [name]: value,
-    });
+  // Calculate progress
+  const answeredCount = useMemo(() => {
+    let count = 0;
+    if (assessmentSurvey.navigationDifficulty) count++;
+    if (assessmentSurvey.appereanceRating) count++;
+    if (assessmentSurvey.satisfactionRating) count++;
+    if (assessmentSurvey.recommendationToOthers) count++;
+    if (assessmentSurvey.comments?.trim()) count++;
+    if (assessmentSurvey.rating > 0) count++;
+    return count;
+  }, [assessmentSurvey]);
+
+  const handleChange = (field, value) => {
+    setAssessmentSurvey((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+    // Clear validation error for this field
+    if (validationErrors[field]) {
+      setValidationErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
   };
 
-  const handleStarAssessmentSurveyChange = (value) => {
-    setAssesmentSurvey({
-      ...assessmentSurvey,
-      rating: value,
-    });
+  const validateForm = () => {
+    const errors = {};
+    
+    if (!assessmentSurvey.navigationDifficulty) {
+      errors.navigationDifficulty = "Por favor, responde esta pregunta";
+    }
+    if (!assessmentSurvey.appereanceRating) {
+      errors.appereanceRating = "Por favor, responde esta pregunta";
+    }
+    if (!assessmentSurvey.satisfactionRating) {
+      errors.satisfactionRating = "Por favor, responde esta pregunta";
+    }
+    if (!assessmentSurvey.recommendationToOthers) {
+      errors.recommendationToOthers = "Por favor, responde esta pregunta";
+    }
+    if (assessmentSurvey.rating === 0) {
+      errors.rating = "Por favor, califica nuestra plataforma";
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (assessmentSurvey.rating === 0) {
-      setStarError("Por favor, califique nuestra plataforma");
+    
+    if (!validateForm()) {
+      // Scroll to first error
+      const firstErrorField = Object.keys(validationErrors)[0];
+      const element = document.getElementById(`question-${firstErrorField}`);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
       return;
     }
 
-    const res = await createAssessmentSurvey(assessmentSurvey);
-    if (res) navigate("/home");
+    setIsSubmitting(true);
+    
+    try {
+      const res = await createAssessmentSurvey(assessmentSurvey);
+      if (res) {
+        setIsSubmitted(true);
+      }
+    } catch (error) {
+      console.error("Error submitting survey:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
   useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
-  // clear errors after 5 seconds
-  useEffect(() => {
-    if (starError) {
-      const timer = setTimeout(() => {
-        setStarError(null);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [starError]);
+  // Render success screen after submission
+  if (isSubmitted) {
+    return (
+      <section className="bg-gray-50 dark:bg-gray-900 min-h-screen py-8 px-4">
+        <div className="max-w-2xl mx-auto mt-16">
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-8">
+            <SuccessScreen />
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <section className="bg-gray-50 dark:bg-gray-900 w-full h-full relative pb-[110px] pt-[120px] lg:pt-[100px] lg:p-9">
-      <form
-        onSubmit={handleSubmit}
-        className="dark:bg-gray-800 lg:p-10 p-5 relative bg-white rounded-lg shadow dark:border dark:border-gray-700"
-      >
-        <h1 className="font-extrabold text-4xl text-blue-700 text-center">
-          Encuesta de valoración de plataforma sovio.com
-        </h1>
-        <p className="text-lg font-normal text-gray-800 lg:text-xl dark:text-gray-400 text-justify mb-5">
-          Hola, por favor, invierte unos pocos minutos de tu tiempo para
-          rellenar el siguiente cuestionario. Esta información nos servirá para seguir mejorando.
-        </p>
-        <div>
-          <p className="text-lg font-bold text-gray-500 lg:text-xl dark:text-gray-400 text-justify mt-10">
-            1. ¿Cómo de difícil te resulta la navegación por la plataforma?
-          </p>
-          <div className="flex items-center mb-4">
-            <input
-              id="Muy sencilla"
-              type="radio"
-              checked={assessmentSurvey.navigationDifficulty === "Muy sencilla"}
-              onChange={handleAssessmentSurveyChange}
-              value="Muy sencilla"
-              name="navigationDifficulty"
-              className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              required
-            />
-            <label
-              htmlFor="Muy sencilla"
-              className="ms-2 font-normal text-gray-900 dark:text-gray-300"
-            >
-              Muy sencilla
-            </label>
-          </div>
-          <div className="flex items-center mb-4">
-            <input
-              id="Relativamente sencilla"
-              type="radio"
-              checked={
-                assessmentSurvey.navigationDifficulty ===
-                "Relativamente sencilla"
-              }
-              onChange={handleAssessmentSurveyChange}
-              value="Relativamente sencilla"
-              name="navigationDifficulty"
-              className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              required
-            />
-            <label
-              htmlFor="Relativamente sencilla"
-              className="ms-2 font-normal text-gray-900 dark:text-gray-300"
-            >
-              Relativamente sencilla
-            </label>
-          </div>
-          <div className="flex items-center mb-4">
-            <input
-              id="Normal"
-              type="radio"
-              checked={assessmentSurvey.navigationDifficulty === "Normal"}
-              onChange={handleAssessmentSurveyChange}
-              value="Normal"
-              name="navigationDifficulty"
-              className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              required
-            />
-            <label
-              htmlFor="Normal"
-              className="ms-2 font-normal text-gray-900 dark:text-gray-300"
-            >
-              Normal
-            </label>
-          </div>
-          <div className="flex items-center mb-4">
-            <input
-              id="Algo compleja"
-              type="radio"
-              checked={
-                assessmentSurvey.navigationDifficulty === "Algo compleja"
-              }
-              onChange={handleAssessmentSurveyChange}
-              value="Algo compleja"
-              name="navigationDifficulty"
-              className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              required
-            />
-            <label
-              htmlFor="Algo compleja"
-              className="ms-2 font-normal text-gray-900 dark:text-gray-300"
-            >
-              Algo compleja
-            </label>
-          </div>
-          <div className="flex items-center mb-4">
-            <input
-              id="Muy compleja"
-              type="radio"
-              checked={assessmentSurvey.navigationDifficulty === "Muy compleja"}
-              onChange={handleAssessmentSurveyChange}
-              value="Muy compleja"
-              name="navigationDifficulty"
-              className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              required
-            />
-            <label
-              htmlFor="Muy compleja"
-              className="ms-2 font-normal text-gray-900 dark:text-gray-300"
-            >
-              Muy compleja
-            </label>
-          </div>
-        </div>
-        <div>
-          <p className="text-lg font-bold text-gray-500 lg:text-xl dark:text-gray-400 text-justify mt-10">
-            2. ¿Cómo valoras el aspecto de nuestra plataforma?
-          </p>
-          <div className="flex items-center mb-4">
-            <input
-              id="Muy bueno"
-              type="radio"
-              checked={assessmentSurvey.appereanceRating === "Muy bueno"}
-              onChange={handleAssessmentSurveyChange}
-              value="Muy bueno"
-              name="appereanceRating"
-              className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              required
-            />
-            <label
-              htmlFor="Muy bueno"
-              className="ms-2 font-normal text-gray-900 dark:text-gray-300"
-            >
-              Muy bueno
-            </label>
-          </div>
-          <div className="flex items-center mb-4">
-            <input
-              id="Normal-appearance"
-              type="radio"
-              checked={assessmentSurvey.appereanceRating === "Normal"}
-              onChange={handleAssessmentSurveyChange}
-              value="Normal"
-              name="appereanceRating"
-              className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              required
-            />
-            <label
-              htmlFor="Normal-appearance"
-              className="ms-2 font-normal text-gray-900 dark:text-gray-300"
-            >
-              Normal
-            </label>
-          </div>
-          <div className="flex items-center mb-4">
-            <input
-              id="Peor que la media"
-              type="radio"
-              checked={
-                assessmentSurvey.appereanceRating === "Peor que la media"
-              }
-              onChange={handleAssessmentSurveyChange}
-              value="Peor que la media"
-              name="appereanceRating"
-              className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              required
-            />
-            <label
-              htmlFor="Peor que la media"
-              className="ms-2 font-normal text-gray-900 dark:text-gray-300"
-            >
-              Peor que la media
-            </label>
-          </div>
-          <div className="flex items-center mb-4">
-            <input
-              id="No me gusta nada"
-              type="radio"
-              checked={assessmentSurvey.appereanceRating === "No me gusta nada"}
-              onChange={handleAssessmentSurveyChange}
-              value="No me gusta nada"
-              name="appereanceRating"
-              className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              required
-            />
-            <label
-              htmlFor="No me gusta nada"
-              className="ms-2 font-normal text-gray-900 dark:text-gray-300"
-            >
-              No me gusta nada
-            </label>
-          </div>
-        </div>
-        <div>
-          <p className="text-lg font-bold text-gray-500 lg:text-xl dark:text-gray-400 text-justify mt-10">
-            3. ¿Cómo de satisfecho/a estás con nuestra plataforma?
-          </p>
-          <div className="flex items-center mb-4">
-            <input
-              id="Muy satisfecho/a"
-              type="radio"
-              checked={
-                assessmentSurvey.satisfactionRating === "Muy satisfecho/a"
-              }
-              onChange={handleAssessmentSurveyChange}
-              value="Muy satisfecho/a"
-              name="satisfactionRating"
-              className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              required
-            />
-            <label
-              htmlFor="Muy satisfecho/a"
-              className="ms-2 font-normal text-gray-900 dark:text-gray-300"
-            >
-              Muy satisfecho/a
-            </label>
-          </div>
-          <div className="flex items-center mb-4">
-            <input
-              id="Satisfecho/a"
-              type="radio"
-              checked={assessmentSurvey.satisfactionRating === "Satisfecho/a"}
-              onChange={handleAssessmentSurveyChange}
-              value="Satisfecho/a"
-              name="satisfactionRating"
-              className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              required
-            />
-            <label
-              htmlFor="Satisfecho/a"
-              className="ms-2 font-normal text-gray-900 dark:text-gray-300"
-            >
-              Satisfecho/a
-            </label>
-          </div>
-          <div className="flex items-center mb-4">
-            <input
-              id="Medianamente satisfecho/a"
-              type="radio"
-              checked={
-                assessmentSurvey.satisfactionRating ===
-                "Medianamente satisfecho/a"
-              }
-              onChange={handleAssessmentSurveyChange}
-              value="Medianamente satisfecho/a"
-              name="satisfactionRating"
-              className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              required
-            />
-            <label
-              htmlFor="Medianamente satisfecho/a"
-              className="ms-2 font-normal text-gray-900 dark:text-gray-300"
-            >
-              Medianamente satisfecho/a
-            </label>
-          </div>
-          <div className="flex items-center mb-4">
-            <input
-              id="Insatisfecho/a"
-              type="radio"
-              checked={assessmentSurvey.satisfactionRating === "Insatisfecho/a"}
-              onChange={handleAssessmentSurveyChange}
-              value="Insatisfecho/a"
-              name="satisfactionRating"
-              className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              required
-            />
-            <label
-              htmlFor="Insatisfecho/a"
-              className="ms-2 font-normal text-gray-900 dark:text-gray-300"
-            >
-              Insatisfecho/a
-            </label>
-          </div>
-          <div className="flex items-center mb-4">
-            <input
-              id="Muy insatisfecho/a"
-              type="radio"
-              checked={
-                assessmentSurvey.satisfactionRating === "Muy insatisfecho/a"
-              }
-              onChange={handleAssessmentSurveyChange}
-              value="Muy insatisfecho/a"
-              name="satisfactionRating"
-              className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              required
-            />
-            <label
-              htmlFor="Muy insatisfecho/a"
-              className="ms-2 font-normal text-gray-900 dark:text-gray-300"
-            >
-              Muy insatisfecho/a
-            </label>
-          </div>
-        </div>
-        <div>
-          <p className="text-lg font-bold text-gray-500 lg:text-xl dark:text-gray-400 text-justify mt-10">
-            4. ¿Recomendarías nuestra plataforma a otras personas?
-          </p>
-          <div className="flex items-center mb-4">
-            <input
-              id="Sí, definitivamente"
-              type="radio"
-              checked={
-                assessmentSurvey.recommendationToOthers ===
-                "Sí, definitivamente"
-              }
-              onChange={handleAssessmentSurveyChange}
-              value="Sí, definitivamente"
-              name="recommendationToOthers"
-              className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              required
-            />
-            <label
-              htmlFor="Sí, definitivamente"
-              className="ms-2 font-normal text-gray-900 dark:text-gray-300"
-            >
-              Sí, definitivamente
-            </label>
-          </div>
-          <div className="flex items-center mb-4">
-            <input
-              id="Probablemente sí"
-              type="radio"
-              checked={
-                assessmentSurvey.recommendationToOthers === "Probablemente sí"
-              }
-              onChange={handleAssessmentSurveyChange}
-              value="Probablemente sí"
-              name="recommendationToOthers"
-              className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              required
-            />
-            <label
-              htmlFor="Probablemente sí"
-              className="ms-2 font-normal text-gray-900 dark:text-gray-300"
-            >
-              Probablemente sí
-            </label>
-          </div>
-          <div className="flex items-center mb-4">
-            <input
-              id="No lo sé"
-              type="radio"
-              checked={assessmentSurvey.recommendationToOthers === "No lo sé"}
-              onChange={handleAssessmentSurveyChange}
-              value="No lo sé"
-              name="recommendationToOthers"
-              className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              required
-            />
-            <label
-              htmlFor="No lo sé"
-              className="ms-2 font-normal text-gray-900 dark:text-gray-300"
-            >
-              No lo sé
-            </label>
-          </div>
-          <div className="flex items-center mb-4">
-            <input
-              id="Probablemente no"
-              type="radio"
-              checked={
-                assessmentSurvey.recommendationToOthers === "Probablemente no"
-              }
-              onChange={handleAssessmentSurveyChange}
-              value="Probablemente no"
-              name="recommendationToOthers"
-              className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              required
-            />
-            <label
-              htmlFor="Probablemente no"
-              className="ms-2 font-normal text-gray-900 dark:text-gray-300"
-            >
-              Probablemente no
-            </label>
-          </div>
-          <div className="flex items-center mb-4">
-            <input
-              id="No, para nada"
-              type="radio"
-              checked={
-                assessmentSurvey.recommendationToOthers === "No, para nada"
-              }
-              onChange={handleAssessmentSurveyChange}
-              value="No, para nada"
-              name="recommendationToOthers"
-              className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              required
-            />
-            <label
-              htmlFor="No, para nada"
-              className="ms-2 font-normal text-gray-900 dark:text-gray-300"
-            >
-              No, para nada
-            </label>
-          </div>
-        </div>
-        <div>
-          <p className="text-lg font-bold text-gray-500 lg:text-xl dark:text-gray-400 text-justify mt-10">
-            5. Dejanos tus comentarios y/o recomendaciones
-          </p>
-          <textarea
-            className="bg-white border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            name="comments"
-            value={assessmentSurvey.comments}
-            onChange={handleAssessmentSurveyChange}
-            required
-          />
-        </div>
-        <div>
-          <p className="text-lg font-bold text-gray-500 lg:text-xl dark:text-gray-400 text-justify mt-10">
-            6. Calificación
-          </p>
-          <div className="flex flex-row w-full text-yellow-500">
-            {[1, 2, 3, 4, 5].map((value) => (
-              <button
-                key={value}
-                type="button"
-                name="rating"
-                value={value}
-                onClick={() => handleStarAssessmentSurveyChange(value)}
-                className="cursor-pointer mr-5"
-              >
-                {assessmentSurvey.rating >= value ? (
-                  <FaStar size={40} />
-                ) : (
-                  <FaRegStar size={40} />
-                )}
-              </button>
-            ))}
-          </div>
-          {starError && (
-            <div className="mt-4 p-2 border rounded-md bg-white border-gray-500 inline-flex items-center text-sm">
-              <TbAlertSquareFilled size={30} color="#ff8c00" />
-              <p>{starError}</p>
+    <>
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn { animation: fadeIn 0.4s ease-out; }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+        .animate-shake { animation: shake 0.3s ease-in-out; }
+      `}</style>
+
+      <section className="bg-gray-50 dark:bg-gray-900 min-h-screen py-8 px-4">
+        <div className="max-w-2xl mx-auto mt-16">
+          
+          {/* Header Card */}
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-8 mb-6 text-white shadow-xl">
+            <div className="flex items-center justify-center mb-4">
+              <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+                <span className="text-4xl">📋</span>
+              </div>
             </div>
-          )}
-        </div>
-        {errors.map((error, i) => (
-          <p
-            key={i}
-            className="w-full text-white bg-red-500 mb-1 font-medium rounded-lg text-sm px-5 py-2.5"
-          >
-            {error}
+            <h1 className="text-2xl md:text-3xl font-bold text-center mb-3">
+              Encuesta de Valoración
+            </h1>
+            <p className="text-blue-100 text-center max-w-md mx-auto">
+              Tu opinión es muy importante para nosotros. Ayúdanos a mejorar SOVIO respondiendo esta breve encuesta.
+            </p>
+            <div className="flex items-center justify-center gap-2 mt-4 text-sm text-blue-200">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>~2 minutos para completar</span>
+            </div>
+          </div>
+
+          {/* Main Form Card */}
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-6 md:p-8">
+            
+            {/* Progress Bar */}
+            <ProgressBar 
+              current={0} 
+              total={SURVEY_QUESTIONS.length} 
+              answeredCount={answeredCount} 
+            />
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              
+              {/* Questions */}
+              {SURVEY_QUESTIONS.map((q, index) => {
+                const isAnswered = q.type === "stars" 
+                  ? assessmentSurvey.rating > 0
+                  : q.type === "textarea"
+                    ? assessmentSurvey.comments?.trim()
+                    : assessmentSurvey[q.id];
+
+                return (
+                  <div 
+                    key={q.id} 
+                    id={`question-${q.id}`}
+                    className={validationErrors[q.id] ? "animate-shake" : ""}
+                  >
+                    <QuestionCard
+                      number={index + 1}
+                      icon={q.icon}
+                      question={q.question}
+                      isAnswered={!!isAnswered}
+                      isOptional={q.optional}
+                    >
+                      {/* Scale type questions */}
+                      {q.type === "scale" && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {q.options.map((option) => (
+                            <ScaleOptionButton
+                              key={option.value}
+                              option={option}
+                              isSelected={assessmentSurvey[q.id] === option.value}
+                              onSelect={(value) => handleChange(q.id, value)}
+                            />
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Textarea type */}
+                      {q.type === "textarea" && (
+                        <TextareaInput
+                          value={assessmentSurvey.comments}
+                          onChange={(value) => handleChange("comments", value)}
+                          placeholder={q.placeholder}
+                        />
+                      )}
+
+                      {/* Star rating type */}
+                      {q.type === "stars" && (
+                        <StarRating
+                          value={assessmentSurvey.rating}
+                          onChange={(value) => handleChange("rating", value)}
+                          labels={q.labels}
+                        />
+                      )}
+
+                      {/* Validation error */}
+                      {validationErrors[q.id] && (
+                        <div className="mt-3 flex items-center gap-2 text-red-500 text-sm">
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                          </svg>
+                          {validationErrors[q.id]}
+                        </div>
+                      )}
+                    </QuestionCard>
+                  </div>
+                );
+              })}
+
+              {/* Server Errors */}
+              {errors?.length > 0 && (
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
+                  {errors.map((error, i) => (
+                    <p key={i} className="text-red-600 dark:text-red-400 text-sm">
+                      {error}
+                    </p>
+                  ))}
+                </div>
+              )}
+
+              {/* Submit Section */}
+              <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className={`
+                      flex items-center justify-center gap-3 px-8 py-4
+                      bg-gradient-to-r from-blue-500 to-blue-600 text-white
+                      font-bold text-lg rounded-xl shadow-lg
+                      transition-all duration-300
+                      ${isSubmitting 
+                        ? "opacity-70 cursor-not-allowed" 
+                        : "hover:shadow-xl hover:scale-105"
+                      }
+                    `}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                        Enviando...
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </svg>
+                        Enviar Encuesta
+                      </>
+                    )}
+                  </button>
+
+                  <a
+                    href="/main"
+                    className="
+                      flex items-center justify-center gap-2 px-6 py-4
+                      bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300
+                      font-semibold rounded-xl
+                      hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-300
+                    "
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Cancelar
+                  </a>
+                </div>
+
+                {/* Completion hint */}
+                {answeredCount < 5 && (
+                  <p className="text-center text-sm text-gray-400 mt-4">
+                    Responde al menos las 4 preguntas obligatorias y la calificación para enviar
+                  </p>
+                )}
+              </div>
+            </form>
+          </div>
+
+          {/* Footer */}
+          <p className="text-center text-xs text-gray-400 dark:text-gray-500 mt-6">
+            Tu respuesta es anónima y nos ayuda a mejorar la plataforma.
           </p>
-        ))}
-        <div className="w-full text-center">
-          <button
-            type="submit"
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 flex flex-row mx-auto items-center justify-center mt-20"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-6 h-6 mr-3"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
-              />
-            </svg>
-            ENVIAR
-          </button>
         </div>
-      </form>
-      <button onClick={() => console.log(errors)}>
-        {" "}
-        gaaaaaaaaaaaaaaaaaaaa
-      </button>
-    </section>
+      </section>
+    </>
   );
 };
+
 export default AssessmentSurvey;

@@ -192,7 +192,7 @@ const Register = () => {
       navigate("/main");
     }
   }, [isAuthenticated, navigate]);
-  
+
   useEffect(() => {
     if (registerErrors.length > 0) {
       registerErrors.forEach((error) => toast.error(error));
@@ -481,30 +481,6 @@ const Register = () => {
                           name="names"
                           id="names"
                           {...register("names")}
-                          onInput={(e) => {
-                            let value = e.target.value;
-
-                            // Permite letras y espacios, elimina otros caracteres
-                            value = value.replace(
-                              /[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g,
-                              ""
-                            );
-
-                            value = value.replace(/\s{2,}/g, " ");
-
-                            // Capitaliza cada palabra sin eliminar espacio al final si el usuario está escribiendo
-                            value = value
-                              .split(" ")
-                              .map((word) =>
-                                word
-                                  ? word.charAt(0).toUpperCase() +
-                                    word.slice(1).toLowerCase()
-                                  : ""
-                              )
-                              .join(" ");
-
-                            e.target.value = value;
-                          }}
                           className={`bg-gray-50 border text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:placeholder:text-gray-400 dark:text-white ${
                             errors.names
                               ? "border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-500"
@@ -535,30 +511,6 @@ const Register = () => {
                           name="surnames"
                           id="surnames"
                           {...register("surnames")}
-                          onInput={(e) => {
-                            let value = e.target.value;
-
-                            // Permite letras y espacios, elimina otros caracteres
-                            value = value.replace(
-                              /[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g,
-                              ""
-                            );
-
-                            value = value.replace(/\s{2,}/g, " ");
-
-                            // Capitaliza cada palabra sin eliminar espacio al final si el usuario está escribiendo
-                            value = value
-                              .split(" ")
-                              .map((word) =>
-                                word
-                                  ? word.charAt(0).toUpperCase() +
-                                    word.slice(1).toLowerCase()
-                                  : ""
-                              )
-                              .join(" ");
-
-                            e.target.value = value;
-                          }}
                           className={`bg-gray-50 border text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:placeholder:text-gray-400 dark:text-white ${
                             errors.surnames
                               ? "border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-500"
