@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../context/authContext";
@@ -7,34 +7,65 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "../schemas/authSchema";
-import { FaArrowLeft, FaEye, FaEyeSlash } from "react-icons/fa6";
+import { FaArrowLeft, FaEye, FaEyeSlash, FaCheck, FaCircleExclamation } from "react-icons/fa6";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [focusedField, setFocusedField] = useState(null);
+  const [loginAttempts, setLoginAttempts] = useState(0);
+  const identifierRef = useRef(null);
+  
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    watch,
+    formState: { errors, dirtyFields, isValid },
   } = useForm({
     resolver: zodResolver(loginSchema),
+    mode: "onChange", // Validación en tiempo real para feedback inmediato
   });
+  
   const { signin, errors: loginErrors, isAuthenticated } = useAuth();
   const { getRecaptchaToken } = useRecaptcha();
   const navigate = useNavigate();
+
+  // Valores observados para feedback visual en tiempo real
+  const identifierValue = watch("identifier");
+  const passwordValue = watch("password");
+
+  // HCI: Autofocus en el primer campo al cargar (eficiencia)
+  useEffect(() => {
+    if (identifierRef.current) {
+      identifierRef.current.focus();
+    }
+  }, []);
 
   const onSubmit = async (data) => {
     try {
       setLoading(true);
       const recaptchaToken = await getRecaptchaToken("login_form");
-      const res = await signin({ ...data, recaptchaToken: recaptchaToken });
-      setLoading(false);
+      const res = await signin({ ...data, recaptchaToken });
+      
       if (res) {
-        toast.success("Inicio de sesión exitoso");
+        // HCI: Feedback positivo claro con mensaje específico
+        toast.success("¡Bienvenido! Redirigiendo al panel principal...", {
+          icon: "👋",
+          autoClose: 2000,
+        });
       }
     } catch (error) {
-      toast.error("Error al iniciar sesión");
-      throw error;
+      setLoginAttempts(prev => prev + 1);
+      
+      // HCI: Mensajes de error constructivos y específicos
+      if (loginAttempts >= 2) {
+        toast.error(
+          "Múltiples intentos fallidos. ¿Olvidaste tu contraseña?",
+          { autoClose: 5000 }
+        );
+      } else {
+        toast.error("Credenciales incorrectas. Verifica tus datos e intenta nuevamente.");
+      }
     } finally {
       setLoading(false);
     }
@@ -51,158 +82,468 @@ const Login = () => {
       loginErrors.forEach((error) => toast.error(error));
     }
   }, [loginErrors]);
+
+  // HCI: Función para determinar el estado visual del campo
+  const getFieldStatus = (fieldName, errorObj, dirtyObj, value) => {
+    if (!dirtyObj[fieldName]) return "neutral";
+    if (errorObj[fieldName]) return "error";
+    if (value && value.length > 0) return "valid";
+    return "neutral";
+  };
+
+  const identifierStatus = getFieldStatus("identifier", errors, dirtyFields, identifierValue);
+  const passwordStatus = getFieldStatus("password", errors, dirtyFields, passwordValue);
+
+  // HCI: Clases dinámicas según estado del campo
+  const getInputClasses = (status, isFocused) => {
+    const baseClasses = `
+      w-full px-4 py-3.5 
+      text-gray-900 dark:text-white 
+      bg-white dark:bg-gray-800
+      border-2 rounded-xl
+      text-base
+      transition-all duration-300 ease-out
+      placeholder:text-gray-400 dark:placeholder:text-gray-500
+      outline-none
+    `;
+    
+    const statusClasses = {
+      neutral: `
+        border-gray-200 dark:border-gray-600
+        ${isFocused 
+          ? "border-blue-500 dark:border-blue-400 ring-4 ring-blue-500/10 dark:ring-blue-400/10" 
+          : "hover:border-gray-300 dark:hover:border-gray-500"
+        }
+      `,
+      error: `
+        border-red-400 dark:border-red-500
+        ${isFocused 
+          ? "ring-4 ring-red-500/10 dark:ring-red-400/10" 
+          : ""
+        }
+        bg-red-50/50 dark:bg-red-900/10
+      `,
+      valid: `
+        border-emerald-400 dark:border-emerald-500
+        ${isFocused 
+          ? "ring-4 ring-emerald-500/10 dark:ring-emerald-400/10" 
+          : ""
+        }
+        bg-emerald-50/30 dark:bg-emerald-900/10
+      `,
+    };
+
+    return `${baseClasses} ${statusClasses[status]}`;
+  };
+
+  // HCI: Indicador visual del estado del campo
+  const FieldStatusIcon = ({ status }) => {
+    if (status === "valid") {
+      return (
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500 animate-scale-in">
+          <FaCheck className="w-4 h-4" />
+        </span>
+      );
+    }
+    if (status === "error") {
+      return (
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500 animate-shake">
+          <FaCircleExclamation className="w-4 h-4" />
+        </span>
+      );
+    }
+    return null;
+  };
+
   return (
-    <section className="bg-gray-50 dark:bg-gray-900 h-screen">
+    <section className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 relative overflow-hidden">
+      {/* Fondo decorativo con formas geométricas sutiles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-400/10 dark:bg-blue-500/5 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-indigo-400/10 dark:bg-indigo-500/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-blue-200/20 to-purple-200/20 dark:from-blue-800/10 dark:to-purple-800/10 rounded-full blur-3xl" />
+      </div>
+
+      {/* HCI: Navegación clara con affordance visible */}
       <Link
         to="/"
-        className="absolute top-4 left-4 inline-flex items-center justify-center px-5 py-3 text-base font-bold text-center text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-800"
+        className="
+          uppercase absolute top-6 left-6 z-10
+          inline-flex items-center gap-2
+          px-4 py-2.5
+          text-sm font-bold
+          text-gray-700 dark:text-gray-200
+          bg-white/80 dark:bg-gray-800/80
+          backdrop-blur-sm
+          border border-gray-200 dark:border-gray-700
+          rounded-xl
+          shadow-sm
+          transition-all duration-300
+          hover:bg-white dark:hover:bg-gray-800
+          hover:shadow-md
+          hover:-translate-x-1
+          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+          group
+        "
+        aria-label="Volver a la página de inicio"
       >
-        <FaArrowLeft className="w-4 h-4 sm:mr-2" />
-        <span className="hidden sm:inline">VOLVER A INICIO</span>
+        <FaArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
+        <span className="hidden sm:inline">Volver al inicio</span>
       </Link>
-      <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto h-screen lg:py-0">
-        <a
-          href="/"
-          className="flex items-center justify-center space-x-2 md:space-x-4 mb-6"
+
+      <div className="relative flex flex-col items-center justify-center min-h-screen px-4 py-12">
+        {/* Logo y branding */}
+        <div className="mb-8 text-center animate-fade-in-down">
+          <a
+            href="/"
+            className="inline-flex flex-col items-center gap-4 group"
+            aria-label="Ir a página principal"
+          >
+            <div className="relative">
+              <img
+                src="./Logo GORE_Nuevo_negativo_vertical.png"
+                className="h-20 w-auto hidden dark:block transition-transform duration-300 group-hover:scale-105"
+                alt="Logo del Gobierno Regional de Cusco"
+              />
+              <img
+                src="./Logo GORE_Nuevo_positivo_vertical.png"
+                className="h-20 w-auto block dark:hidden transition-transform duration-300 group-hover:scale-105"
+                alt="Logo del Gobierno Regional de Cusco"
+              />
+            </div>
+            <div className="text-center">
+              <p className="font-semibold text-xs tracking-wider text-gray-600 dark:text-gray-300 uppercase">
+                Gerencia Regional de Trabajo
+              </p>
+              <p className="text-[10px] tracking-wide text-gray-500 dark:text-gray-400 uppercase">
+                y Promoción del Empleo Cusco
+              </p>
+            </div>
+          </a>
+        </div>
+
+        {/* Card principal del formulario */}
+        <div 
+          className="
+            w-full max-w-md
+            bg-white/90 dark:bg-gray-800/90
+            backdrop-blur-xl
+            rounded-3xl
+            shadow-xl shadow-gray-200/50 dark:shadow-none
+            border border-gray-100 dark:border-gray-700
+            p-8 sm:p-10
+            animate-fade-in-up
+          "
+          role="main"
         >
-          <img
-            src={"./Logo GORE_Nuevo_negativo_vertical.png"}
-            className="h-16 w-auto hidden dark:block"
-            alt="Logo GORE Cusco"
-          />
-          <img
-            src={"./Logo GORE_Nuevo_positivo_vertical.png"}
-            className="h-16 w-auto block dark:hidden"
-            alt="Logo GORE Cusco"
-          />
-          <span className="font-arima text-[6px] md:text-[8px] font-extrabold text-center dark:text-white">
-            GERENCIA REGIONAL DE TRABAJO
-            <br />Y PROMOCIÓN DEL EMPLEO CUSCO
-          </span>
-        </a>
-        <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-          <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-            <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-              Inicia sesión en tu cuenta
+          {/* HCI: Título claro con jerarquía visual */}
+          <div className="text-center mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              Bienvenido de nuevo
             </h1>
-            <form
-              className="space-y-4 md:space-y-6"
-              onSubmit={handleSubmit(onSubmit)}
-            >
-              <div>
-                <label
-                  htmlFor="identifier"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  <span>N° de documento de identidad o correo electrónico</span>
-                  <span className="mt-2 text-sm text-red-600 dark:text-red-500 font-bold">
-                    {" "}
-                    *
-                  </span>
-                </label>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">
+              Ingresa tus credenciales para acceder al sistema
+            </p>
+          </div>
+
+          <form
+            className="space-y-6"
+            onSubmit={handleSubmit(onSubmit)}
+            noValidate // Usamos validación personalizada
+          >
+            {/* Campo de identificador */}
+            <div className="space-y-2">
+              <label
+                htmlFor="identifier"
+                className="flex items-center justify-between text-sm font-medium text-gray-700 dark:text-gray-200"
+              >
+                <span className="flex items-center gap-1">
+                  Documento o correo electrónico
+                  <span className="text-red-500" aria-hidden="true">*</span>
+                </span>
+                {/* HCI: Indicador de campo requerido para lectores de pantalla */}
+                <span className="sr-only">(campo requerido)</span>
+              </label>
+              
+              <div className="relative">
                 <input
                   type="text"
-                  name="identifier"
                   id="identifier"
+                  autoComplete="username"
+                  aria-required="true"
+                  aria-invalid={errors.identifier ? "true" : "false"}
+                  aria-describedby={errors.identifier ? "identifier-error" : "identifier-hint"}
                   {...register("identifier")}
-                  className={`bg-gray-50 border text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:placeholder:text-gray-400 dark:text-white ${
-                    errors.identifier
-                      ? "border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-500"
-                      : "bg-gray-50 border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  }`}
-                  placeholder="Ej. 74###### o correo@ejemplo.com"
+                  ref={(e) => {
+                    register("identifier").ref(e);
+                    identifierRef.current = e;
+                  }}
+                  onFocus={() => setFocusedField("identifier")}
+                  onBlur={() => setFocusedField(null)}
+                  className={`${getInputClasses(identifierStatus, focusedField === "identifier")} ${identifierStatus !== "neutral" ? "pr-10" : ""}`}
+                  placeholder="Ej: 72345678 o correo@ejemplo.com"
                 />
-                {errors.identifier?.message && (
-                  <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                    {errors.identifier?.message}
-                  </p>
-                )}
+                {identifierStatus !== "neutral" && <FieldStatusIcon status={identifierStatus} />}
               </div>
-              <div>
+              
+              {/* HCI: Texto de ayuda contextual */}
+              {!errors.identifier && (
+                <p id="identifier-hint" className="text-xs text-gray-500 dark:text-gray-400 mt-1.5 ml-1">
+                  Puedes usar tu DNI, CE o tu correo registrado
+                </p>
+              )}
+              
+              {/* HCI: Mensaje de error claro y constructivo */}
+              {errors.identifier?.message && (
+                <p 
+                  id="identifier-error" 
+                  className="flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400 mt-1.5 ml-1 animate-slide-down"
+                  role="alert"
+                >
+                  <FaCircleExclamation className="w-3.5 h-3.5 flex-shrink-0" />
+                  {errors.identifier.message}
+                </p>
+              )}
+            </div>
+
+            {/* Campo de contraseña */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
                 <label
                   htmlFor="password"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  className="text-sm font-medium text-gray-700 dark:text-gray-200"
                 >
-                  <span>Contraseña</span>
-                  <span className="mt-2 text-sm text-red-600 dark:text-red-500 font-bold">
-                    {" "}
-                    *
+                  <span className="flex items-center gap-1">
+                    Contraseña
+                    <span className="text-red-500" aria-hidden="true">*</span>
                   </span>
+                  <span className="sr-only">(campo requerido)</span>
                 </label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    id="password"
-                    {...register("password")}
-                    placeholder="••••••••"
-                    className={`bg-gray-50 border text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:placeholder:text-gray-400 dark:text-white ${
-                      errors.password
-                        ? "border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-500"
-                        : "bg-gray-50 border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    }`}
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none"
-                  >
-                    {showPassword ? (
-                      <FaEyeSlash className="w-4 h-4" />
-                    ) : (
-                      <FaEye className="w-4 h-4" />
-                    )}
-                  </button>
-                </div>
-                {errors.password?.message && (
-                  <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                    {errors.password?.message}
-                  </p>
-                )}
+                
+                {/* HCI: Enlace de recuperación visible */}
+                <Link
+                  to="/forgot-password"
+                  className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline transition-colors"
+                >
+                  ¿Olvidaste tu contraseña?
+                </Link>
               </div>
-              <button
-                type="submit"
-                className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 justify-center items-center flex"
-                disabled={loading}
-              >
-                {loading ? (
+              
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  autoComplete="current-password"
+                  aria-required="true"
+                  aria-invalid={errors.password ? "true" : "false"}
+                  aria-describedby={errors.password ? "password-error" : undefined}
+                  {...register("password")}
+                  onFocus={() => setFocusedField("password")}
+                  onBlur={() => setFocusedField(null)}
+                  className={`${getInputClasses(passwordStatus, focusedField === "password")} pr-12`}
+                  placeholder="Ingresa tu contraseña"
+                />
+                
+                {/* HCI: Botón de mostrar/ocultar con feedback claro */}
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="
+                    absolute right-3 top-1/2 -translate-y-1/2
+                    p-1.5 rounded-lg
+                    text-gray-400 hover:text-gray-600
+                    dark:text-gray-500 dark:hover:text-gray-300
+                    hover:bg-gray-100 dark:hover:bg-gray-700
+                    transition-all duration-200
+                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                  "
+                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  aria-pressed={showPassword}
+                >
+                  {showPassword ? (
+                    <FaEyeSlash className="w-4 h-4" />
+                  ) : (
+                    <FaEye className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
+              
+              {errors.password?.message && (
+                <p 
+                  id="password-error" 
+                  className="flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400 mt-1.5 ml-1 animate-slide-down"
+                  role="alert"
+                >
+                  <FaCircleExclamation className="w-3.5 h-3.5 flex-shrink-0" />
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+
+            {/* HCI: Botón de envío con estados claros */}
+            <button
+              type="submit"
+              disabled={loading}
+              className={`
+                uppercase relative w-full
+                py-3.5 px-6
+                text-white font-semibold text-base
+                rounded-xl
+                transition-all duration-300
+                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                ${loading 
+                  ? "bg-blue-400 dark:bg-blue-500 cursor-wait" 
+                  : "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 dark:from-blue-500 dark:to-blue-600 dark:hover:from-blue-600 dark:hover:to-blue-700 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0"
+                }
+              `}
+              aria-busy={loading}
+            >
+              {loading ? (
+                <span className="flex items-center justify-center gap-3">
+                  {/* HCI: Indicador de carga con animación suave */}
                   <svg
-                    aria-hidden="true"
-                    className="w-6 h-6 mr-3 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
-                    viewBox="0 0 100 101"
-                    fill="none"
+                    className="animate-spin h-5 w-5"
                     xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
                   >
-                    <path
-                      d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                      fill="#FFFFFF"
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
                     />
                     <path
-                      d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                      fill="currentFill"
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
                   </svg>
-                ) : (
-                  "INGRESAR"
-                )}
-              </button>
-              <div
-                className="text-base font-medium text-gray-500 dark:text-gray-400 text-center"
-                bis_skin_checked="1"
-              >
-                ¿Aún no tienes una cuenta?
-                <a
-                  className="ml-1 text-blue-700 dark:text-blue-500 hover:underline font-bold"
-                  href="/register"
-                >
-                  Regístrese aquí
-                </a>
+                  <span>Verificando credenciales...</span>
+                </span>
+              ) : (
+                "Iniciar sesión"
+              )}
+            </button>
+
+            {/* HCI: Separador visual para opciones secundarias */}
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-200 dark:border-gray-700" />
               </div>
-            </form>
-          </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white dark:bg-gray-800 px-3 text-gray-400 dark:text-gray-500 font-medium">
+                  ¿Nuevo usuario?
+                </span>
+              </div>
+            </div>
+
+            {/* HCI: CTA secundario claramente diferenciado */}
+            <Link
+              to="/register"
+              className="
+                uppercase flex items-center justify-center
+                w-full py-3.5 px-6
+                text-gray-700 dark:text-gray-200 font-semibold text-base
+                bg-gray-50 dark:bg-gray-700/50
+                border-2 border-gray-200 dark:border-gray-600
+                rounded-xl
+                transition-all duration-300
+                hover:bg-gray-100 dark:hover:bg-gray-700
+                hover:border-gray-300 dark:hover:border-gray-500
+                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+              "
+            >
+              Crear una cuenta nueva
+            </Link>
+          </form>
         </div>
       </div>
+
+      {/* HCI: Estilos CSS para animaciones */}
+      <style>{`
+        @keyframes fade-in-down {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        @keyframes fade-in-up {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        @keyframes fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        
+        @keyframes slide-down {
+          from {
+            opacity: 0;
+            transform: translateY(-5px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        @keyframes scale-in {
+          from {
+            opacity: 0;
+            transform: scale(0.8);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-4px); }
+          75% { transform: translateX(4px); }
+        }
+        
+        .animate-fade-in-down {
+          animation: fade-in-down 0.5s ease-out;
+        }
+        
+        .animate-fade-in-up {
+          animation: fade-in-up 0.6s ease-out;
+        }
+        
+        .animate-fade-in {
+          animation: fade-in 0.8s ease-out 0.3s both;
+        }
+        
+        .animate-slide-down {
+          animation: slide-down 0.3s ease-out;
+        }
+        
+        .animate-scale-in {
+          animation: scale-in 0.2s ease-out;
+        }
+        
+        .animate-shake {
+          animation: shake 0.4s ease-out;
+        }
+      `}</style>
     </section>
   );
 };
