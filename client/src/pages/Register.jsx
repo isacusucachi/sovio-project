@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useForm, useWatch } from "react-hook-form";
@@ -13,76 +13,380 @@ import {
   getInstitutionRequest,
 } from "../api/educationalService";
 import paises from "../data/paises.json";
-import { FaArrowLeft, FaEye, FaEyeSlash, FaIdCard } from "react-icons/fa6";
+import { 
+  FaArrowLeft, 
+  FaArrowRight,
+  FaEye, 
+  FaEyeSlash, 
+  FaIdCard, 
+  FaCheck, 
+  FaCircleExclamation,
+  FaCircleInfo,
+  FaSpinner
+} from "react-icons/fa6";
 import { IoSchool } from "react-icons/io5";
 import { TbPasswordUser } from "react-icons/tb";
-import StepIndicator from "../components/Register/StepIndicator";
-import { PasswordRequirement } from "../components/Register/PasswordRequirement";
+import { HiOutlineDocumentText, HiOutlineMail, HiOutlinePhone } from "react-icons/hi";
+import { FaCalendar, FaUser } from "react-icons/fa";
+
+// ============================================================================
+// CONSTANTES
+// ============================================================================
 
 const departamentos_peru = [
-  "AMAZONAS",
-  "ANCASH",
-  "APURIMAC",
-  "AREQUIPA",
-  "AYACUCHO",
-  "CAJAMARCA",
-  "CALLAO",
-  "CUSCO",
-  "HUANCAVELICA",
-  "HUANUCO",
-  "ICA",
-  "JUNIN",
-  "LA LIBERTAD",
-  "LAMBAYEQUE",
-  "LIMA",
-  "LORETO",
-  "MADRE DE DIOS",
-  "MOQUEGUA",
-  "PASCO",
-  "PIURA",
-  "PUNO",
-  "SAN MARTIN",
-  "TACNA",
-  "TUMBES",
-  "UCAYALI",
+  "AMAZONAS", "ANCASH", "APURIMAC", "AREQUIPA", "AYACUCHO", "CAJAMARCA",
+  "CALLAO", "CUSCO", "HUANCAVELICA", "HUANUCO", "ICA", "JUNIN", "LA LIBERTAD",
+  "LAMBAYEQUE", "LIMA", "LORETO", "MADRE DE DIOS", "MOQUEGUA", "PASCO",
+  "PIURA", "PUNO", "SAN MARTIN", "TACNA", "TUMBES", "UCAYALI",
 ];
 
 // Campos por paso para validación parcial
 const step1Fields = [
-  "nationality",
-  "typeOfIdentityDocument",
-  "identityDocumentNumber",
-  "names",
-  "surnames",
-  "birthdate",
-  "gender",
-  "height",
+  "nationality", "typeOfIdentityDocument", "identityDocumentNumber",
+  "names", "surnames", "birthdate", "gender", "height",
 ];
 const step2Fields = [
-  "department",
-  "province",
-  "district",
-  "educationalService",
-  "grade_section_cycle",
+  "department", "province", "district", "educationalService", "grade_section_cycle",
+];
+const step3Fields = [
+  "email", "phoneNumber", "password", "confirmPassword", "termsAndConditions",
 ];
 
+// ============================================================================
+// COMPONENTES AUXILIARES CON HCI
+// ============================================================================
+
+// HCI: Indicador de paso mejorado con feedback visual claro
+const StepIndicator = ({ step, currentStep, isLast, completedSteps }) => {
+  const isActive = currentStep === step.number;
+  const isCompleted = completedSteps.includes(step.number);
+  const isPending = !isActive && !isCompleted;
+  const Icon = step.icon;
+
+  return (
+    <li className={`flex items-center ${!isLast ? "flex-1" : ""}`}>
+      <div className="flex flex-col items-center">
+        <div
+          className={`
+            relative flex items-center justify-center w-12 h-12 rounded-2xl
+            transition-all duration-500 ease-out
+            ${isCompleted 
+              ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30 scale-100" 
+              : isActive 
+                ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30 scale-110 ring-4 ring-blue-500/20" 
+                : "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500"
+            }
+          `}
+          aria-current={isActive ? "step" : undefined}
+        >
+          {isCompleted ? (
+            <FaCheck className="w-5 h-5 animate-scale-in" />
+          ) : (
+            <Icon className="w-5 h-5" />
+          )}
+          
+          {/* HCI: Indicador de progreso animado */}
+          {isActive && (
+            <span className="absolute -inset-1 rounded-2xl border-2 border-blue-500/50 animate-pulse" />
+          )}
+        </div>
+        
+        {/* HCI: Título del paso con estado */}
+        <span 
+          className={`
+            mt-2 text-xs font-medium text-center max-w-[80px] leading-tight
+            transition-colors duration-300
+            ${isActive 
+              ? "text-blue-600 dark:text-blue-400" 
+              : isCompleted 
+                ? "text-emerald-600 dark:text-emerald-400" 
+                : "text-gray-400 dark:text-gray-500"
+            }
+          `}
+        >
+          {step.title}
+        </span>
+      </div>
+      
+      {/* Línea conectora con progreso */}
+      {!isLast && (
+        <div className="flex-1 mx-3 h-1 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
+          <div 
+            className={`
+              h-full rounded-full transition-all duration-500 ease-out
+              ${isCompleted ? "w-full bg-emerald-500" : "w-0 bg-blue-500"}
+            `}
+          />
+        </div>
+      )}
+    </li>
+  );
+};
+
+// HCI: Indicador de requisito de contraseña mejorado
+const PasswordRequirement = ({ text, valid }) => (
+  <div 
+    className={`
+      flex items-center gap-2 text-sm transition-all duration-300
+      ${valid 
+        ? "text-emerald-600 dark:text-emerald-400" 
+        : "text-gray-400 dark:text-gray-500"
+      }
+    `}
+    role="status"
+    aria-live="polite"
+  >
+    <span 
+      className={`
+        flex items-center justify-center w-4 h-4 rounded-full
+        transition-all duration-300
+        ${valid 
+          ? "bg-emerald-100 dark:bg-emerald-900/30" 
+          : "bg-gray-100 dark:bg-gray-800"
+        }
+      `}
+    >
+      {valid ? (
+        <FaCheck className="w-2.5 h-2.5 animate-scale-in" />
+      ) : (
+        <span className="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600" />
+      )}
+    </span>
+    <span className={valid ? "line-through opacity-60" : ""}>{text}</span>
+  </div>
+);
+
+// HCI: Campo de formulario mejorado con feedback visual
+const FormField = ({ 
+  label, 
+  name, 
+  type = "text", 
+  placeholder, 
+  register, 
+  error, 
+  required = true,
+  hint,
+  children,
+  className = "",
+  ...props 
+}) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const hasError = !!error;
+  const hasValue = props.value?.length > 0;
+
+  return (
+    <div className={`space-y-1.5 ${className}`}>
+      <label
+        htmlFor={name}
+        className="flex items-center justify-between text-sm font-medium text-gray-700 dark:text-gray-200"
+      >
+        <span className="flex items-center gap-1">
+          {label}
+          {required && <span className="text-red-500" aria-hidden="true">*</span>}
+          {!required && <span className="text-gray-400 text-xs ml-1">(Opcional)</span>}
+        </span>
+        <span className="sr-only">{required ? "(campo requerido)" : "(campo opcional)"}</span>
+      </label>
+      
+      <div className="relative">
+        {children || (
+          <input
+            type={type}
+            id={name}
+            {...register(name)}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            placeholder={placeholder}
+            aria-required={required}
+            aria-invalid={hasError}
+            aria-describedby={error ? `${name}-error` : hint ? `${name}-hint` : undefined}
+            className={`
+              w-full px-4 py-3
+              text-gray-900 dark:text-white
+              bg-white dark:bg-gray-800
+              border-2 rounded-xl
+              text-sm
+              transition-all duration-300 ease-out
+              placeholder:text-gray-400 dark:placeholder:text-gray-500
+              outline-none
+              ${hasError 
+                ? "border-red-400 dark:border-red-500 bg-red-50/50 dark:bg-red-900/10" 
+                : isFocused 
+                  ? "border-blue-500 dark:border-blue-400 ring-4 ring-blue-500/10" 
+                  : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500"
+              }
+            `}
+            {...props}
+          />
+        )}
+        
+        {/* Indicador de estado */}
+        {hasError && (
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500">
+            <FaCircleExclamation className="w-4 h-4" />
+          </span>
+        )}
+      </div>
+      
+      {/* Texto de ayuda */}
+      {hint && !error && (
+        <p id={`${name}-hint`} className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 ml-1">
+          <FaCircleInfo className="w-3 h-3 flex-shrink-0" />
+          {hint}
+        </p>
+      )}
+      
+      {/* Mensaje de error */}
+      {error && (
+        <p 
+          id={`${name}-error`} 
+          className="flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400 ml-1 animate-slide-down"
+          role="alert"
+        >
+          <FaCircleExclamation className="w-3.5 h-3.5 flex-shrink-0" />
+          {error}
+        </p>
+      )}
+    </div>
+  );
+};
+
+// HCI: Select mejorado con estado de carga
+const FormSelect = ({ 
+  label, 
+  name, 
+  options, 
+  register, 
+  error, 
+  required = true,
+  disabled = false,
+  loading = false,
+  placeholder = "Seleccione una opción",
+  hint,
+  renderOption,
+  className = "",
+}) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const hasError = !!error;
+
+  return (
+    <div className={`space-y-1.5 ${className}`}>
+      <label
+        htmlFor={name}
+        className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-200"
+      >
+        <span className="flex items-center gap-1">
+          {label}
+          {required && <span className="text-red-500" aria-hidden="true">*</span>}
+        </span>
+      </label>
+      
+      <div className="relative">
+        <select
+          id={name}
+          {...register(name)}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          disabled={disabled || loading}
+          aria-required={required}
+          aria-invalid={hasError}
+          aria-describedby={error ? `${name}-error` : hint ? `${name}-hint` : undefined}
+          className={`
+            w-full px-4 py-3
+            text-gray-900 dark:text-white
+            bg-white dark:bg-gray-800
+            border-2 rounded-xl
+            text-sm
+            transition-all duration-300 ease-out
+            outline-none
+            appearance-none
+            cursor-pointer
+            ${disabled || loading
+              ? "opacity-60 cursor-not-allowed bg-gray-50 dark:bg-gray-900"
+              : ""
+            }
+            ${hasError 
+              ? "border-red-400 dark:border-red-500 bg-red-50/50 dark:bg-red-900/10" 
+              : isFocused 
+                ? "border-blue-500 dark:border-blue-400 ring-4 ring-blue-500/10" 
+                : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500"
+            }
+          `}
+        >
+          <option value="">{loading ? "Cargando..." : placeholder}</option>
+          {options.map((option) => 
+            renderOption ? renderOption(option) : (
+              <option key={option} value={option}>{option}</option>
+            )
+          )}
+        </select>
+        
+        {/* Icono de dropdown o loading */}
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+          {loading ? (
+            <FaSpinner className="w-4 h-4 text-gray-400 animate-spin" />
+          ) : (
+            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          )}
+        </div>
+      </div>
+      
+      {hint && !error && (
+        <p id={`${name}-hint`} className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 ml-1">
+          <FaCircleInfo className="w-3 h-3 flex-shrink-0" />
+          {hint}
+        </p>
+      )}
+      
+      {error && (
+        <p 
+          id={`${name}-error`} 
+          className="flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400 ml-1 animate-slide-down"
+          role="alert"
+        >
+          <FaCircleExclamation className="w-3.5 h-3.5 flex-shrink-0" />
+          {error}
+        </p>
+      )}
+    </div>
+  );
+};
+
+// ============================================================================
+// COMPONENTE PRINCIPAL
+// ============================================================================
+
 const Register = () => {
+  // Estados principales
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
+  const [completedSteps, setCompletedSteps] = useState([]);
+  const [loadingProvinces, setLoadingProvinces] = useState(false);
+  const [loadingDistricts, setLoadingDistricts] = useState(false);
+  const [loadingInstitutions, setLoadingInstitutions] = useState(false);
 
+  // Refs para autofocus
+  const firstFieldRefs = useRef({});
+  const formContainerRef = useRef(null);
+
+  // Hooks de autenticación y navegación
   const { signup, errors: registerErrors, isAuthenticated } = useAuth();
   const { getRecaptchaToken } = useRecaptcha();
   const navigate = useNavigate();
 
+  // Configuración del formulario con react-hook-form
   const {
     register,
     handleSubmit,
     setValue,
     control,
     trigger,
-    formState: { errors },
+    watch,
+    formState: { errors, dirtyFields },
   } = useForm({
     defaultValues: {
       identityDocumentNumber: "",
@@ -101,12 +405,78 @@ const Register = () => {
       phoneNumber: "",
       password: "",
       confirmPassword: "",
-      acceptTerms: false,
+      termsAndConditions: false,
     },
     resolver: zodResolver(registerSchema),
     mode: "onChange",
   });
 
+  // Estados de ubicación e instituciones
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [institutions, setInstitutions] = useState([]);
+
+  // Valores observados
+  const selectedDepartment = useWatch({ control, name: "department" });
+  const selectedProvince = useWatch({ control, name: "province" });
+  const selectedDistrict = useWatch({ control, name: "district" });
+  const passwordValue = watch("password") || "";
+  const confirmPasswordValue = watch("confirmPassword") || "";
+
+  // Calcular fechas mínima y máxima permitidas (13–24 años)
+  const today = new Date();
+  const minDate = new Date(today.getFullYear() - 24, today.getMonth(), today.getDate())
+    .toISOString()
+    .split("T")[0];
+  const maxDate = new Date(today.getFullYear() - 13, today.getMonth(), today.getDate())
+    .toISOString()
+    .split("T")[0];
+
+  // Validaciones de contraseña
+  const passwordChecks = {
+    hasMinLength: passwordValue.length >= 8,
+    hasUppercase: /[A-Z]/.test(passwordValue),
+    hasLowercase: /[a-z]/.test(passwordValue),
+    hasNumber: /[0-9]/.test(passwordValue),
+    hasSpecialChar: /[^A-Za-z0-9]/.test(passwordValue),
+  };
+  const passwordStrength = Object.values(passwordChecks).filter(Boolean).length;
+  const passwordsMatch = passwordValue && confirmPasswordValue && passwordValue === confirmPasswordValue;
+
+  // Configuración de pasos
+  const steps = [
+    { number: 1, title: "Información Personal", icon: FaIdCard },
+    { number: 2, title: "Institución Educativa", icon: IoSchool },
+    { number: 3, title: "Credenciales", icon: TbPasswordUser },
+  ];
+
+  // HCI: Scroll suave al cambiar de paso
+  useEffect(() => {
+    if (formContainerRef.current) {
+      formContainerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [currentStep]);
+
+  // HCI: Autofocus en el primer campo de cada paso
+  useEffect(() => {
+    const focusFirstField = () => {
+      const fieldMap = {
+        1: "nationality",
+        2: "department", 
+        3: "email",
+      };
+      const fieldName = fieldMap[currentStep];
+      if (fieldName) {
+        const field = document.getElementById(fieldName);
+        if (field) {
+          setTimeout(() => field.focus(), 100);
+        }
+      }
+    };
+    focusFirstField();
+  }, [currentStep]);
+
+  // Navegación entre pasos
   const handleNext = async () => {
     let fieldsToValidate;
     if (currentStep === 1) fieldsToValidate = step1Fields;
@@ -114,7 +484,19 @@ const Register = () => {
 
     const isValid = await trigger(fieldsToValidate);
     if (isValid) {
+      setCompletedSteps((prev) => [...new Set([...prev, currentStep])]);
       setCurrentStep(currentStep + 1);
+      
+      // HCI: Feedback positivo al completar paso
+      toast.success(`Paso ${currentStep} completado ✓`, {
+        autoClose: 1500,
+        hideProgressBar: true,
+      });
+    } else {
+      // HCI: Feedback de error con guía
+      toast.error("Por favor completa todos los campos requeridos", {
+        autoClose: 3000,
+      });
     }
   };
 
@@ -122,71 +504,36 @@ const Register = () => {
     setCurrentStep(currentStep - 1);
   };
 
-  const steps = [
-    {
-      number: 1,
-      title: "Información Personal",
-      icon: FaIdCard,
-    },
-    {
-      number: 2,
-      title: "Institución Educativa",
-      icon: IoSchool,
-    },
-    {
-      number: 3,
-      title: "Credenciales",
-      icon: TbPasswordUser,
-    },
-  ];
-
-  const [provinces, setProvinces] = useState([]);
-  const [districts, setDistricts] = useState([]);
-  const [institutions, setInstitutions] = useState([]);
-
-  const selectedDepartment = useWatch({ control, name: "department" });
-  const selectedProvince = useWatch({ control, name: "province" });
-  const selectedDistrict = useWatch({ control, name: "district" });
-  const [passwordValue, setPasswordValue] = useState("");
-
-  // Calcular fechas mínima y máxima permitidas (13–24 años)
-  const today = new Date();
-  const minDate = new Date(
-    today.getFullYear() - 24,
-    today.getMonth(),
-    today.getDate()
-  )
-    .toISOString()
-    .split("T")[0]; // Máxima edad: 24 años (fecha más antigua permitida)
-  const maxDate = new Date(
-    today.getFullYear() - 13,
-    today.getMonth(),
-    today.getDate()
-  )
-    .toISOString()
-    .split("T")[0]; // Mínima edad: 13 años (fecha más reciente permitida)
-
+  // Envío del formulario
   const onSubmit = async (data) => {
     try {
       setLoading(true);
       const recaptchaToken = await getRecaptchaToken("register_form");
-      const res = await signup({ ...data, recaptchaToken: recaptchaToken });
+      const res = await signup({ ...data, recaptchaToken });
+      
       if (res) {
-        toast.success("Registro exitoso");
+        toast.success("¡Registro exitoso! Bienvenido al sistema 🎉", {
+          autoClose: 3000,
+        });
       }
     } catch (error) {
-      toast.error("Error al iniciar sesión");
-      throw error;
+      toast.error("Hubo un problema al registrar tu cuenta. Por favor intenta nuevamente.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    handleSubmit(onSubmit)(e);
+    const isValid = await trigger(step3Fields);
+    if (isValid) {
+      handleSubmit(onSubmit)(e);
+    } else {
+      toast.error("Por favor completa todos los campos requeridos");
+    }
   };
 
+  // Efectos de navegación y errores
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/main");
@@ -199,51 +546,57 @@ const Register = () => {
     }
   }, [registerErrors]);
 
-  // Cargar provincias cuando se selecciona un departamento
+  // Cargar provincias
   useEffect(() => {
     const fetchProvinces = async () => {
       if (selectedDepartment) {
+        setLoadingProvinces(true);
         try {
           const response = await getProvinceRequest(selectedDepartment);
           setProvinces(response.data);
-          setValue("province", ""); // Limpiar selección de provincia
-          setValue("district", ""); // Limpiar selección de distrito
-          setValue("educationalInstitution", ""); // Limpiar selección de institución
+          setValue("province", "");
+          setValue("district", "");
+          setValue("educationalService", "");
           setDistricts([]);
           setInstitutions([]);
         } catch (error) {
           console.error("Error fetching provinces:", error);
+          toast.error("Error al cargar las provincias");
+        } finally {
+          setLoadingProvinces(false);
         }
       }
     };
-
-    fetchProvinces(); // Llamar a la función asíncrona
+    fetchProvinces();
   }, [selectedDepartment, setValue]);
 
+  // Cargar distritos
   useEffect(() => {
-    const fetchDistrics = async () => {
+    const fetchDistricts = async () => {
       if (selectedProvince) {
+        setLoadingDistricts(true);
         try {
-          const response = await getDistrictRequest(
-            selectedDepartment,
-            selectedProvince
-          );
+          const response = await getDistrictRequest(selectedDepartment, selectedProvince);
           setDistricts(response.data);
-          setValue("district", ""); // Limpiar selección de distrito
-          setValue("educationalInstitution", ""); // Limpiar selección de institución
+          setValue("district", "");
+          setValue("educationalService", "");
           setInstitutions([]);
         } catch (error) {
           console.error("Error fetching districts:", error);
+          toast.error("Error al cargar los distritos");
+        } finally {
+          setLoadingDistricts(false);
         }
       }
     };
-
-    fetchDistrics(); // Llamar a la función asíncrona
+    fetchDistricts();
   }, [selectedProvince, setValue, selectedDepartment]);
 
+  // Cargar instituciones
   useEffect(() => {
     const fetchInstitutions = async () => {
       if (selectedDistrict) {
+        setLoadingInstitutions(true);
         try {
           const response = await getInstitutionRequest(
             selectedDepartment,
@@ -251,883 +604,838 @@ const Register = () => {
             selectedDistrict
           );
           setInstitutions(response.data);
-          setValue("educationalInstitution", ""); // Limpiar selección de institución
+          setValue("educationalService", "");
         } catch (error) {
           console.error("Error fetching institutions:", error);
+          toast.error("Error al cargar las instituciones educativas");
+        } finally {
+          setLoadingInstitutions(false);
         }
       }
     };
-
     fetchInstitutions();
   }, [selectedDistrict, setValue, selectedProvince, selectedDepartment]);
 
-  const hasMinLength = passwordValue?.length >= 8;
-  const hasUppercase = /[A-Z]/.test(passwordValue);
-  const hasLowercase = /[a-z]/.test(passwordValue);
-  const hasNumber = /[0-9]/.test(passwordValue);
-  const hasSpecialChar = /[^A-Za-z0-9]/.test(passwordValue);
+  // ============================================================================
+  // RENDER
+  // ============================================================================
 
   return (
-    <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 relative overflow-hidden">
+      {/* Fondo decorativo */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-400/10 dark:bg-blue-500/5 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-indigo-400/10 dark:bg-indigo-500/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-gradient-to-r from-blue-200/20 to-purple-200/20 dark:from-blue-800/10 dark:to-purple-800/10 rounded-full blur-3xl" />
+      </div>
+
+      {/* HCI: Navegación clara con affordance visible */}
       <Link
         to="/"
-        className="absolute top-4 left-4 inline-flex items-center justify-center px-5 py-3 text-base font-bold text-center text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-800"
+        className="
+          uppercase font-bold absolute top-6 left-6 z-10
+          inline-flex items-center gap-2
+          px-4 py-2.5
+          text-sm
+          text-gray-700 dark:text-gray-200
+          bg-white/80 dark:bg-gray-800/80
+          backdrop-blur-sm
+          border border-gray-200 dark:border-gray-700
+          rounded-lg
+          shadow-sm
+          transition-all duration-300
+          hover:bg-white dark:hover:bg-gray-800
+          hover:shadow-md
+          hover:-translate-x-1
+          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+          group
+        "
+        aria-label="Volver a la página de inicio"
       >
-        <FaArrowLeft className="w-4 h-4 sm:mr-2" />
-        <span className="hidden sm:inline">VOLVER A INICIO</span>
+        <FaArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
+        <span className="hidden sm:inline">Volver al inicio</span>
       </Link>
-      <main className="bg-gray-50 dark:bg-gray-900">
-        <div className="flex flex-col justify-center items-center py-8 px-6 mx-auto md:h-screen">
-          <a
-            href="/"
-            className="flex items-center justify-center space-x-2 md:space-x-4 mb-6"
+
+      <main className="relative py-8 px-4 sm:px-6">
+        <div className="max-w-4xl mx-auto" ref={formContainerRef}>
+          {/* Logo y branding */}
+          <div className="text-center mb-8 pt-16 sm:pt-8 animate-fade-in-down">
+            <a
+              href="/"
+              className="inline-flex flex-col items-center gap-4 group"
+              aria-label="Ir a página principal"
+            >
+              <div className="relative">
+                <img
+                  src="./Logo GORE_Nuevo_negativo_vertical.png"
+                  className="h-20 w-auto hidden dark:block transition-transform duration-300 group-hover:scale-105"
+                  alt="Logo del Gobierno Regional de Cusco"
+                />
+                <img
+                  src="./Logo GORE_Nuevo_positivo_vertical.png"
+                  className="h-20 w-auto block dark:hidden transition-transform duration-300 group-hover:scale-105"
+                  alt="Logo del Gobierno Regional de Cusco"
+                />
+              </div>
+              <div className="text-center">
+                <p className="font-semibold text-xs tracking-wider text-gray-600 dark:text-gray-300 uppercase">
+                  Gerencia Regional de Trabajo
+                </p>
+                <p className="text-[10px] tracking-wide text-gray-500 dark:text-gray-400 uppercase">
+                  y Promoción del Empleo Cusco
+                </p>
+              </div>
+            </a>
+          </div>
+
+          {/* Card principal */}
+          <div 
+            className="
+              bg-white/90 dark:bg-gray-800/90
+              backdrop-blur-xl
+              rounded-3xl
+              shadow-xl shadow-gray-200/50 dark:shadow-none
+              border border-gray-100 dark:border-gray-700
+              p-6 sm:p-8 lg:p-10
+              animate-fade-in-up
+            "
+            role="main"
           >
-            <img
-              src={"./Logo GORE_Nuevo_negativo_vertical.png"}
-              className="h-16 w-auto hidden dark:block"
-              alt="Logo GORE Cusco"
-            />
-            <img
-              src={"./Logo GORE_Nuevo_positivo_vertical.png"}
-              className="h-16 w-auto block dark:hidden"
-              alt="Logo GORE Cusco"
-            />
-            <span className="font-arima text-[6px] md:text-[8px] font-extrabold text-center dark:text-white">
-              GERENCIA REGIONAL DE TRABAJO
-              <br />Y PROMOCIÓN DEL EMPLEO CUSCO
-            </span>
-          </a>
-          <div className="justify-center items-center w-full bg-white rounded-lg shadow lg:flex md:mt-0 lg:max-w-screen-lg xl:p-0 dark:bg-gray-800">
-            <div className="p-6 space-y-4 md:space-y-6 sm:p-8 w-full">
-              <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white w-full">
+            {/* Encabezado */}
+            <div className="text-center mb-8">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
                 Crear una cuenta
               </h1>
-              <ol
-                className={`flex justify-between items-center w-full mb-4 sm:mb-5 ${
-                  currentStep === 0 ? "hidden" : "block"
-                }`}
-              >
-                {steps.map((step, index) => (
-                  <StepIndicator
-                    key={step.number}
-                    step={step}
-                    currentStep={currentStep}
-                    isLast={index === steps.length - 1}
+              <p className="text-gray-500 dark:text-gray-400 text-sm">
+                {currentStep === 0 
+                  ? "Completa el formulario para registrarte en el sistema"
+                  : `Paso ${currentStep} de 3 - ${steps[currentStep - 1]?.title}`
+                }
+              </p>
+            </div>
+
+            {/* HCI: Indicador de progreso visual (solo en pasos activos) */}
+            {currentStep > 0 && (
+              <nav aria-label="Progreso del registro" className="mb-10">
+                <ol className="flex justify-between items-start">
+                  {steps.map((step, index) => (
+                    <StepIndicator
+                      key={step.number}
+                      step={step}
+                      currentStep={currentStep}
+                      isLast={index === steps.length - 1}
+                      completedSteps={completedSteps}
+                    />
+                  ))}
+                </ol>
+                
+                {/* HCI: Barra de progreso general */}
+                <div className="mt-6 h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500 ease-out"
+                    style={{ width: `${(currentStep / 3) * 100}%` }}
+                    role="progressbar"
+                    aria-valuenow={currentStep}
+                    aria-valuemin={0}
+                    aria-valuemax={3}
+                    aria-label={`Progreso: paso ${currentStep} de 3`}
                   />
-                ))}
-              </ol>
-              <div
-                className="mt-8 w-full"
-                onSubmit={handleSubmit(onSubmit)}
-                noValidate
-              >
-                {currentStep === 0 && (
-                  <div className="space-y-6 mb-8">
-                    <h3 className="mb-4 text-lg lg:text-xl font-bold leading-none text-gray-900 dark:text-white text-center">
-                      Antes de comenzar...
-                    </h3>
+                </div>
+              </nav>
+            )}
 
-                    <p className="text-lg leading-normal text-gray-500 lg:text-xl dark:text-gray-400 mb-6 md:mb-8">
-                      Por favor revisa que tengas a la mano la siguiente
-                      información para completar tu registro.
-                    </p>
+            {/* ================================================================ */}
+            {/* PASO 0: Pantalla de bienvenida */}
+            {/* ================================================================ */}
+            {currentStep === 0 && (
+              <div className="space-y-8 animate-fade-in">
+                <div className="text-center">
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                    Antes de comenzar...
+                  </h2>
+                  <p className="text-gray-600 dark:text-gray-300 max-w-lg mx-auto">
+                    Por favor revisa que tengas a la mano la siguiente información para completar tu registro.
+                  </p>
+                </div>
 
-                    <ul className="text-lg leading-normal text-gray-500 lg:text-xl dark:text-gray-400 mb-6 md:mb-8 list-disc px-8">
-                      <li>
-                        Número de documento de identidad. (DNI, Carnet de
-                        Extranjería, Pasaporte)
-                      </li>
-                      <li>Fecha de nacimiento (Tener entre 13 a 24 años).</li>
-                      <li>
-                        Información personal completa (nombres, apellidos,
-                        género).
-                      </li>
-                      <li>Institución educativa donde estudias.</li>
-                      <li>Correo electrónico y un número de celular válido.</li>
-                    </ul>
-
-                    <p className="text-base text-gray-500 dark:text-gray-400 mt-4">
-                      <span className="text-red-600 font-bold">*</span> indica
-                      los campos obligatorios.
-                    </p>
-                  </div>
-                )}
-
-                {currentStep === 1 && (
-                  <div>
-                    <h3 className="mb-4 text-lg font-bold leading-none text-gray-900 dark:text-white text-center">
-                      1. Información Personal
-                    </h3>
-                    <div className="grid md:grid-cols-3 gap-x-4 gap-y-6">
-                      <div>
-                        <label
-                          htmlFor="nationality"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          <span>Nacionalidad </span>
-                          <span className="mt-2 text-sm text-red-600 dark:text-red-500 font-bold">
-                            {" "}
-                            *
-                          </span>
-                        </label>
-                        <select
-                          id="nationality"
-                          name="nationality"
-                          {...register("nationality")}
-                          className={`bg-gray-50 border text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:placeholder:text-gray-400 dark:text-white ${
-                            errors.nationality
-                              ? "border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-500"
-                              : "bg-gray-50 border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          }`}
-                          required
-                        >
-                          <option value="PERÚ">PERÚ</option>
-                          {paises.map((pais) => (
-                            <option key={pais.iso3} value={pais.nombre}>
-                              {pais.nombre}
-                            </option>
-                          ))}
-                        </select>
-                        {errors.nationality?.message && (
-                          <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                            {errors.nationality?.message}
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        <label
-                          htmlFor="typeOfIdentityDocument"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          <span>Tipo doc. identidad </span>
-                          <span className="mt-2 text-sm text-red-600 dark:text-red-500 font-bold">
-                            {" "}
-                            *
-                          </span>
-                        </label>
-                        <select
-                          id="typeOfIdentityDocument"
-                          name="typeOfIdentityDocument"
-                          {...register("typeOfIdentityDocument")}
-                          className={`bg-gray-50 border text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:placeholder:text-gray-400 dark:text-white ${
-                            errors.typeOfIdentityDocument
-                              ? "border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-500"
-                              : "bg-gray-50 border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          }`}
-                          required
-                        >
-                          <option value="DNI">
-                            DOCUMENTO NACIONAL DE IDENTIDAD
-                          </option>
-                          <option value="CE">CARNÉ DE EXTRANJERÍA</option>
-                          <option value="PTP">
-                            PERMISO TEMPORAL DE PERMANENCIA
-                          </option>
-                        </select>
-                        {errors.typeOfIdentityDocument?.message && (
-                          <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                            {errors.typeOfIdentityDocument?.message}
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        <label
-                          htmlFor="identityDocumentNumber"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          <span>N° doc. identidad</span>
-                          <span className="mt-2 text-sm text-red-600 dark:text-red-500 font-bold">
-                            {" "}
-                            *
-                          </span>
-                        </label>
-                        <input
-                          type="text"
-                          name="identityDocumentNumber"
-                          id="identityDocumentNumber"
-                          {...register("identityDocumentNumber")}
-                          onInput={(e) => {
-                            const value = e.target.value.replace(/[^0-9]/g, "");
-                            e.target.value =
-                              value.length > 9 ? value.slice(0, 9) : value;
-                          }}
-                          className={`bg-gray-50 border text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:placeholder:text-gray-400 dark:text-white ${
-                            errors.identityDocumentNumber
-                              ? "border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-500"
-                              : "bg-gray-50 border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          }`}
-                          placeholder=" Ej. 74######"
-                          required
-                        />
-                        {errors.identityDocumentNumber?.message && (
-                          <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                            {errors.identityDocumentNumber?.message}
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        <label
-                          htmlFor="names"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          <span>Nombres</span>
-                          <span className="mt-2 text-sm text-red-600 dark:text-red-500 font-bold">
-                            {" "}
-                            *
-                          </span>
-                        </label>
-                        <input
-                          type="text"
-                          name="names"
-                          id="names"
-                          {...register("names")}
-                          className={`bg-gray-50 border text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:placeholder:text-gray-400 dark:text-white ${
-                            errors.names
-                              ? "border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-500"
-                              : "bg-gray-50 border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          }`}
-                          placeholder="Ej. Juan Carlos"
-                          required
-                        />
-                        {errors.names?.message && (
-                          <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                            {errors.names?.message}
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        <label
-                          htmlFor="surnames"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          <span>Apellidos</span>
-                          <span className="mt-2 text-sm text-red-600 dark:text-red-500 font-bold">
-                            {" "}
-                            *
-                          </span>
-                        </label>
-                        <input
-                          type="text"
-                          name="surnames"
-                          id="surnames"
-                          {...register("surnames")}
-                          className={`bg-gray-50 border text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:placeholder:text-gray-400 dark:text-white ${
-                            errors.surnames
-                              ? "border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-500"
-                              : "bg-gray-50 border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          }`}
-                          placeholder="Ej. Flores Gómez"
-                          required
-                        />
-                        {errors.surnames?.message && (
-                          <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                            {errors.surnames?.message}
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        <label
-                          htmlFor="birthdate"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          <span>Fecha de nacimiento</span>
-                          <span className="mt-2 text-sm text-red-600 dark:text-red-500 font-bold">
-                            {" "}
-                            *
-                          </span>
-                        </label>
-                        <input
-                          type="date"
-                          id="birthdate"
-                          name="birthdate"
-                          {...register("birthdate")}
-                          min={minDate}
-                          max={maxDate}
-                          className={`bg-gray-50 border text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:placeholder:text-gray-400 dark:text-white ${
-                            errors.birthdate
-                              ? "border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-500"
-                              : "bg-gray-50 border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          }`}
-                          required
-                        />
-                        {errors.birthdate?.message && (
-                          <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                            {errors.birthdate?.message}
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        <label
-                          htmlFor="gender"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          <span>Género</span>
-                          <span className="mt-2 text-sm text-red-600 dark:text-red-500 font-bold">
-                            {" "}
-                            *
-                          </span>
-                        </label>
-                        <select
-                          id="gender"
-                          name="gender"
-                          {...register("gender")}
-                          className={`bg-gray-50 border text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:placeholder:text-gray-400 dark:text-white ${
-                            errors.gender
-                              ? "border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-500"
-                              : "bg-gray-50 border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          }`}
-                          required
-                        >
-                          <option value="">Seleciona género</option>
-                          <option value="femenino">Femenino</option>
-                          <option value="masculino">Masculino</option>
-                        </select>
-                        {errors.gender?.message && (
-                          <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                            {errors.gender?.message}
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        <label
-                          htmlFor="height"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          <span>Estatura (cm)</span>
-                          <span className="text-gray-500 text-xs ml-1">
-                            (Opcional)
-                          </span>
-                        </label>
-                        <input
-                          type="text"
-                          id="height"
-                          name="height"
-                          {...register("height")}
-                          onInput={(e) => {
-                            // Permitir solo números y un punto decimal
-                            let value = e.target.value.replace(/[^0-9.]/g, "");
-
-                            // Permitir solo un punto decimal
-                            const parts = value.split(".");
-                            if (parts.length > 2) {
-                              value = parts[0] + "." + parts.slice(1).join("");
-                            }
-
-                            // Limitar a 3 dígitos antes del punto (ej: 250.5)
-                            if (parts[0].length > 3) {
-                              value =
-                                parts[0].slice(0, 3) +
-                                (parts[1] ? "." + parts[1] : "");
-                            }
-
-                            // Limitar a 1 decimal (ej: 165.5)
-                            if (parts[1] && parts[1].length > 1) {
-                              value = parts[0] + "." + parts[1].slice(0, 1);
-                            }
-
-                            e.target.value = value;
-                          }}
-                          className={`bg-gray-50 border text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:placeholder:text-gray-400 dark:text-white ${
-                            errors.height
-                              ? "border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-500"
-                              : "bg-gray-50 border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          }`}
-                          placeholder="Ej: 165 o 165.5"
-                        />
-                        {errors.height?.message && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {errors.height?.message}
-                          </p>
-                        )}
-                      </div>
+                {/* HCI: Lista de requisitos con iconos claros */}
+                <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
+                  {[
+                    { icon: FaIdCard, text: "Documento de identidad (DNI, CE o Pasaporte)" },
+                    { icon: FaCalendar, text: "Fecha de nacimiento (entre 13 y 24 años)" },
+                    { icon: FaUser, text: "Información personal (nombres, apellidos, género)" },
+                    { icon: IoSchool, text: "Institución educativa donde estudias" },
+                    { icon: HiOutlineMail, text: "Correo electrónico válido" },
+                    { icon: HiOutlinePhone, text: "Número de celular activo" },
+                  ].map((item, index) => (
+                    <div 
+                      key={index}
+                      className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl"
+                    >
+                      {typeof item.icon === "string" ? (
+                        <span className="text-2xl">{item.icon}</span>
+                      ) : (
+                        <item.icon className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                      )}
+                      <span className="text-sm text-gray-700 dark:text-gray-200">{item.text}</span>
                     </div>
-                  </div>
-                )}
-                {currentStep === 2 && (
-                  <div>
-                    <h3 className="mb-4 text-lg font-bold leading-none text-gray-900 dark:text-white text-center">
-                      2. Institucion Educativa
-                    </h3>
-                    <div className="grid md:grid-cols-3 gap-4 mb-6">
-                      <div>
-                        <label
-                          htmlFor="department"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          <span>Departamento</span>
-                          <span className="mt-2 text-sm text-red-600 dark:text-red-500 font-bold">
-                            {" "}
-                            *
-                          </span>
-                        </label>
-                        <select
-                          id="department"
-                          name="department"
-                          {...register("department")}
-                          className={`bg-gray-50 border text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:placeholder:text-gray-400 dark:text-white ${
-                            errors.department
-                              ? "border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-500"
-                              : "bg-gray-50 border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          }`}
-                          required
-                        >
-                          {departamentos_peru.map((dep) => (
-                            <option key={dep} value={dep}>
-                              {dep}
-                            </option>
-                          ))}
-                        </select>
-                        {errors.department?.message && (
-                          <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                            {errors.department?.message}
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        <label
-                          htmlFor="province"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          <span>Provincia </span>
-                          <span className="mt-2 text-sm text-red-600 dark:text-red-500 font-bold">
-                            {" "}
-                            *
-                          </span>
-                        </label>
-                        <select
-                          id="province"
-                          name="province"
-                          {...register("province")}
-                          className={`bg-gray-50 border text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:placeholder:text-gray-400 dark:text-white ${
-                            errors.province
-                              ? "border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-500"
-                              : "bg-gray-50 border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          }`}
-                          required
-                          disabled={!selectedDepartment}
-                        >
-                          <option value="">Seleccione una provincia</option>
-                          {provinces.map((prov) => (
-                            <option key={prov} value={prov}>
-                              {prov}
-                            </option>
-                          ))}
-                        </select>
-                        {errors.province?.message && (
-                          <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                            {errors.province?.message}
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        <label
-                          htmlFor="district"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          <span>Distrito </span>
-                          <span className="mt-2 text-sm text-red-600 dark:text-red-500 font-bold">
-                            {" "}
-                            *
-                          </span>
-                        </label>
-                        <select
-                          id="district"
-                          name="district"
-                          {...register("district")}
-                          className={`bg-gray-50 border text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:placeholder:text-gray-400 dark:text-white ${
-                            errors.district
-                              ? "border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-500"
-                              : "bg-gray-50 border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          }`}
-                          required
-                          disabled={!selectedProvince}
-                        >
-                          <option value="">Seleccione un distrito</option>
-                          {districts.map((dist) => (
-                            <option key={dist} value={dist}>
-                              {dist}
-                            </option>
-                          ))}
-                        </select>
-                        {errors.district?.message && (
-                          <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                            {errors.district?.message}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="grid md:grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <label
-                          htmlFor="educationalService"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          <span>Institución Educativa </span>
-                          <span className="mt-2 text-sm text-red-600 dark:text-red-500 font-bold">
-                            {" "}
-                            *
-                          </span>
-                        </label>
-                        <select
-                          id="educationalService"
-                          name="educationalService"
-                          {...register("educationalService")}
-                          className={`bg-gray-50 border text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:placeholder:text-gray-400 dark:text-white ${
-                            errors.educationalService
-                              ? "border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-500"
-                              : "bg-gray-50 border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          }`}
-                          required
-                          disabled={!selectedDistrict}
-                        >
-                          <option value="">
-                            Seleccione una institución educativa
-                          </option>
-                          {institutions.map((inst) => (
-                            <option key={inst._id} value={inst._id}>
-                              {inst.CEN_EDU + " - (" + inst.D_NIV_MOD + ")"}
-                            </option>
-                          ))}
-                        </select>
-                        {errors.educationalService?.message && (
-                          <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                            {errors.educationalService?.message}
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        <label
-                          htmlFor="grade_section_cycle"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          <span>Grado/Sección/Ciclo</span>
-                          <span className="mt-2 text-sm text-red-600 dark:text-red-500 font-bold">
-                            {" "}
-                            *
-                          </span>
-                        </label>
-                        <input
-                          type="text"
-                          name="grade_section_cycle"
-                          id="grade_section_cycle"
-                          {...register("grade_section_cycle")}
-                          className={`bg-gray-50 border text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:placeholder:text-gray-400 dark:text-white ${
-                            errors.grade_section_cycle
-                              ? "border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-500"
-                              : "bg-gray-50 border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          }`}
-                          placeholder="Ej. 5to A"
-                          required
-                        />
-                        {errors.grade_section_cycle?.message && (
-                          <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                            {errors.grade_section_cycle?.message}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-                {currentStep === 3 && (
-                  <div>
-                    <h3 className="mb-4 text-lg font-bold leading-none text-gray-900 dark:text-white text-center">
-                      3. Credenciales
-                    </h3>
-                    <div className="grid md:grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <label
-                          htmlFor="email"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          <span>Correo electrónico</span>
-                          <span className="mt-2 text-sm text-red-600 dark:text-red-500 font-bold">
-                            {" "}
-                            *
-                          </span>
-                        </label>
-                        <input
-                          type="text"
-                          name="email"
-                          id="email"
-                          {...register("email")}
-                          className={`bg-gray-50 border text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:placeholder:text-gray-400 dark:text-white ${
-                            errors.email
-                              ? "border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-500"
-                              : "bg-gray-50 border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          }`}
-                          placeholder="Ej. ejemplo@correo.com"
-                        />
-                        {errors.email?.message && (
-                          <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                            {errors.email?.message}
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        <label
-                          htmlFor="phoneNumber"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          <span>Número de Celular</span>
-                          <span className="mt-2 text-sm text-red-600 dark:text-red-500 font-bold">
-                            *
-                          </span>
-                        </label>
+                  ))}
+                </div>
 
-                        <input
-                          type="text"
-                          name="phoneNumber"
-                          id="phoneNumber"
-                          maxLength={9}
-                          onInput={(e) => {
-                            e.target.value = e.target.value
-                              .replace(/\D/g, "")
-                              .slice(0, 9);
-                          }}
-                          {...register("phoneNumber")}
-                          className={`bg-gray-50 border text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:placeholder:text-gray-400 dark:text-white ${
-                            errors.phoneNumber
-                              ? "border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-500"
-                              : "bg-gray-50 border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          }`}
-                          placeholder="Ej. 9########"
-                        />
-                        {errors.phoneNumber?.message && (
-                          <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                            {errors.phoneNumber?.message}
-                          </p>
-                        )}
-                      </div>
+                {/* HCI: Indicador de campos requeridos */}
+                <div className="flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                  <span className="text-red-500 font-bold">*</span>
+                  <span>indica los campos obligatorios</span>
+                </div>
+              </div>
+            )}
 
-                      <div>
-                        <label
-                          htmlFor="password"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          <span>Contraseña</span>
-                          <span className="mt-2 text-sm text-red-600 dark:text-red-500 font-bold">
-                            {" "}
-                            *
-                          </span>
-                        </label>
-                        <div className="relative">
-                          <input
-                            type={showPassword ? "text" : "password"}
-                            name="password"
-                            id="password"
-                            {...register("password")}
-                            onChange={(e) => setPasswordValue(e.target.value)}
-                            placeholder="••••••••"
-                            className={`bg-gray-50 border text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:placeholder:text-gray-400 dark:text-white ${
-                              errors.password
-                                ? "border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-500"
-                                : "bg-gray-50 border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            }`}
-                            required
-                          />
+            {/* ================================================================ */}
+            {/* PASO 1: Información Personal */}
+            {/* ================================================================ */}
+            {currentStep === 1 && (
+              <div className="space-y-6 animate-fade-in">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-5">
+                  {/* Nacionalidad */}
+                  <FormSelect
+                    label="Nacionalidad"
+                    name="nationality"
+                    register={register}
+                    error={errors.nationality?.message}
+                    options={["PERÚ", ...paises.map(p => p.nombre)]}
+                    placeholder="Selecciona tu nacionalidad"
+                  />
 
-                          <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none"
-                          >
-                            {showPassword ? (
-                              <FaEyeSlash className="w-4 h-4" />
-                            ) : (
-                              <FaEye className="w-4 h-4" />
-                            )}
-                          </button>
-                        </div>
+                  {/* Tipo de documento */}
+                  <FormSelect
+                    label="Tipo de documento"
+                    name="typeOfIdentityDocument"
+                    register={register}
+                    error={errors.typeOfIdentityDocument?.message}
+                    options={[
+                      { value: "DNI", label: "DNI - Documento Nacional" },
+                      { value: "CE", label: "CE - Carné de Extranjería" },
+                      { value: "PTP", label: "PTP - Permiso Temporal" },
+                    ]}
+                    renderOption={(opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    )}
+                    placeholder="Selecciona tipo"
+                  />
 
-                        <div className="mt-2 space-y-1 text-sm">
-                          <PasswordRequirement
-                            text="Mínimo 8 caracteres"
-                            valid={hasMinLength}
-                          />
-                          <PasswordRequirement
-                            text="Una letra mayúscula"
-                            valid={hasUppercase}
-                          />
-                          <PasswordRequirement
-                            text="Una letra minúscula"
-                            valid={hasLowercase}
-                          />
-                          <PasswordRequirement
-                            text="Un número"
-                            valid={hasNumber}
-                          />
-                          <PasswordRequirement
-                            text="Un carácter especial (!$@#%*)"
-                            valid={hasSpecialChar}
-                          />
-                        </div>
+                  {/* Número de documento */}
+                  <FormField
+                    label="N° de documento"
+                    name="identityDocumentNumber"
+                    register={register}
+                    error={errors.identityDocumentNumber?.message}
+                    placeholder="Ej: 74123456"
+                    hint="Solo números, máximo 9 dígitos"
+                  >
+                    <input
+                      type="text"
+                      id="identityDocumentNumber"
+                      {...register("identityDocumentNumber")}
+                      onInput={(e) => {
+                        const value = e.target.value.replace(/[^0-9]/g, "");
+                        e.target.value = value.length > 9 ? value.slice(0, 9) : value;
+                      }}
+                      placeholder="Ej: 74123456"
+                      aria-describedby="identityDocumentNumber-hint"
+                      className={`
+                        w-full px-4 py-3 text-gray-900 dark:text-white
+                        bg-white dark:bg-gray-800 border-2 rounded-xl text-sm
+                        transition-all duration-300 ease-out
+                        placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none
+                        ${errors.identityDocumentNumber 
+                          ? "border-red-400 dark:border-red-500 bg-red-50/50 dark:bg-red-900/10" 
+                          : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+                        }
+                      `}
+                    />
+                  </FormField>
 
-                        {errors.password?.message && (
-                          <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                            {errors.password?.message}
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        <label
-                          htmlFor="confirmPassword"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          <span>Confirmar contraseña</span>
-                          <span className="mt-2 text-sm text-red-600 dark:text-red-500 font-bold">
-                            {" "}
-                            *
-                          </span>
-                        </label>
-                        <div className="relative">
-                          <input
-                            type={showConfirmPassword ? "text" : "password"}
-                            name="confirmPassword"
-                            id="confirmPassword"
-                            {...register("confirmPassword")}
-                            placeholder="••••••••"
-                            className={`bg-gray-50 border text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:placeholder:text-gray-400 dark:text-white ${
-                              errors.confirmPassword
-                                ? "border-red-500 focus:ring-red-500 focus:border-red-500 dark:border-red-500"
-                                : "bg-gray-50 border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            }`}
-                            required
-                          />
+                  {/* Nombres */}
+                  <FormField
+                    label="Nombres"
+                    name="names"
+                    register={register}
+                    error={errors.names?.message}
+                    placeholder="Ej: Juan Carlos"
+                  />
 
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setShowConfirmPassword(!showConfirmPassword)
-                            }
-                            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none"
-                          >
-                            {showConfirmPassword ? (
-                              <FaEyeSlash className="w-4 h-4" />
-                            ) : (
-                              <FaEye className="w-4 h-4" />
-                            )}
-                          </button>
-                        </div>
-                        {errors.confirmPassword?.message && (
-                          <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                            {errors.confirmPassword?.message}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-start" bis_skin_checked="1">
-                      <div
-                        className="flex items-center h-5"
-                        bis_skin_checked="1"
+                  {/* Apellidos */}
+                  <FormField
+                    label="Apellidos"
+                    name="surnames"
+                    register={register}
+                    error={errors.surnames?.message}
+                    placeholder="Ej: Flores Gómez"
+                  />
+
+                  {/* Fecha de nacimiento */}
+                  <FormField
+                    label="Fecha de nacimiento"
+                    name="birthdate"
+                    type="date"
+                    register={register}
+                    error={errors.birthdate?.message}
+                    hint="Debes tener entre 13 y 24 años"
+                  >
+                    <input
+                      type="date"
+                      id="birthdate"
+                      {...register("birthdate")}
+                      min={minDate}
+                      max={maxDate}
+                      aria-describedby="birthdate-hint"
+                      className={`
+                        w-full px-4 py-3 text-gray-900 dark:text-white
+                        bg-white dark:bg-gray-800 border-2 rounded-xl text-sm
+                        transition-all duration-300 ease-out outline-none
+                        ${errors.birthdate 
+                          ? "border-red-400 dark:border-red-500 bg-red-50/50 dark:bg-red-900/10" 
+                          : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+                        }
+                      `}
+                    />
+                  </FormField>
+
+                  {/* Género */}
+                  <FormSelect
+                    label="Género"
+                    name="gender"
+                    register={register}
+                    error={errors.gender?.message}
+                    options={[
+                      { value: "femenino", label: "Femenino" },
+                      { value: "masculino", label: "Masculino" },
+                    ]}
+                    renderOption={(opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    )}
+                    placeholder="Selecciona género"
+                  />
+
+                  {/* Estatura */}
+                  <FormField
+                    label="Estatura (cm)"
+                    name="height"
+                    register={register}
+                    error={errors.height?.message}
+                    required={false}
+                    placeholder="Ej: 165"
+                    hint="En centímetros (opcional)"
+                  >
+                    <input
+                      type="text"
+                      id="height"
+                      {...register("height")}
+                      onInput={(e) => {
+                        let value = e.target.value.replace(/[^0-9.]/g, "");
+                        const parts = value.split(".");
+                        if (parts.length > 2) value = parts[0] + "." + parts.slice(1).join("");
+                        if (parts[0]?.length > 3) value = parts[0].slice(0, 3) + (parts[1] ? "." + parts[1] : "");
+                        if (parts[1]?.length > 1) value = parts[0] + "." + parts[1].slice(0, 1);
+                        e.target.value = value;
+                      }}
+                      placeholder="Ej: 165"
+                      className={`
+                        w-full px-4 py-3 text-gray-900 dark:text-white
+                        bg-white dark:bg-gray-800 border-2 rounded-xl text-sm
+                        transition-all duration-300 ease-out outline-none
+                        ${errors.height 
+                          ? "border-red-400 dark:border-red-500 bg-red-50/50 dark:bg-red-900/10" 
+                          : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+                        }
+                      `}
+                    />
+                  </FormField>
+                </div>
+              </div>
+            )}
+
+            {/* ================================================================ */}
+            {/* PASO 2: Institución Educativa */}
+            {/* ================================================================ */}
+            {currentStep === 2 && (
+              <div className="space-y-6 animate-fade-in">
+                {/* HCI: Información contextual */}
+                <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800">
+                  <FaCircleInfo className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                    Selecciona primero el departamento, luego la provincia y distrito. 
+                    Las instituciones educativas se cargarán automáticamente según tu ubicación.
+                  </p>
+                </div>
+
+                <div className="grid sm:grid-cols-3 gap-4">
+                  {/* Departamento */}
+                  <FormSelect
+                    label="Departamento"
+                    name="department"
+                    register={register}
+                    error={errors.department?.message}
+                    options={departamentos_peru}
+                    placeholder="Selecciona departamento"
+                  />
+
+                  {/* Provincia */}
+                  <FormSelect
+                    label="Provincia"
+                    name="province"
+                    register={register}
+                    error={errors.province?.message}
+                    options={provinces}
+                    disabled={!selectedDepartment}
+                    loading={loadingProvinces}
+                    placeholder={!selectedDepartment ? "Primero selecciona departamento" : "Selecciona provincia"}
+                  />
+
+                  {/* Distrito */}
+                  <FormSelect
+                    label="Distrito"
+                    name="district"
+                    register={register}
+                    error={errors.district?.message}
+                    options={districts}
+                    disabled={!selectedProvince}
+                    loading={loadingDistricts}
+                    placeholder={!selectedProvince ? "Primero selecciona provincia" : "Selecciona distrito"}
+                  />
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {/* Institución Educativa */}
+                  <FormSelect
+                    label="Institución Educativa"
+                    name="educationalService"
+                    register={register}
+                    error={errors.educationalService?.message}
+                    options={institutions}
+                    disabled={!selectedDistrict}
+                    loading={loadingInstitutions}
+                    placeholder={!selectedDistrict ? "Primero selecciona distrito" : "Selecciona institución"}
+                    renderOption={(inst) => (
+                      <option key={inst._id} value={inst._id}>
+                        {inst.CEN_EDU} - ({inst.D_NIV_MOD})
+                      </option>
+                    )}
+                  />
+
+                  {/* Grado/Sección/Ciclo */}
+                  <FormField
+                    label="Grado / Sección / Ciclo"
+                    name="grade_section_cycle"
+                    register={register}
+                    error={errors.grade_section_cycle?.message}
+                    placeholder="Ej: 5to A"
+                    hint="Indica tu grado y sección actual"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* ================================================================ */}
+            {/* PASO 3: Credenciales */}
+            {/* ================================================================ */}
+            {currentStep === 3 && (
+              <div className="space-y-6 animate-fade-in">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {/* Email */}
+                  <FormField
+                    label="Correo electrónico"
+                    name="email"
+                    type="email"
+                    register={register}
+                    error={errors.email?.message}
+                    placeholder="ejemplo@correo.com"
+                    hint="Usaremos este correo para comunicarnos contigo"
+                  />
+
+                  {/* Teléfono */}
+                  <FormField
+                    label="Número de celular"
+                    name="phoneNumber"
+                    register={register}
+                    error={errors.phoneNumber?.message}
+                    placeholder="9########"
+                    hint="9 dígitos, sin espacios"
+                  >
+                    <input
+                      type="text"
+                      id="phoneNumber"
+                      {...register("phoneNumber")}
+                      maxLength={9}
+                      onInput={(e) => {
+                        e.target.value = e.target.value.replace(/\D/g, "").slice(0, 9);
+                      }}
+                      placeholder="9########"
+                      className={`
+                        w-full px-4 py-3 text-gray-900 dark:text-white
+                        bg-white dark:bg-gray-800 border-2 rounded-xl text-sm
+                        transition-all duration-300 ease-out outline-none
+                        ${errors.phoneNumber 
+                          ? "border-red-400 dark:border-red-500 bg-red-50/50 dark:bg-red-900/10" 
+                          : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+                        }
+                      `}
+                    />
+                  </FormField>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {/* Contraseña */}
+                  <div className="space-y-1.5">
+                    <label
+                      htmlFor="password"
+                      className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-200"
+                    >
+                      Contraseña
+                      <span className="text-red-500 ml-1" aria-hidden="true">*</span>
+                    </label>
+                    
+                    <div className="relative">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        id="password"
+                        {...register("password")}
+                        placeholder="Crea tu contraseña"
+                        aria-describedby="password-requirements"
+                        className={`
+                          w-full px-4 py-3 pr-12 text-gray-900 dark:text-white
+                          bg-white dark:bg-gray-800 border-2 rounded-xl text-sm
+                          transition-all duration-300 ease-out outline-none
+                          ${errors.password 
+                            ? "border-red-400 dark:border-red-500 bg-red-50/50 dark:bg-red-900/10" 
+                            : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+                          }
+                        `}
+                      />
+                      
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+                        aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                       >
-                        <input
-                          required=""
-                          id="termsAndConditions"
-                          aria-describedby="termsAndConditions"
-                          name="termsAndConditions"
-                          type="checkbox"
-                          {...register("termsAndConditions")}
-                          className="w-4 h-4 bg-gray-50 rounded border-gray-300 focus:ring-3 focus:ring-blue-300 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
-                        />
+                        {showPassword ? <FaEyeSlash className="w-4 h-4" /> : <FaEye className="w-4 h-4" />}
+                      </button>
+                    </div>
+
+                    {/* HCI: Indicador de fortaleza de contraseña */}
+                    <div className="mt-3 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                          <div 
+                            className={`h-full rounded-full transition-all duration-500 ${
+                              passwordStrength <= 1 ? "bg-red-500 w-1/5" :
+                              passwordStrength <= 2 ? "bg-orange-500 w-2/5" :
+                              passwordStrength <= 3 ? "bg-yellow-500 w-3/5" :
+                              passwordStrength <= 4 ? "bg-lime-500 w-4/5" :
+                              "bg-emerald-500 w-full"
+                            }`}
+                          />
+                        </div>
+                        <span className={`text-xs font-medium ${
+                          passwordStrength <= 1 ? "text-red-500" :
+                          passwordStrength <= 2 ? "text-orange-500" :
+                          passwordStrength <= 3 ? "text-yellow-600" :
+                          passwordStrength <= 4 ? "text-lime-600" :
+                          "text-emerald-600"
+                        }`}>
+                          {passwordStrength <= 1 ? "Muy débil" :
+                           passwordStrength <= 2 ? "Débil" :
+                           passwordStrength <= 3 ? "Regular" :
+                           passwordStrength <= 4 ? "Fuerte" :
+                           "Muy fuerte"}
+                        </span>
                       </div>
-                      <div className="ml-3 text-sm">
-                        <label
-                          htmlFor="termsAndConditions"
-                          className="font-medium text-gray-900 dark:text-white"
-                        >
-                          Estoy de acuerdo con los
-                          <a
-                            className="ml-1 text-blue-700 dark:text-blue-500 hover:underline"
-                            href="/terms-and-conditions/"
-                            target="_blank"
-                          >
-                            Términos y Condiciones
-                          </a>
-                        </label>
+                      
+                      {/* Requisitos de contraseña */}
+                      <div id="password-requirements" className="grid grid-cols-2 gap-1">
+                        <PasswordRequirement text="8+ caracteres" valid={passwordChecks.hasMinLength} />
+                        <PasswordRequirement text="Una mayúscula" valid={passwordChecks.hasUppercase} />
+                        <PasswordRequirement text="Una minúscula" valid={passwordChecks.hasLowercase} />
+                        <PasswordRequirement text="Un número" valid={passwordChecks.hasNumber} />
+                        <PasswordRequirement text="Un especial (!$@#%*)" valid={passwordChecks.hasSpecialChar} />
                       </div>
                     </div>
-                    {errors.termsAndConditions?.message && (
-                      <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                        {errors.termsAndConditions?.message}
+                    
+                    {errors.password?.message && (
+                      <p className="flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400 mt-2" role="alert">
+                        <FaCircleExclamation className="w-3.5 h-3.5 flex-shrink-0" />
+                        {errors.password.message}
                       </p>
                     )}
                   </div>
-                )}
-                <div className="flex justify-between mt-8 mb-6">
-                  <button
-                    type="button"
-                    onClick={handleBack}
-                    disabled={currentStep === 0}
-                    className={`w-2/5 md:w-1/3 inline-flex items-center justify-center px-5 py-3 text-base font-bold text-center text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-800 ${
-                      currentStep === 0 ? "invisible" : "block"
-                    }`}
-                  >
-                    ATRÁS
-                  </button>
-                  {currentStep == 0 ? (
-                    <button
-                      type="button"
-                      onClick={() => setCurrentStep(1)}
-                      className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-bold rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+
+                  {/* Confirmar contraseña */}
+                  <div className="space-y-1.5">
+                    <label
+                      htmlFor="confirmPassword"
+                      className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-200"
                     >
-                      INICIAR REGISTRO
-                    </button>
-                  ) : currentStep < 3 ? (
-                    <button
-                      type="button"
-                      onClick={handleNext}
-                      className="w-2/5 md:w-1/3 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-bold rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 text-center"
-                    >
-                      SIGUIENTE
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={handleFormSubmit}
-                      className="w-2/5 md:w-1/3 flex justify-center items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-bold rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 text-center"
-                      disabled={loading}
-                    >
-                      {loading ? (
-                        <svg
-                          aria-hidden="true"
-                          className="w-6 h-6 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
-                          viewBox="0 0 100 101"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                            fill="#FFFFFF"
-                          />
-                          <path
-                            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                            fill="currentFill"
-                          />
-                        </svg>
-                      ) : (
-                        "REGISTRAR"
-                      )}
-                    </button>
+                      Confirmar contraseña
+                      <span className="text-red-500 ml-1" aria-hidden="true">*</span>
+                    </label>
+                    
+                    <div className="relative">
+                      <input
+                        type={showConfirmPassword ? "text" : "password"}
+                        id="confirmPassword"
+                        {...register("confirmPassword")}
+                        placeholder="Repite tu contraseña"
+                        className={`
+                          w-full px-4 py-3 pr-12 text-gray-900 dark:text-white
+                          bg-white dark:bg-gray-800 border-2 rounded-xl text-sm
+                          transition-all duration-300 ease-out outline-none
+                          ${errors.confirmPassword 
+                            ? "border-red-400 dark:border-red-500 bg-red-50/50 dark:bg-red-900/10" 
+                            : passwordsMatch
+                              ? "border-emerald-400 dark:border-emerald-500 bg-emerald-50/30 dark:bg-emerald-900/10"
+                              : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+                          }
+                        `}
+                      />
+                      
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+                        aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                      >
+                        {showConfirmPassword ? <FaEyeSlash className="w-4 h-4" /> : <FaEye className="w-4 h-4" />}
+                      </button>
+                    </div>
+
+                    {/* HCI: Indicador de coincidencia */}
+                    {confirmPasswordValue && (
+                      <p className={`flex items-center gap-1.5 text-sm mt-2 ${
+                        passwordsMatch 
+                          ? "text-emerald-600 dark:text-emerald-400" 
+                          : "text-red-600 dark:text-red-400"
+                      }`}>
+                        {passwordsMatch ? (
+                          <>
+                            <FaCheck className="w-3.5 h-3.5" />
+                            Las contraseñas coinciden
+                          </>
+                        ) : (
+                          <>
+                            <FaCircleExclamation className="w-3.5 h-3.5" />
+                            Las contraseñas no coinciden
+                          </>
+                        )}
+                      </p>
+                    )}
+                    
+                    {errors.confirmPassword?.message && (
+                      <p className="flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400 mt-2" role="alert">
+                        <FaCircleExclamation className="w-3.5 h-3.5 flex-shrink-0" />
+                        {errors.confirmPassword.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Términos y condiciones */}
+                <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                  <label className="flex items-start gap-3 cursor-pointer group">
+                    <div className="relative flex items-center justify-center mt-0.5">
+                      <input
+                        type="checkbox"
+                        id="termsAndConditions"
+                        {...register("termsAndConditions")}
+                        className="peer sr-only"
+                      />
+                      <div className="w-5 h-5 border-2 border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 peer-checked:bg-blue-600 peer-checked:border-blue-600 transition-all duration-200 peer-focus:ring-2 peer-focus:ring-blue-500/50">
+                        <FaCheck className="w-full h-full p-0.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity" />
+                      </div>
+                      <FaCheck className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" />
+                    </div>
+                    <span className="text-sm text-gray-700 dark:text-gray-200">
+                      Estoy de acuerdo con los{" "}
+                      <a 
+                        href="/terms-and-conditions/" 
+                        target="_blank" 
+                        className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Términos y Condiciones
+                      </a>
+                      {" "}y la{" "}
+                      <a 
+                        href="/privacy-policy/" 
+                        target="_blank" 
+                        className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Política de Privacidad
+                      </a>
+                    </span>
+                  </label>
+                  
+                  {errors.termsAndConditions?.message && (
+                    <p className="flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400 mt-2 ml-8" role="alert">
+                      <FaCircleExclamation className="w-3.5 h-3.5 flex-shrink-0" />
+                      {errors.termsAndConditions.message}
+                    </p>
                   )}
                 </div>
-                <div
-                  className="text-lg font-medium text-gray-500 dark:text-gray-400 text-center"
-                  bis_skin_checked="1"
-                >
-                  ¿Ya tienes una cuenta?
-                  <a
-                    className="ml-1 text-blue-700 dark:text-blue-500 hover:underline font-bold"
-                    href="/login"
-                  >
-                    Inicie sesión aquí
-                  </a>
-                </div>
               </div>
+            )}
+
+            {/* ================================================================ */}
+            {/* BOTONES DE NAVEGACIÓN */}
+            {/* ================================================================ */}
+            <div className="flex items-center justify-between mt-10 pt-6 border-t border-gray-100 dark:border-gray-700">
+              {/* Botón Atrás */}
+              <button
+                type="button"
+                onClick={handleBack}
+                disabled={currentStep === 0}
+                className={`
+                  uppercase inline-flex items-center gap-2 px-8 py-3.5
+                  text-sm font-bold rounded-xl
+                  transition-all duration-300
+                  focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2
+                  ${currentStep === 0 
+                    ? "invisible opacity-0 cursor-default pointer-events-none" 
+                    : "text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
+                  }
+                `}
+              >
+                <FaArrowLeft className="w-4 h-4" />
+                Atrás
+              </button>
+
+              {/* Botón Siguiente / Registrar */}
+              {currentStep === 0 ? (
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(1)}
+                  className="
+                    uppercase inline-flex items-center gap-2 px-8 py-3.5
+                    text-white font-bold text-base
+                    bg-gradient-to-r from-blue-600 to-blue-700
+                    hover:from-blue-700 hover:to-blue-800
+                    rounded-xl
+                    shadow-lg shadow-blue-500/30
+                    hover:shadow-xl hover:shadow-blue-500/40
+                    hover:-translate-y-0.5 active:translate-y-0
+                    transition-all duration-300
+                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                  "
+                >
+                  Iniciar registro
+                  <FaArrowRight className="w-4 h-4" />
+                </button>
+              ) : currentStep < 3 ? (
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="
+                    uppercase inline-flex items-center gap-2 px-8 py-3.5
+                    text-white font-bold text-base
+                    bg-gradient-to-r from-blue-600 to-blue-700
+                    hover:from-blue-700 hover:to-blue-800
+                    rounded-xl
+                    shadow-lg shadow-blue-500/30
+                    hover:shadow-xl hover:shadow-blue-500/40
+                    hover:-translate-y-0.5 active:translate-y-0
+                    transition-all duration-300
+                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                  "
+                >
+                  Siguiente
+                  <FaArrowRight className="w-4 h-4" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleFormSubmit}
+                  disabled={loading}
+                  className={`
+                    uppercase inline-flex items-center justify-center gap-2 px-8 py-3.5
+                    text-white font-bold text-base
+                    rounded-xl
+                    transition-all duration-300
+                    focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2
+                    min-w-[180px]
+                    ${loading 
+                      ? "bg-emerald-400 cursor-wait" 
+                      : "bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 hover:-translate-y-0.5 active:translate-y-0"
+                    }
+                  `}
+                  aria-busy={loading}
+                >
+                  {loading ? (
+                    <>
+                      <FaSpinner className="w-5 h-5 animate-spin" />
+                      Registrando...
+                    </>
+                  ) : (
+                    <>
+                      <FaCheck className="w-4 h-4" />
+                      Completar registro
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+
+            {/* Link a login */}
+            <div className="mt-8 text-center">
+              <p className="text-gray-500 dark:text-gray-400">
+                ¿Ya tienes una cuenta?{" "}
+                <Link 
+                  to="/login" 
+                  className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                >
+                  Inicia sesión aquí
+                </Link>
+              </p>
             </div>
           </div>
         </div>
       </main>
+
+      {/* Estilos CSS para animaciones */}
+      <style>{`
+        @keyframes fade-in-down {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fade-in-up {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        
+        @keyframes slide-down {
+          from { opacity: 0; transform: translateY(-5px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes scale-in {
+          from { opacity: 0; transform: scale(0.8); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        
+        .animate-fade-in-down { animation: fade-in-down 0.5s ease-out; }
+        .animate-fade-in-up { animation: fade-in-up 0.6s ease-out; }
+        .animate-fade-in { animation: fade-in 0.5s ease-out; }
+        .animate-slide-down { animation: slide-down 0.3s ease-out; }
+        .animate-scale-in { animation: scale-in 0.2s ease-out; }
+      `}</style>
     </div>
   );
 };
+
 export default Register;

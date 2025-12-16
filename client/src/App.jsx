@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Index from "./pages/Index";
+import LandingPage from "./pages/LandingPage";
 import MainPage from "./pages/MainPage";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -51,7 +51,7 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<Index />} />
+      <Route path="/" element={<LandingPage />} />
       <Route
         path="/login"
         element={

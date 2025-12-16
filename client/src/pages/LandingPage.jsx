@@ -4,7 +4,7 @@ import Hero from "../components/index/Hero";
 import Features from "../components/index/Features";
 import VocationalTestsDescription from "../components/index/VocationalTestsDescription";
 
-const Index = () => {
+const LandingPage = () => {
   return (
     <div>
       <Header />
@@ -18,4 +18,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default LandingPage;
