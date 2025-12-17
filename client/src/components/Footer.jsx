@@ -104,7 +104,7 @@ const Footer = () => {
           <div className="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">
             {footerConfig.sections.map((section, index) => (
               <div key={index}>
-                <h2 className="mb-6 text-sm font-semibold text-gray-900 dark:text-white uppercase">
+                <h2 className="mb-6 text-sm font-bold text-gray-900 dark:text-white uppercase">
                   {section.title}
                 </h2>
                 <ul className="text-gray-500 dark:text-gray-400 font-medium">
@@ -113,7 +113,7 @@ const Footer = () => {
                       key={linkIndex}
                       className={linkIndex < section.links.length - 1 ? "mb-4" : ""}
                     >
-                      <a href={link.url} className="hover:underline">
+                      <a href={link.url} className="hover:underline hover:text-blue-700 dark:hover:text-blue-500 uppercase">
                         {link.name}
                       </a>
                     </li>
