@@ -23,7 +23,7 @@ const Footer = () => {
         links: [
           { name: "Servicios", url: "/services" },
           { name: "Galería", url: "/gallery" },
-          { name: "Preguntas Frecuentes", url: "/faq" },
+          { name: "Preguntas Frecuentes", url: "/faqs" },
         ],
       },
       {
