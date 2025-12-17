@@ -6,7 +6,6 @@ import LandingPage from "./pages/LandingPage";
 import MainPage from "./pages/MainPage";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
-import PersonalInformationSheet from "./pages/PersonalInformationSheet";
 import IeppoTest from "./pages/IeppoTest";
 import PhbTest from "./pages/PhbTest";
 import TepeTest from "./pages/TepeTest";
@@ -70,10 +69,6 @@ const AppRoutes = () => {
       />
       <Route element={<ProtectedRoute />}>
         <Route path="/main" element={<MainPage />} />
-        <Route
-          path="/personal-information"
-          element={<PersonalInformationSheet />}
-        />
         <Route path="/phb-test" element={<PhbTest />} />
         <Route path="/ieppo-test" element={<IeppoTest />} />
         <Route path="/tepe-test" element={<TepeTest />} />

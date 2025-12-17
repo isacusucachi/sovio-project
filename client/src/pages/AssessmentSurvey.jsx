@@ -1,6 +1,8 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAssessmentSurveys } from "../context/assessmentSurveyContex";
+import { useAuth } from "../context/authContext";
+import { FaX } from "react-icons/fa6";
 
 // ============================================
 // SURVEY CONFIGURATION
@@ -13,11 +15,31 @@ const SURVEY_QUESTIONS = [
     icon: "🧭",
     type: "scale",
     options: [
-      { value: "Muy sencilla", label: "Muy sencilla", emoji: "😊", color: "green" },
-      { value: "Relativamente sencilla", label: "Relativamente sencilla", emoji: "🙂", color: "green" },
+      {
+        value: "Muy sencilla",
+        label: "Muy sencilla",
+        emoji: "😊",
+        color: "green",
+      },
+      {
+        value: "Relativamente sencilla",
+        label: "Relativamente sencilla",
+        emoji: "🙂",
+        color: "green",
+      },
       { value: "Normal", label: "Normal", emoji: "😐", color: "amber" },
-      { value: "Algo compleja", label: "Algo compleja", emoji: "😕", color: "red" },
-      { value: "Muy compleja", label: "Muy compleja", emoji: "😣", color: "red" },
+      {
+        value: "Algo compleja",
+        label: "Algo compleja",
+        emoji: "😕",
+        color: "red",
+      },
+      {
+        value: "Muy compleja",
+        label: "Muy compleja",
+        emoji: "😣",
+        color: "red",
+      },
     ],
   },
   {
@@ -28,21 +50,57 @@ const SURVEY_QUESTIONS = [
     options: [
       { value: "Muy bueno", label: "Muy bueno", emoji: "🤩", color: "green" },
       { value: "Normal", label: "Normal", emoji: "😐", color: "amber" },
-      { value: "Peor que la media", label: "Peor que la media", emoji: "😕", color: "red" },
-      { value: "No me gusta nada", label: "No me gusta nada", emoji: "😞", color: "red" },
+      {
+        value: "Peor que la media",
+        label: "Peor que la media",
+        emoji: "😕",
+        color: "red",
+      },
+      {
+        value: "No me gusta nada",
+        label: "No me gusta nada",
+        emoji: "😞",
+        color: "red",
+      },
     ],
   },
   {
     id: "satisfactionRating",
-    question: "¿Cómo de satisfecho/a te encuentras respecto a los datos obtenidos de nuestra plataforma?",
+    question:
+      "¿Cómo de satisfecho/a te encuentras respecto a los datos obtenidos de nuestra plataforma?",
     icon: "📊",
     type: "scale",
     options: [
-      { value: "Muy satisfecho/a", label: "Muy satisfecho/a", emoji: "🤩", color: "green" },
-      { value: "Satisfecho/a", label: "Satisfecho/a", emoji: "😊", color: "green" },
-      { value: "Medianamente satisfecho/a", label: "Medianamente satisfecho/a", emoji: "😐", color: "amber" },
-      { value: "Insatisfecho/a", label: "Insatisfecho/a", emoji: "😕", color: "red" },
-      { value: "Muy insatisfecho/a", label: "Muy insatisfecho/a", emoji: "😞", color: "red" },
+      {
+        value: "Muy satisfecho/a",
+        label: "Muy satisfecho/a",
+        emoji: "🤩",
+        color: "green",
+      },
+      {
+        value: "Satisfecho/a",
+        label: "Satisfecho/a",
+        emoji: "😊",
+        color: "green",
+      },
+      {
+        value: "Medianamente satisfecho/a",
+        label: "Medianamente satisfecho/a",
+        emoji: "😐",
+        color: "amber",
+      },
+      {
+        value: "Insatisfecho/a",
+        label: "Insatisfecho/a",
+        emoji: "😕",
+        color: "red",
+      },
+      {
+        value: "Muy insatisfecho/a",
+        label: "Muy insatisfecho/a",
+        emoji: "😞",
+        color: "red",
+      },
     ],
   },
   {
@@ -51,11 +109,31 @@ const SURVEY_QUESTIONS = [
     icon: "💬",
     type: "scale",
     options: [
-      { value: "Sí, definitivamente", label: "Sí, definitivamente", emoji: "👍", color: "green" },
-      { value: "Probablemente sí", label: "Probablemente sí", emoji: "🙂", color: "green" },
+      {
+        value: "Sí, definitivamente",
+        label: "Sí, definitivamente",
+        emoji: "👍",
+        color: "green",
+      },
+      {
+        value: "Probablemente sí",
+        label: "Probablemente sí",
+        emoji: "🙂",
+        color: "green",
+      },
       { value: "No lo sé", label: "No lo sé", emoji: "🤔", color: "amber" },
-      { value: "Probablemente no", label: "Probablemente no", emoji: "😕", color: "red" },
-      { value: "No, para nada", label: "No, para nada", emoji: "👎", color: "red" },
+      {
+        value: "Probablemente no",
+        label: "Probablemente no",
+        emoji: "😕",
+        color: "red",
+      },
+      {
+        value: "No, para nada",
+        label: "No, para nada",
+        emoji: "👎",
+        color: "red",
+      },
     ],
   },
   {
@@ -63,7 +141,8 @@ const SURVEY_QUESTIONS = [
     question: "¿Tienes algún comentario o sugerencia para nosotros?",
     icon: "✏️",
     type: "textarea",
-    placeholder: "Escribe aquí tus comentarios, sugerencias o ideas para mejorar la plataforma...",
+    placeholder:
+      "Escribe aquí tus comentarios, sugerencias o ideas para mejorar la plataforma...",
     optional: true,
   },
   {
@@ -82,7 +161,7 @@ const SURVEY_QUESTIONS = [
 // Progress Bar
 const ProgressBar = ({ current, total, answeredCount }) => {
   const percentage = (answeredCount / total) * 100;
-  
+
   return (
     <div className="mb-8">
       <div className="flex justify-between items-center mb-2">
@@ -104,26 +183,37 @@ const ProgressBar = ({ current, total, answeredCount }) => {
 };
 
 // Question Card Wrapper
-const QuestionCard = ({ number, icon, question, children, isAnswered, isOptional }) => {
+const QuestionCard = ({
+  number,
+  icon,
+  question,
+  children,
+  isAnswered,
+  isOptional,
+}) => {
   return (
     <div
       className={`
         bg-white dark:bg-gray-800 rounded-2xl p-6 border-2 transition-all duration-300
-        ${isAnswered
-          ? "border-green-300 dark:border-green-700 shadow-md"
-          : "border-gray-200 dark:border-gray-700 hover:border-blue-200 dark:hover:border-blue-800"
+        ${
+          isAnswered
+            ? "border-green-300 dark:border-green-700 shadow-md"
+            : "border-gray-200 dark:border-gray-700 hover:border-blue-200 dark:hover:border-blue-800"
         }
       `}
     >
       {/* Question Header */}
       <div className="flex items-start gap-4 mb-5">
-        <div className={`
+        <div
+          className={`
           w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0
-          ${isAnswered 
-            ? "bg-green-100 dark:bg-green-900/30" 
-            : "bg-blue-100 dark:bg-blue-900/30"
+          ${
+            isAnswered
+              ? "bg-green-100 dark:bg-green-900/30"
+              : "bg-blue-100 dark:bg-blue-900/30"
           }
-        `}>
+        `}
+        >
           {isAnswered ? "✓" : icon}
         </div>
         <div className="flex-1">
@@ -149,9 +239,7 @@ const QuestionCard = ({ number, icon, question, children, isAnswered, isOptional
       </div>
 
       {/* Question Content */}
-      <div className="ml-0 md:ml-16">
-        {children}
-      </div>
+      <div className="ml-0 md:ml-16">{children}</div>
     </div>
   );
 };
@@ -160,15 +248,20 @@ const QuestionCard = ({ number, icon, question, children, isAnswered, isOptional
 const ScaleOptionButton = ({ option, isSelected, onSelect }) => {
   const colorClasses = {
     green: {
-      selected: "bg-green-100 dark:bg-green-900/40 border-green-400 dark:border-green-600 ring-2 ring-green-200 dark:ring-green-800",
-      hover: "hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-300",
+      selected:
+        "bg-green-100 dark:bg-green-900/40 border-green-400 dark:border-green-600 ring-2 ring-green-200 dark:ring-green-800",
+      hover:
+        "hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-300",
     },
     amber: {
-      selected: "bg-amber-100 dark:bg-amber-900/40 border-amber-400 dark:border-amber-600 ring-2 ring-amber-200 dark:ring-amber-800",
-      hover: "hover:bg-amber-50 dark:hover:bg-amber-900/20 hover:border-amber-300",
+      selected:
+        "bg-amber-100 dark:bg-amber-900/40 border-amber-400 dark:border-amber-600 ring-2 ring-amber-200 dark:ring-amber-800",
+      hover:
+        "hover:bg-amber-50 dark:hover:bg-amber-900/20 hover:border-amber-300",
     },
     red: {
-      selected: "bg-red-100 dark:bg-red-900/40 border-red-400 dark:border-red-600 ring-2 ring-red-200 dark:ring-red-800",
+      selected:
+        "bg-red-100 dark:bg-red-900/40 border-red-400 dark:border-red-600 ring-2 ring-red-200 dark:ring-red-800",
       hover: "hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-300",
     },
   };
@@ -182,19 +275,34 @@ const ScaleOptionButton = ({ option, isSelected, onSelect }) => {
       className={`
         w-full p-4 rounded-xl border-2 transition-all duration-200 text-left
         flex items-center gap-3
-        ${isSelected
-          ? colors.selected
-          : `border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 ${colors.hover}`
+        ${
+          isSelected
+            ? colors.selected
+            : `border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 ${colors.hover}`
         }
       `}
     >
       <span className="text-2xl">{option.emoji}</span>
-      <span className={`font-medium ${isSelected ? "text-gray-800 dark:text-white" : "text-gray-600 dark:text-gray-300"}`}>
+      <span
+        className={`font-medium ${
+          isSelected
+            ? "text-gray-800 dark:text-white"
+            : "text-gray-600 dark:text-gray-300"
+        }`}
+      >
         {option.label}
       </span>
       {isSelected && (
-        <svg className="w-5 h-5 ml-auto text-green-500" fill="currentColor" viewBox="0 0 20 20">
-          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+        <svg
+          className="w-5 h-5 ml-auto text-green-500"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            fillRule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+            clipRule="evenodd"
+          />
         </svg>
       )}
     </button>
@@ -231,19 +339,22 @@ const StarRating = ({ value, onChange, labels }) => {
           </button>
         ))}
       </div>
-      
+
       {/* Label indicator */}
       <div className="h-8">
         {(hoverValue || value) > 0 && (
-          <span className={`
+          <span
+            className={`
             inline-block px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-200
-            ${(hoverValue || value) >= 4 
-              ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-              : (hoverValue || value) >= 3
+            ${
+              (hoverValue || value) >= 4
+                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                : (hoverValue || value) >= 3
                 ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
                 : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
             }
-          `}>
+          `}
+          >
             {labels[(hoverValue || value) - 1]}
           </span>
         )}
@@ -284,7 +395,11 @@ const TextareaInput = ({ value, onChange, placeholder }) => {
         "
       />
       <div className="flex justify-end mt-2">
-        <span className={`text-xs ${charCount > maxLength * 0.8 ? "text-amber-500" : "text-gray-400"}`}>
+        <span
+          className={`text-xs ${
+            charCount > maxLength * 0.8 ? "text-amber-500" : "text-gray-400"
+          }`}
+        >
           {charCount}/{maxLength} caracteres
         </span>
       </div>
@@ -314,12 +429,109 @@ const SuccessScreen = () => {
           hover:shadow-xl transition-all duration-300 transform hover:scale-105
         "
       >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+          />
         </svg>
         Volver al Inicio
       </a>
     </div>
+  );
+};
+
+const ExitConfirmModal = ({ isOpen, onConfirm, onCancel }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onCancel}
+      />
+
+      {/* Modal */}
+      <div className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-md w-full p-6 animate-fadeIn">
+        {/* Icon */}
+        <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-red-400 to-rose-500 rounded-full flex items-center justify-center shadow-lg">
+          <span className="text-4xl">🚪</span>
+        </div>
+
+        {/* Title */}
+        <h3 className="text-xl font-bold text-gray-800 dark:text-white text-center mb-2">
+          ¿Desea Salir de la Encuesta?
+        </h3>
+
+        {/* Buttons */}
+        <div className="flex gap-3">
+          <button
+            onClick={onCancel}
+            className="flex-1 py-3 px-6 rounded-xl font-bold
+                       bg-gray-100 dark:bg-gray-700 
+                       text-gray-700 dark:text-gray-200
+                       hover:bg-gray-200 dark:hover:bg-gray-600
+                       transition-all duration-300"
+          >
+            CANCELAR
+          </button>
+          <button
+            onClick={onConfirm}
+            className="flex-1 py-3 px-6 rounded-xl font-bold text-white
+                       bg-gradient-to-r from-red-500 to-rose-600
+                       hover:from-red-600 hover:to-rose-700
+                       transition-all duration-300 transform hover:scale-[1.02]
+                       shadow-lg shadow-red-500/30
+                       flex items-center justify-center gap-2"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+              />
+            </svg>
+            SALIR
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Exit Button Component
+const ExitButton = ({ onClick }) => {
+  return (
+    <button
+      onClick={onClick}
+      className="fixed top-4 right-4 z-40
+                 flex items-center gap-2 px-5 py-3 rounded-xl
+                 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg
+                 border-2 border-gray-200 dark:border-gray-700
+                 text-gray-600 dark:text-gray-300
+                 hover:bg-red-50 dark:hover:bg-red-900/20
+                 hover:border-red-300 dark:hover:border-red-700
+                 hover:text-red-600 dark:hover:text-red-400
+                 transition-all duration-300 shadow-lg
+                 group"
+    >
+      <FaX className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
+      <span className="font-bold text-sm md:text-base">SALIR</span>
+    </button>
   );
 };
 
@@ -329,7 +541,8 @@ const SuccessScreen = () => {
 
 const AssessmentSurvey = () => {
   const { createAssessmentSurvey, errors } = useAssessmentSurveys();
-  const navigate = useNavigate();
+
+  const { user } = useAuth();
 
   const [assessmentSurvey, setAssessmentSurvey] = useState({
     navigationDifficulty: null,
@@ -341,7 +554,9 @@ const AssessmentSurvey = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showExitModal, setShowExitModal] = useState(false);
+  const [completedAssessmentSurvey, setCompletedAssessmentSurvey] =
+    useState(null);
   const [validationErrors, setValidationErrors] = useState({});
 
   // Calculate progress
@@ -373,7 +588,7 @@ const AssessmentSurvey = () => {
 
   const validateForm = () => {
     const errors = {};
-    
+
     if (!assessmentSurvey.navigationDifficulty) {
       errors.navigationDifficulty = "Por favor, responde esta pregunta";
     }
@@ -396,7 +611,7 @@ const AssessmentSurvey = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       // Scroll to first error
       const firstErrorField = Object.keys(validationErrors)[0];
@@ -408,7 +623,7 @@ const AssessmentSurvey = () => {
     }
 
     setIsSubmitting(true);
-    
+
     try {
       const res = await createAssessmentSurvey(assessmentSurvey);
       if (res) {
@@ -421,12 +636,34 @@ const AssessmentSurvey = () => {
     }
   };
 
+  const handleExitClick = () => {
+    completedAssessmentSurvey
+      ? (window.location.href = "/main")
+      : setShowExitModal(true);
+  };
+
+  const handleExitConfirm = async () => {
+    try {
+      await createUpdateTepeTest({ testAnswers });
+    } catch (error) {
+      console.error("Error saving progress:", error);
+    }
+    window.location.href = "/main";
+  };
+
+  const handleExitCancel = () => {
+    setShowExitModal(false);
+  };
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
-  // Render success screen after submission
-  if (isSubmitted) {
+  useEffect(() => {
+    setCompletedAssessmentSurvey(user?.completedAssessmentSurvey);
+  }, [user]);
+
+  if (completedAssessmentSurvey) {
     return (
       <section className="bg-gray-50 dark:bg-gray-900 min-h-screen py-8 px-4">
         <div className="max-w-2xl mx-auto mt-16">
@@ -456,7 +693,6 @@ const AssessmentSurvey = () => {
 
       <section className="bg-gray-50 dark:bg-gray-900 min-h-screen py-8 px-4">
         <div className="max-w-2xl mx-auto mt-16">
-          
           {/* Header Card */}
           <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-8 mb-6 text-white shadow-xl">
             <div className="flex items-center justify-center mb-4">
@@ -468,11 +704,22 @@ const AssessmentSurvey = () => {
               Encuesta de Valoración
             </h1>
             <p className="text-blue-100 text-center max-w-md mx-auto">
-              Tu opinión es muy importante para nosotros. Ayúdanos a mejorar SOVIO respondiendo esta breve encuesta.
+              Tu opinión es muy importante para nosotros. Ayúdanos a mejorar
+              SOVIO respondiendo esta breve encuesta.
             </p>
             <div className="flex items-center justify-center gap-2 mt-4 text-sm text-blue-200">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
               <span>~2 minutos para completar</span>
             </div>
@@ -480,27 +727,26 @@ const AssessmentSurvey = () => {
 
           {/* Main Form Card */}
           <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-6 md:p-8">
-            
             {/* Progress Bar */}
-            <ProgressBar 
-              current={0} 
-              total={SURVEY_QUESTIONS.length} 
-              answeredCount={answeredCount} 
+            <ProgressBar
+              current={0}
+              total={SURVEY_QUESTIONS.length}
+              answeredCount={answeredCount}
             />
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              
               {/* Questions */}
               {SURVEY_QUESTIONS.map((q, index) => {
-                const isAnswered = q.type === "stars" 
-                  ? assessmentSurvey.rating > 0
-                  : q.type === "textarea"
+                const isAnswered =
+                  q.type === "stars"
+                    ? assessmentSurvey.rating > 0
+                    : q.type === "textarea"
                     ? assessmentSurvey.comments?.trim()
                     : assessmentSurvey[q.id];
 
                 return (
-                  <div 
-                    key={q.id} 
+                  <div
+                    key={q.id}
                     id={`question-${q.id}`}
                     className={validationErrors[q.id] ? "animate-shake" : ""}
                   >
@@ -518,7 +764,9 @@ const AssessmentSurvey = () => {
                             <ScaleOptionButton
                               key={option.value}
                               option={option}
-                              isSelected={assessmentSurvey[q.id] === option.value}
+                              isSelected={
+                                assessmentSurvey[q.id] === option.value
+                              }
                               onSelect={(value) => handleChange(q.id, value)}
                             />
                           ))}
@@ -546,8 +794,16 @@ const AssessmentSurvey = () => {
                       {/* Validation error */}
                       {validationErrors[q.id] && (
                         <div className="mt-3 flex items-center gap-2 text-red-500 text-sm">
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                          <svg
+                            className="w-4 h-4"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                              clipRule="evenodd"
+                            />
                           </svg>
                           {validationErrors[q.id]}
                         </div>
@@ -561,7 +817,10 @@ const AssessmentSurvey = () => {
               {errors?.length > 0 && (
                 <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
                   {errors.map((error, i) => (
-                    <p key={i} className="text-red-600 dark:text-red-400 text-sm">
+                    <p
+                      key={i}
+                      className="text-red-600 dark:text-red-400 text-sm"
+                    >
                       {error}
                     </p>
                   ))}
@@ -579,50 +838,62 @@ const AssessmentSurvey = () => {
                       bg-gradient-to-r from-blue-500 to-blue-600 text-white
                       font-bold text-lg rounded-xl shadow-lg
                       transition-all duration-300
-                      ${isSubmitting 
-                        ? "opacity-70 cursor-not-allowed" 
-                        : "hover:shadow-xl hover:scale-105"
+                      ${
+                        isSubmitting
+                          ? "opacity-70 cursor-not-allowed"
+                          : "hover:shadow-xl hover:scale-105"
                       }
                     `}
                   >
                     {isSubmitting ? (
                       <>
-                        <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        <svg
+                          className="animate-spin w-5 h-5"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                            fill="none"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                          />
                         </svg>
                         Enviando...
                       </>
                     ) : (
                       <>
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                          />
                         </svg>
                         Enviar Encuesta
                       </>
                     )}
                   </button>
-
-                  <a
-                    href="/main"
-                    className="
-                      flex items-center justify-center gap-2 px-6 py-4
-                      bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300
-                      font-semibold rounded-xl
-                      hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-300
-                    "
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                    Cancelar
-                  </a>
                 </div>
 
                 {/* Completion hint */}
                 {answeredCount < 5 && (
                   <p className="text-center text-sm text-gray-400 mt-4">
-                    Responde al menos las 4 preguntas obligatorias y la calificación para enviar
+                    Responde al menos las 4 preguntas obligatorias y la
+                    calificación para enviar
                   </p>
                 )}
               </div>
@@ -634,6 +905,14 @@ const AssessmentSurvey = () => {
             Tu respuesta es anónima y nos ayuda a mejorar la plataforma.
           </p>
         </div>
+
+        {/* Exit Confirmation Modal */}
+        <ExitConfirmModal
+          isOpen={showExitModal}
+          onConfirm={handleExitConfirm}
+          onCancel={handleExitCancel}
+        />
+        <ExitButton onClick={handleExitClick} />
       </section>
     </>
   );

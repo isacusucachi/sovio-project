@@ -3,6 +3,7 @@ import { useVocationalTests } from "../context/vocationalTestContext";
 import { useAuth } from "../context/authContext";
 import questions from "../data/questions.json";
 import { FaSave } from "react-icons/fa";
+import { FaX } from "react-icons/fa6";
 
 // ============================================
 // CONSTANTS & CONFIGURATION
@@ -879,33 +880,6 @@ const CompletionScreen = ({
           </svg>
         </a>
 
-        <a
-          href="/main"
-          className="
-            bg-gray-100 dark:bg-gray-700
-            text-gray-700 dark:text-gray-200
-            px-8 py-4 rounded-xl font-bold text-lg
-            hover:bg-gray-200 dark:hover:bg-gray-600
-            transition-all duration-300
-            inline-flex items-center justify-center gap-2
-          "
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-            />
-          </svg>
-          Volver al Inicio
-        </a>
-
         <button
           onClick={() => setShowRetakeModal(true)}
           disabled={loading}
@@ -1254,8 +1228,8 @@ const ExitButton = ({ onClick }) => {
   return (
     <button
       onClick={onClick}
-      className="fixed top-4 left-4 z-40
-                 flex items-center gap-2 px-4 py-2 rounded-xl
+      className="fixed top-4 right-4 z-40
+                 flex items-center gap-2 px-5 py-3 rounded-xl
                  bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg
                  border-2 border-gray-200 dark:border-gray-700
                  text-gray-600 dark:text-gray-300
@@ -1265,19 +1239,7 @@ const ExitButton = ({ onClick }) => {
                  transition-all duration-300 shadow-lg
                  group"
     >
-      <svg
-        className="w-5 h-5 transition-transform group-hover:-translate-x-1"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M10 19l-7-7m0 0l7-7m-7 7h18"
-        />
-      </svg>
+      <FaX className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
       <span className="font-bold text-sm md:text-base">SALIR</span>
     </button>
   );
@@ -1501,7 +1463,7 @@ const PhbTest = () => {
   };
 
   const handleExitClick = () => {
-    setShowExitModal(true);
+    completedTest ? (window.location.href = "/main") : setShowExitModal(true);
   };
 
   const handleExitConfirm = async () => {
@@ -1899,7 +1861,12 @@ const PhbTest = () => {
           {/* Main Card */}
           <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-3xl shadow-xl p-6">
             {completedTest ? (
-              <CompletionScreen onRetake={handleReset} loading={resetLoading} showRetakeModal={showRetakeModal} setShowRetakeModal={setShowRetakeModal} />
+              <CompletionScreen
+                onRetake={handleReset}
+                loading={resetLoading}
+                showRetakeModal={showRetakeModal}
+                setShowRetakeModal={setShowRetakeModal}
+              />
             ) : (
               <>
                 {/* Overall Progress */}
@@ -2051,7 +2018,7 @@ const PhbTest = () => {
         />
 
         {/* Exit Button - Only show when test is not completed */}
-        {!completedTest && <ExitButton onClick={handleExitClick} />}
+        <ExitButton onClick={handleExitClick} />
       </div>
     </>
   );

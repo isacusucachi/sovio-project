@@ -152,7 +152,7 @@ const PasswordRequirement = ({ text, valid }) => (
         <span className="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600" />
       )}
     </span>
-    <span className={valid ? "line-through opacity-60" : ""}>{text}</span>
+    <span className={valid ? "opacity-60" : ""}>{text}</span>
   </div>
 );
 
