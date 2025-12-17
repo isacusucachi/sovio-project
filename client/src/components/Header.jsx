@@ -91,6 +91,7 @@ export default function Header({ onToggleSidebar, isSidebarOpen }) {
     { path: "/", label: "INICIO" },
     { path: "/services", label: "SERVICIOS" },
     { path: "/gallery", label: "GALERÍA" },
+    { path: "/faqs", label: "FAQ" },
   ];
 
   return (

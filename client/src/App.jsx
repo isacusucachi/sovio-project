@@ -87,7 +87,7 @@ const AppRoutes = () => {
       </Route>
       <Route path="/services" element={<Services />} />
       <Route path="/gallery" element={<Gallery />} />
-      <Route path="/faq" element={<FaqPage />} />
+      <Route path="/faqs" element={<FaqPage />} />
       <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="*" element={<NotFound />} />
