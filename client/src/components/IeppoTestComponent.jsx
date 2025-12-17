@@ -9,38 +9,47 @@ import { FaX } from "react-icons/fa6";
 // CONSTANTS & CONFIGURATION
 // ============================================
 
-const QUESTIONS_PER_PAGE = 5;
+const QUESTIONS_PER_PAGE = 5; // Show 5 questions at a time for better UX
 
 const SECTIONS = [
   {
-    id: "traits",
-    title: "Rasgos Personales",
-    icon: "🎯",
-    color: "from-violet-500 to-purple-600",
-    bgColor: "bg-violet-50 dark:bg-violet-900/20",
-    borderColor: "border-violet-200 dark:border-violet-800",
-    description: "Identifica las características que te describen",
-    instruction: "Soy una persona...",
-    optionTrue: "Sí, me describe",
-    optionFalse: "No me describe",
-    prefix: "N",
-    startIndex: 1,
-    endIndex: 21,
+    id: "personalStyles",
+    title: "Estilos Personales",
+    icon: "🎭",
+    color: "from-purple-500 to-indigo-600",
+    bgColor: "bg-purple-50 dark:bg-purple-900/20",
+    borderColor: "border-purple-200 dark:border-purple-800",
+    description: "Descubre cómo es tu manera de ser y actuar",
+    instruction: "Soy una persona que...",
+    optionTrue: "Se parece a mí",
+    optionFalse: "No se parece a mí",
+    prefix: "E",
   },
   {
-    id: "affirmations",
-    title: "Afirmaciones",
-    icon: "💼",
-    color: "from-sky-500 to-blue-600",
+    id: "preferredActivities",
+    title: "Actividades Preferidas",
+    icon: "⚡",
+    color: "from-sky-500 to-cyan-600",
     bgColor: "bg-sky-50 dark:bg-sky-900/20",
     borderColor: "border-sky-200 dark:border-sky-800",
-    description: "Evalúa tu situación actual de vida",
-    instruction: "En mi situación actual...",
-    optionTrue: "Sí",
-    optionFalse: "No",
-    prefix: "N",
-    startIndex: 22,
-    endIndex: 100,
+    description: "Identifica las actividades que te interesan",
+    instruction: "Me interesa...",
+    optionTrue: "Me interesa",
+    optionFalse: "No me interesa",
+    prefix: "P",
+  },
+  {
+    id: "perceptionOfAbility",
+    title: "Percepción de Habilidad",
+    icon: "💪",
+    color: "from-emerald-500 to-teal-600",
+    bgColor: "bg-emerald-50 dark:bg-emerald-900/20",
+    borderColor: "border-emerald-200 dark:border-emerald-800",
+    description: "Evalúa tus habilidades y capacidades",
+    instruction: "Soy hábil para...",
+    optionTrue: "Soy Hábil",
+    optionFalse: "No soy Hábil",
+    prefix: "H",
   },
 ];
 
@@ -49,11 +58,14 @@ const SECTIONS = [
 // ============================================
 
 const generateInitialState = () => ({
-  traits: Object.fromEntries(
-    Array.from({ length: 21 }, (_, i) => [`N${i + 1}`, null])
+  personalStyles: Object.fromEntries(
+    Array.from({ length: 33 }, (_, i) => [`E${i + 1}`, null])
   ),
-  affirmations: Object.fromEntries(
-    Array.from({ length: 79 }, (_, i) => [`N${i + 22}`, null])
+  preferredActivities: Object.fromEntries(
+    Array.from({ length: 47 }, (_, i) => [`P${i + 1}`, null])
+  ),
+  perceptionOfAbility: Object.fromEntries(
+    Array.from({ length: 38 }, (_, i) => [`H${i + 1}`, null])
   ),
 });
 
@@ -62,7 +74,7 @@ const generateInitialState = () => ({
 // ============================================
 
 const getQuestionsForSection = (sectionId) => {
-  return Object.entries(questions.tepeQuestions[sectionId] || {});
+  return Object.entries(questions.ieppoQuestions[sectionId] || {});
 };
 
 const countAnswered = (answers) => {
@@ -71,8 +83,9 @@ const countAnswered = (answers) => {
 
 const getTotalQuestions = () => {
   return (
-    Object.keys(questions.tepeQuestions.traits || {}).length +
-    Object.keys(questions.tepeQuestions.affirmations || {}).length
+    Object.keys(questions.ieppoQuestions.personalStyles || {}).length +
+    Object.keys(questions.ieppoQuestions.preferredActivities || {}).length +
+    Object.keys(questions.ieppoQuestions.perceptionOfAbility || {}).length
   );
 };
 
@@ -80,7 +93,7 @@ const getTotalQuestions = () => {
 // REUSABLE COMPONENTS
 // ============================================
 
-// Main Progress Bar
+// Main Progress Bar (Overall)
 const OverallProgressBar = ({ answered, total }) => {
   const percentage = Math.round((answered / total) * 100);
 
@@ -96,7 +109,7 @@ const OverallProgressBar = ({ answered, total }) => {
       </div>
       <div className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
         <div
-          className="h-full bg-gradient-to-r from-violet-500 via-blue-500 to-cyan-500 rounded-full transition-all duration-500 ease-out"
+          className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full transition-all duration-500 ease-out"
           style={{ width: `${percentage}%` }}
         />
       </div>
@@ -107,42 +120,42 @@ const OverallProgressBar = ({ answered, total }) => {
 // Section Progress Indicator
 const SectionProgress = ({ sections, currentSectionIndex, testAnswers }) => {
   return (
-    <div className="flex justify-center gap-6 mb-6">
+    <div className="flex justify-center gap-3 mb-6">
       {sections.map((section, index) => {
         const sectionQuestions = getQuestionsForSection(section.id);
         const answered = countAnswered(testAnswers[section.id]);
         const total = sectionQuestions.length;
         const isComplete = answered === total;
         const isCurrent = index === currentSectionIndex;
+        const isPast = index < currentSectionIndex;
 
         return (
           <div key={section.id} className="flex flex-col items-center">
             <div
               className={`
-                w-14 h-14 rounded-2xl flex items-center justify-center text-2xl
+                w-12 h-12 rounded-full flex items-center justify-center text-xl
                 transition-all duration-300 transform
                 ${
                   isCurrent
-                    ? `bg-gradient-to-br ${section.color} text-white scale-110 shadow-lg`
+                    ? `bg-gradient-to-r ${section.color} text-white scale-110 shadow-lg`
                     : isComplete
                     ? "bg-green-500 text-white"
-                    : "bg-gray-200 dark:bg-gray-700 text-gray-400"
+                    : isPast
+                    ? "bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-300"
+                    : "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500"
                 }
               `}
             >
               {isComplete && !isCurrent ? "✓" : section.icon}
             </div>
             <span
-              className={`text-xs mt-2 font-semibold ${
+              className={`text-xs mt-1 font-medium ${
                 isCurrent
                   ? "text-blue-600 dark:text-blue-400"
                   : "text-gray-500 dark:text-gray-400"
               }`}
             >
               {answered}/{total}
-            </span>
-            <span className="text-xs text-gray-400 dark:text-gray-500 hidden sm:block">
-              {section.title}
             </span>
           </div>
         );
@@ -151,7 +164,7 @@ const SectionProgress = ({ sections, currentSectionIndex, testAnswers }) => {
   );
 };
 
-// Page Progress Dots
+// Page Progress (within section)
 const PageProgress = ({ currentPage, totalPages, sectionColor }) => {
   return (
     <div className="flex justify-center gap-1.5 mb-4">
@@ -159,8 +172,8 @@ const PageProgress = ({ currentPage, totalPages, sectionColor }) => {
         <div
           key={i}
           className={`
-            h-2 rounded-full transition-all duration-300
-            ${i === currentPage ? "w-8" : "w-2"}
+            h-1.5 rounded-full transition-all duration-300
+            ${i === currentPage ? "w-8" : "w-3"}
             ${
               i <= currentPage
                 ? `bg-gradient-to-r ${sectionColor}`
@@ -194,7 +207,7 @@ const QuestionCard = ({
         ${
           answer !== null
             ? "border-green-300 dark:border-green-700 bg-green-50/50 dark:bg-green-900/10"
-            : "border-gray-100 dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-600"
+            : "border-gray-100 dark:border-gray-700"
         }
       `}
       style={{ animationDelay: `${index * 50}ms` }}
@@ -202,13 +215,13 @@ const QuestionCard = ({
       <div className="flex items-start gap-3 mb-4">
         <div
           className={`
-          w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold
-          bg-gradient-to-br ${sectionColor} text-white flex-shrink-0 shadow-sm
+          w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold
+          bg-gradient-to-r ${sectionColor} text-white flex-shrink-0
         `}
         >
           {numericId}
         </div>
-        <p className="text-gray-700 dark:text-gray-200 font-medium leading-relaxed pt-1">
+        <p className="text-gray-700 dark:text-gray-200 font-medium leading-relaxed">
           {questionText}
         </p>
       </div>
@@ -227,22 +240,7 @@ const QuestionCard = ({
             }
           `}
         >
-          <span className="flex items-center justify-center gap-2">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-            {optionTrue}
-          </span>
+          ✓ {optionTrue}
         </button>
         <button
           type="button"
@@ -257,22 +255,7 @@ const QuestionCard = ({
             }
           `}
         >
-          <span className="flex items-center justify-center gap-2">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-            {optionFalse}
-          </span>
+          ✗ {optionFalse}
         </button>
       </div>
     </div>
@@ -394,21 +377,14 @@ const NavigationButtons = ({
 };
 
 // Section Intro Screen
-const SectionIntro = ({ section, onStart, questionsCount, sectionNumber }) => {
+const SectionIntro = ({ section, onStart, questionsCount }) => {
   return (
     <div className="text-center py-8 animate-fadeIn">
-      <div className="inline-block mb-2">
-        <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-          Sección {sectionNumber} de 2
-        </span>
-      </div>
-
       <div
         className={`
         w-24 h-24 mx-auto mb-6 rounded-3xl
         bg-gradient-to-br ${section.color}
         flex items-center justify-center shadow-xl
-        transform transition-transform hover:scale-105
       `}
       >
         <span className="text-5xl">{section.icon}</span>
@@ -423,32 +399,21 @@ const SectionIntro = ({ section, onStart, questionsCount, sectionNumber }) => {
       </p>
 
       <div
-        className={`${section.bgColor} ${section.borderColor} border-2 rounded-2xl p-4 mb-6 max-w-sm mx-auto`}
+        className={`
+        ${section.bgColor} ${section.borderColor}
+        border-2 rounded-2xl p-4 mb-6 max-w-sm mx-auto
+      `}
       >
-        <div className="flex items-center justify-center gap-4 text-sm">
-          <div className="flex items-center gap-2">
-            <span className="text-lg">📝</span>
-            <span className="font-bold text-gray-700 dark:text-gray-200">
-              {questionsCount}
-            </span>
-            <span className="text-gray-500 dark:text-gray-400">preguntas</span>
-          </div>
-          <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
-          <div className="flex items-center gap-2">
-            <span className="text-lg">⏱️</span>
-            <span className="text-gray-500 dark:text-gray-400">
-              ~{Math.ceil(questionsCount / 5)} min
-            </span>
-          </div>
-        </div>
+        <p className="text-sm text-gray-600 dark:text-gray-300">
+          <span className="font-bold">{questionsCount}</span> preguntas •
+          Responde según tu forma de ser
+        </p>
       </div>
 
-      <div className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-2xl p-4 mb-8 max-w-md mx-auto">
-        <p className="text-blue-800 dark:text-blue-200">
-          <span className="font-bold">💡 Instrucción:</span>{" "}
-          {section.id === "traits"
-            ? "Marca SI o NO según las características que te describen tal como eres."
-            : "Marca SI o NO según consideres que la frase describa tu situación actual de vida."}
+      <div className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-4 mb-6 max-w-md mx-auto">
+        <p className="text-blue-800 dark:text-blue-200 font-medium">
+          💡 <span className="font-bold">Instrucción:</span>{" "}
+          {section.instruction}
         </p>
       </div>
 
@@ -456,13 +421,13 @@ const SectionIntro = ({ section, onStart, questionsCount, sectionNumber }) => {
         onClick={onStart}
         className={`
           bg-gradient-to-r ${section.color} text-white
-          px-10 py-4 rounded-xl font-bold text-lg
+          px-8 py-4 rounded-xl font-bold text-lg
           shadow-lg hover:shadow-xl
           transition-all duration-300 transform hover:scale-105
-          inline-flex items-center gap-3
+          inline-flex items-center gap-2
         `}
       >
-        Comenzar Sección
+        Comenzar
         <svg
           className="w-5 h-5"
           fill="none"
@@ -499,8 +464,8 @@ const CompletionScreen = ({
       </h2>
 
       <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">
-        Has completado con éxito el Test de Evaluación del Potencial Empresarial
-        (TEPE).
+        Has completado con éxito el Test de Inventario de Estilos Personales y
+        Preferencias Ocupacionales (IEPPO).
       </p>
 
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -587,11 +552,12 @@ const CompletionScreen = ({
           onRetake();
         }}
         loading={loading}
-        testName="Test TEPE"
+        testName="Test IEPPO"
       />
     </div>
   );
 };
+
 // Floating Save Button
 const FloatingSaveButton = ({ onSave, loading, saved }) => {
   const [showTooltip, setShowTooltip] = useState(false);
@@ -607,7 +573,7 @@ const FloatingSaveButton = ({ onSave, loading, saved }) => {
           w-14 h-14 rounded-full shadow-lg
           flex items-center justify-center
           transition-all duration-300 transform hover:scale-110
-          ${saved ? "bg-green-500" : "bg-violet-500 hover:bg-violet-600"}
+          ${saved ? "bg-green-500" : "bg-blue-500 hover:bg-blue-600"}
         `}
       >
         {loading ? (
@@ -647,16 +613,16 @@ const FloatingSaveButton = ({ onSave, loading, saved }) => {
       </button>
 
       {showTooltip && (
-        <div className="absolute bottom-16 right-0 bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-800 text-sm px-3 py-2 rounded-lg whitespace-nowrap shadow-lg">
-          {saved ? "✓ Guardado" : "Guardar progreso"}
+        <div className="absolute bottom-16 right-0 bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-800 text-sm px-3 py-1 rounded-lg whitespace-nowrap">
+          {saved ? "¡Guardado!" : "Guardar progreso"}
         </div>
       )}
     </div>
   );
 };
 
-// Warning Component
-const UnansweredWarning = ({ count }) => {
+// Unanswered Questions Warning
+const UnansweredWarning = ({ count, onFix }) => {
   if (count === 0) return null;
 
   return (
@@ -871,19 +837,18 @@ const RetakeConfirmModal = ({
     </div>
   );
 };
-
 // ============================================
 // MAIN COMPONENT
 // ============================================
 
-const TepeTest = () => {
+export default function IeppoTestComponent() {
   const { user } = useAuth();
   const {
-    createUpdateTepeTest,
-    finishTepeTest,
-    generateResultTepeTest,
-    getTepeTest,
-    resetTepeTest,
+    createUpdateIeppoTest,
+    finishIeppoTest,
+    generateResultIeppoTest,
+    getIeppoTest,
+    resetIeppoTest,
   } = useVocationalTests();
 
   // State
@@ -917,18 +882,21 @@ const TepeTest = () => {
   // Calculate totals
   const totalAnswered = useMemo(() => {
     return (
-      countAnswered(testAnswers.traits) +
-      countAnswered(testAnswers.affirmations)
+      countAnswered(testAnswers.personalStyles) +
+      countAnswered(testAnswers.preferredActivities) +
+      countAnswered(testAnswers.perceptionOfAbility)
     );
   }, [testAnswers]);
 
   const totalQuestions = useMemo(() => getTotalQuestions(), []);
 
-  // Check current page completion
+  // Check if current page is complete
   const currentPageAnswered = currentQuestions.filter(
     ([id]) => testAnswers[currentSection.id][id] !== null
   ).length;
   const isCurrentPageComplete = currentPageAnswered === currentQuestions.length;
+
+  // Check unanswered on current page
   const unansweredOnPage = currentQuestions.length - currentPageAnswered;
 
   // Handlers
@@ -943,8 +911,9 @@ const TepeTest = () => {
             [questionId]: value,
           },
         };
+        // Save to localStorage
         localStorage.setItem(
-          `tepeTestAnswers${user?.id}`,
+          `ieppoTestAnswers${user?.id}`,
           JSON.stringify(newAnswers)
         );
         return newAnswers;
@@ -954,6 +923,7 @@ const TepeTest = () => {
   );
 
   const handleNext = useCallback(() => {
+    // Check if current page is complete
     if (!isCurrentPageComplete) {
       setShowWarning(true);
       return;
@@ -962,14 +932,17 @@ const TepeTest = () => {
     setShowWarning(false);
 
     if (currentPage < totalPages - 1) {
+      // Next page in current section
       setCurrentPage((prev) => prev + 1);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else if (currentSectionIndex < SECTIONS.length - 1) {
+      // Next section
       setCurrentSectionIndex((prev) => prev + 1);
       setCurrentPage(0);
       setShowSectionIntro(true);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
+      // Submit test
       handleSubmit();
     }
   }, [currentPage, totalPages, currentSectionIndex, isCurrentPageComplete]);
@@ -981,6 +954,7 @@ const TepeTest = () => {
       setCurrentPage((prev) => prev - 1);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else if (currentSectionIndex > 0) {
+      // Go to previous section's last page
       const prevSection = SECTIONS[currentSectionIndex - 1];
       const prevSectionQuestions = getQuestionsForSection(prevSection.id);
       const prevTotalPages = Math.ceil(
@@ -1004,7 +978,7 @@ const TepeTest = () => {
 
   const handleExitConfirm = async () => {
     try {
-      await createUpdateTepeTest({ testAnswers });
+      await createUpdateIeppoTest({ testAnswers });
     } catch (error) {
       console.error("Error saving progress:", error);
     }
@@ -1018,15 +992,15 @@ const TepeTest = () => {
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      const res = await finishTepeTest({ testAnswers });
+      const res = await finishIeppoTest({ testAnswers });
       if (res) {
-        await generateResultTepeTest();
-        localStorage.removeItem(`tepeTestAnswers${user?.id}`);
+        await generateResultIeppoTest();
+        localStorage.removeItem(`ieppoTestAnswers${user?.id}`);
         setCompletedTest(true);
       }
+      setLoading(false);
     } catch (error) {
       console.error(error);
-    } finally {
       setLoading(false);
     }
   };
@@ -1034,7 +1008,7 @@ const TepeTest = () => {
   const handleSaveProgress = async () => {
     try {
       setProgressLoading(true);
-      const res = await createUpdateTepeTest({ testAnswers });
+      const res = await createUpdateIeppoTest({ testAnswers });
       if (res) {
         setProgressSaved(true);
         setTimeout(() => setProgressSaved(false), 3000);
@@ -1049,14 +1023,14 @@ const TepeTest = () => {
   const handleReset = async () => {
     try {
       setResetLoading(true);
-      const res = await resetTepeTest();
+      const res = await resetIeppoTest();
       if (res) {
         setCompletedTest(false);
         setTestAnswers(generateInitialState());
         setCurrentSectionIndex(0);
         setCurrentPage(0);
         setShowSectionIntro(true);
-        localStorage.removeItem(`tepeTestAnswers${user?.id}`);
+        localStorage.removeItem(`ieppoTestAnswers${user?.id}`);
       }
     } catch (error) {
       console.error(error);
@@ -1069,16 +1043,18 @@ const TepeTest = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const savedAnswers = localStorage.getItem(`tepeTestAnswers${user?.id}`);
+        const savedAnswers = localStorage.getItem(
+          `ieppoTestAnswers${user?.id}`
+        );
 
         if (savedAnswers) {
           setTestAnswers(JSON.parse(savedAnswers));
         } else {
-          const response = await getTepeTest();
+          const response = await getIeppoTest();
           if (response?.testAnswers) {
             setTestAnswers(response.testAnswers);
             localStorage.setItem(
-              `tepeTestAnswers${user?.id}`,
+              `ieppoTestAnswers${user?.id}`,
               JSON.stringify(response.testAnswers)
             );
           }
@@ -1091,14 +1067,14 @@ const TepeTest = () => {
     if (completedTest === false) {
       fetchData();
     }
-  }, [user?.id, getTepeTest, completedTest]);
+  }, [user?.id, getIeppoTest, completedTest]);
 
   // Load completion status
   useEffect(() => {
-    setCompletedTest(user?.completedTepeTest);
+    setCompletedTest(user?.completedIeppoTest);
   }, [user]);
 
-  // Navigation flags
+  // Determine if we're on the last page of the last section
   const isLastSection = currentSectionIndex === SECTIONS.length - 1;
   const isLastPage = currentPage === totalPages - 1;
   const isFirstPage = currentPage === 0 && currentSectionIndex === 0;
@@ -1110,26 +1086,21 @@ const TepeTest = () => {
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes bounce-slow {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
-        }
         .animate-fadeIn { animation: fadeIn 0.4s ease-out; }
-        .animate-bounce-slow { animation: bounce-slow 2s ease-in-out infinite; }
       `}</style>
 
-      <div className="bg-gradient-to-br from-slate-50 via-violet-50 to-blue-100 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 min-h-screen py-8 px-4">
+      <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 min-h-screen py-8 px-4">
         <div className="max-w-2xl mx-auto mt-20">
           {/* Header */}
           <div className="text-center mb-6">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl shadow-lg shadow-violet-500/30 mb-4">
-              <span className="text-3xl">💼</span>
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-lg shadow-blue-500/30 mb-4">
+              <span className="text-3xl">📋</span>
             </div>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-2">
-              Test TEPE
+              Test IEPPO
             </h1>
             <p className="text-gray-500 dark:text-gray-400 text-sm">
-              Test de Evaluación del Potencial Empresarial
+              Inventario de Estilos Personales y Preferencias Ocupacionales
             </p>
           </div>
 
@@ -1162,7 +1133,6 @@ const TepeTest = () => {
                     section={currentSection}
                     onStart={handleStartSection}
                     questionsCount={sectionQuestions.length}
-                    sectionNumber={currentSectionIndex + 1}
                   />
                 ) : (
                   <>
@@ -1179,11 +1149,6 @@ const TepeTest = () => {
                           <p className="text-sm text-gray-600 dark:text-gray-300">
                             {currentSection.instruction}
                           </p>
-                        </div>
-                        <div className="ml-auto text-right">
-                          <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">
-                            Página {currentPage + 1}/{totalPages}
-                          </span>
                         </div>
                       </div>
                     </div>
@@ -1221,10 +1186,16 @@ const TepeTest = () => {
                     <NavigationButtons
                       onPrev={handlePrev}
                       onNext={handleNext}
-                      isFirst={isFirstPage}
+                      isFirst={
+                        isFirstPage &&
+                        showSectionIntro === false &&
+                        currentPage === 0 &&
+                        currentSectionIndex === 0
+                      }
                       isLast={isLastPage}
                       isLastSection={isLastSection}
                       loading={loading}
+                      canProceed={true}
                     />
                   </>
                 )}
@@ -1235,7 +1206,8 @@ const TepeTest = () => {
           {/* Help text */}
           {!completedTest && (
             <p className="text-center text-sm text-gray-400 dark:text-gray-500 mt-6">
-              💾 Tu progreso se guarda automáticamente
+              Tu progreso se guarda automáticamente. Usa el botón flotante para
+              guardar manualmente.
             </p>
           )}
         </div>
@@ -1249,8 +1221,6 @@ const TepeTest = () => {
           />
         )}
       </div>
-
-      {/* Exit Confirmation Modal */}
       <ExitConfirmModal
         isOpen={showExitModal}
         onConfirm={handleExitConfirm}
@@ -1261,6 +1231,4 @@ const TepeTest = () => {
       <ExitButton onClick={handleExitClick} />
     </>
   );
-};
-
-export default TepeTest;
+}

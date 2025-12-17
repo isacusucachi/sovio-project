@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import "react-toastify/dist/ReactToastify.css";
 
-import Footer from "../components/Footer";
+import Footer from "./Footer";
 import { useUsers } from "../context/userContext";
 import { useAuth } from "../context/authContext";
 
@@ -1497,8 +1497,7 @@ const ExitButton = ({ onClick }) => {
 // MAIN COMPONENT
 // ============================================
 
-const PersonalInformationSheet = () => {
-  const { user } = useAuth();
+const PersonalInformationComponent = ({ user, setCurrentBigStep }) => {
   const [completedUserInformation, setCompletedUserInformation] =
     useState(null);
   const { createPersonalInformation, errors: personalInformationErrors } =
@@ -1773,11 +1772,11 @@ const PersonalInformationSheet = () => {
                 <p className="text-gray-500 dark:text-gray-400 mb-8">
                   Tu información ha sido guardada correctamente
                 </p>
-                <a
-                  href="/main"
+                <button
+                 onClick={() => setCurrentBigStep("ieppoTest")}
                   className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-8 py-4 rounded-xl font-bold shadow-lg shadow-blue-500/30 hover:shadow-xl transition-all transform hover:scale-105"
                 >
-                  Ir a las pruebas
+                  INICIAR PRUEBA IEPPO
                   <svg
                     className="w-5 h-5"
                     fill="none"
@@ -1791,7 +1790,7 @@ const PersonalInformationSheet = () => {
                       d="M9 5l7 7-7 7"
                     />
                   </svg>
-                </a>
+                </button>
               </div>
             ) : (
               // Form
@@ -1903,4 +1902,4 @@ const PersonalInformationSheet = () => {
   );
 };
 
-export default PersonalInformationSheet;
+export default PersonalInformationComponent;

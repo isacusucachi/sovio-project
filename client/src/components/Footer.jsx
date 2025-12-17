@@ -74,7 +74,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-white dark:bg-[#0B1120]">
+    <footer className="bg-gray-50 dark:bg-gray-950 ">
       <div className="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">
         <div className="md:flex md:justify-between">
           {/* Logo Section */}
