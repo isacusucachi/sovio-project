@@ -343,7 +343,7 @@ const Services = () => {
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <a
                 href="/login"
-                className="uppercase inline-flex items-center justify-center px-6 py-3.5 text-base font-bold text-blue-700 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-blue-300 transition-all duration-200 shadow-lg"
+                className="uppercase inline-flex items-center justify-center px-6 py-3.5 text-base font-medium text-white bg-transparent border-2 border-white rounded-lg hover:bg-white/30 focus:ring-4 focus:ring-white/30 transition-all duration-200"
               >
                 <svg
                   className="w-5 h-5 mr-2"
@@ -362,7 +362,7 @@ const Services = () => {
               </a>
               <a
                 href="https://www.gob.pe/institucion/regioncusco-grtpe/contacto-y-numeros-de-emergencias"
-                className="uppercase inline-flex items-center justify-center px-6 py-3.5 text-base font-medium text-white bg-transparent border-2 border-white rounded-lg hover:bg-white/10 focus:ring-4 focus:ring-white/30 transition-all duration-200"
+                className="uppercase inline-flex items-center justify-center px-6 py-3.5 text-base font-medium text-white bg-transparent border-2 border-white rounded-lg hover:bg-white/30 focus:ring-4 focus:ring-white/30 transition-all duration-200"
               >
                 <svg
                   className="w-5 h-5 mr-2"
