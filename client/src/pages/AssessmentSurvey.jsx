@@ -421,7 +421,7 @@ const SuccessScreen = () => {
         Tu feedback nos ayuda a mejorar SOVIO para ti y para todos los usuarios.
       </p>
       <a
-        href="/home"
+        href="/main"
         className="
           inline-flex items-center gap-2 px-8 py-4 
           bg-gradient-to-r from-blue-500 to-blue-600 text-white
@@ -627,7 +627,7 @@ const AssessmentSurvey = () => {
     try {
       const res = await createAssessmentSurvey(assessmentSurvey);
       if (res) {
-        setIsSubmitted(true);
+        setCompletedAssessmentSurvey(true);
       }
     } catch (error) {
       console.error("Error submitting survey:", error);
